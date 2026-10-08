@@ -5,7 +5,7 @@ import { classifyCategory, MerchantCategory, normalizeMerchant } from '../utils/
 import { getRankedRecommendations, RecommendationResult } from '../utils/recommendationEngine';
 import { haversineDistance } from '../utils/geospatial';
 
-const MAPBOX_TOKEN = 'YOUR_MAPBOX_TOKEN';
+const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN;
 
 export type LocationCoord = { lat: number; lon: number };
 export type EnrichedPlace = {

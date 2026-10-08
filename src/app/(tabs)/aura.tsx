@@ -17,7 +17,7 @@ import { useCardStore } from '../../store/useCardStore';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const GROQ_API_KEY = 'YOUR_GROQ_API_KEY';
+const GROQ_API_KEY = process.env.EXPO_PUBLIC_GROQ_API_KEY;
 
 const SYSTEM_PROMPT = `You are Aura, WalletWise's dedicated AI financial intelligence assistant.
 IMPORTANT: You are NOT a general-purpose chatbot. You ONLY entertain, answer, and assist with questions directly related to credit cards, rewards, points, cashback, miles, travel rewards, benefits, fees, reward optimization, comparisons, spending optimization, and finance topics directly connected to credit cards.

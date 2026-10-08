@@ -20,7 +20,7 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 const MODES = ['Max Value', 'Cashback'];
 const CATEGORIES = ['All', 'Dining', 'Grocery', 'Electronics', 'Shopping'];
 
-const MAPBOX_TOKEN = 'YOUR_MAPBOX_TOKEN';
+const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN;
 const MAPBOX_URL = `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`;
 
 // Snaps (Distance from bottom of screen to top of sheet)
