@@ -1,14 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as Location from 'expo-location';
+
+import { areaName, HAS_MAPBOX_TOKEN, MapboxError, nearbyPlaces, searchPlaces } from '../services/mapbox';
+import type { LatLon, MapPlace, SpendFilter } from '../services/mapbox';
 import { useCardStore } from '../store/useCardStore';
 import type { CardData } from '../store/useCardStore';
-import { classifyCategory, MerchantCategory, normalizeMerchant } from '../utils/merchantClassifier';
-import { getRankedRecommendations, RecommendationResult } from '../utils/recommendationEngine';
 import { haversineDistance } from '../utils/geospatial';
+import { classifyMapboxPlace, normalizeMerchant } from '../utils/merchantClassifier';
+import type { MerchantCategory } from '../utils/merchantClassifier';
+import { getRankedRecommendations } from '../utils/recommendationEngine';
+import type { RecommendationResult } from '../utils/recommendationEngine';
 
-const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN;
+export type LocationCoord = LatLon;
 
-export type LocationCoord = { lat: number; lon: number };
 export type EnrichedPlace = {
   id: string;
   name: string;
@@ -18,183 +22,224 @@ export type EnrichedPlace = {
   center: [number, number];
   distanceKm: number;
   recommendation: RecommendationResult | null;
-  raw: any;
+  /** Every wallet card ranked for this place (₹2,000 sample spend). */
+  ranked: RecommendationResult[];
+  isPoi: boolean;
 };
 
-/** Turns a Mapbox feature into a place with a category, distance and the best wallet card. */
-export function enrichFeature(
-  feature: any,
-  fallbackCategory: MerchantCategory,
-  from: LocationCoord | null,
-  cards: CardData[],
-): EnrichedPlace {
-  const rawName = feature.text;
-  const normName = normalizeMerchant(rawName);
-  const classified = classifyCategory(rawName, feature.properties?.category);
-  // Use the chosen chip's category when the classifier cannot tell.
-  const category = classified === 'Unknown' ? (fallbackCategory === ('All' as MerchantCategory) ? 'Unknown' : fallbackCategory) : classified;
-  const [lon, lat] = feature.center;
-  const distanceKm = from ? haversineDistance(from.lat, from.lon, lat, lon) : 0;
-  const recommendations = getRankedRecommendations(normName, category, cards);
+export type PermissionState = 'checking' | 'granted' | 'denied' | 'services-off';
+export type LoadState = 'idle' | 'loading' | 'ready' | 'error';
+
+/** Search radii offered on screen, in km. 5 km is the default. */
+export const RADIUS_OPTIONS = [1, 2, 5] as const;
+export type RadiusKm = (typeof RADIUS_OPTIONS)[number];
+
+/** Ignore GPS jitter: only a move of this many km re-runs the nearby search. */
+const MOVE_THRESHOLD_KM = 0.15;
+/** Last known position younger than this is good enough to start with. */
+const LAST_KNOWN_MAX_AGE_MS = 10 * 60 * 1000;
+const SEARCH_DEBOUNCE_MS = 350;
+
+/** Turns a Mapbox place into a place with a spend type, distance and the best wallet card. */
+export function enrichPlace(p: MapPlace, fallback: MerchantCategory, from: LatLon | null, cards: CardData[]): EnrichedPlace {
+  const normalizedName = normalizeMerchant(p.name);
+  const category = classifyMapboxPlace(p.name, p.categories, p.maki, fallback);
+  const ranked = getRankedRecommendations(normalizedName, category, cards);
   return {
-    id: feature.id,
-    name: rawName,
-    address: feature.place_name ?? '',
-    normalizedName: normName,
+    id: p.id,
+    name: p.name,
+    address: p.address,
+    normalizedName,
     category,
-    center: [lon, lat],
-    distanceKm,
-    recommendation: recommendations[0] ?? null,
-    raw: feature,
+    center: [p.lon, p.lat],
+    distanceKm: from ? haversineDistance(from.lat, from.lon, p.lat, p.lon) : 0,
+    recommendation: ranked[0] ?? null,
+    ranked,
+    isPoi: p.isPoi,
   };
 }
 
+const errorText = (e: unknown) =>
+  e instanceof MapboxError ? e.message : 'Something went wrong loading places. Check your connection and try again.';
+
 export function useBestCardLogic() {
-  const { cards } = useCardStore();
-  
-  // State
-  const [activeCategory, setActiveCategory] = useState('Dining');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  
-  const [userLocation, setUserLocation] = useState<LocationCoord | null>(null);
-  const [customCenter, setCustomCenter] = useState<LocationCoord | null>(null);
-  
-  const [places, setPlaces] = useState<EnrichedPlace[]>([]);
-  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const cards = useCardStore((s) => s.cards);
 
-  // Refs for tracking stale requests
-  const latestSearchQuery = useRef('');
-  const latestNearbyQuery = useRef<{ center: LocationCoord, cat: string } | null>(null);
+  // ── Location ───────────────────────────────────────
+  const [permission, setPermission] = useState<PermissionState>('checking');
+  const [userLocation, setUserLocation] = useState<LatLon | null>(null);
+  const [customCenter, setCustomCenter] = useState<LatLon | null>(null);
+  const [locationAttempt, setLocationAttempt] = useState(0);
+  const activeLocation = customCenter ?? userLocation;
 
-  const activeLocation = customCenter || userLocation;
-
-  // 1. Initial Location Request
   useEffect(() => {
-    let locationSubscription: Location.LocationSubscription | null = null;
-    let initialCameraSet = false;
+    let sub: Location.LocationSubscription | null = null;
+    let cancelled = false;
+
+    const accept = (loc: Location.LocationObject | null) => {
+      if (!loc || cancelled) return;
+      const next = { lat: loc.coords.latitude, lon: loc.coords.longitude };
+      setUserLocation((prev) => (prev && haversineDistance(prev.lat, prev.lon, next.lat, next.lon) < MOVE_THRESHOLD_KM ? prev : next));
+    };
 
     (async () => {
       try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setIsLoading(false);
+        setPermission('checking');
+        if (!(await Location.hasServicesEnabledAsync())) {
+          if (!cancelled) setPermission('services-off');
           return;
         }
-
-        locationSubscription = await Location.watchPositionAsync(
-          { accuracy: Location.Accuracy.Balanced, timeInterval: 5000, distanceInterval: 10 },
-          (location) => {
-            // Only update if accuracy is decent (less than 1000 meters)
-            if (location.coords.accuracy && location.coords.accuracy > 1000) return;
-            
-            const coords = { lat: location.coords.latitude, lon: location.coords.longitude };
-            setUserLocation(coords);
-            
-            if (!initialCameraSet) {
-              initialCameraSet = true;
-              setIsLoading(false);
-            }
-          }
-        );
-      } catch (err) {
-        setIsLoading(false);
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (cancelled) return;
+        if (status !== 'granted') {
+          setPermission('denied');
+          return;
+        }
+        setPermission('granted');
+        // Fast start from the last known fix, then a fresh fix, then follow movement.
+        accept(await Location.getLastKnownPositionAsync({ maxAge: LAST_KNOWN_MAX_AGE_MS }));
+        Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }).then(accept, () => {});
+        sub = await Location.watchPositionAsync({ accuracy: Location.Accuracy.Balanced, distanceInterval: 50, timeInterval: 10000 }, accept);
+        if (cancelled) sub.remove();
+      } catch {
+        if (!cancelled) setPermission('denied');
       }
     })();
-    return () => { if (locationSubscription) locationSubscription.remove(); };
-  }, []);
 
-  // 2. Debounced Autocomplete Search
+    return () => {
+      cancelled = true;
+      sub?.remove();
+    };
+  }, [locationAttempt]);
+
+  const retryLocation = useCallback(() => setLocationAttempt((n) => n + 1), []);
+  const backToMyLocation = useCallback(() => setCustomCenter(null), []);
+
+  // ── Area name for the header ───────────────────────
+  const [areaLabel, setAreaLabel] = useState<string | null>(null);
+  const areaKey = activeLocation ? `${activeLocation.lat.toFixed(3)},${activeLocation.lon.toFixed(3)}` : null;
+  useEffect(() => {
+    if (!activeLocation || !HAS_MAPBOX_TOKEN) return;
+    let live = true;
+    areaName(activeLocation).then((name) => live && setAreaLabel(name));
+    return () => {
+      live = false;
+    };
+    // areaKey rounds the position so GPS jitter does not trigger a new lookup.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [areaKey]);
+
+  // ── Nearby places ──────────────────────────────────
+  const [activeCategory, setActiveCategory] = useState<SpendFilter>('All');
+  const [radiusKm, setRadiusKm] = useState<RadiusKm>(5);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const nearbyKey = activeLocation ? `${activeLocation.lat.toFixed(3)},${activeLocation.lon.toFixed(3)}` : null;
+  // Identifies one nearby request. A result belongs to the request whose key it carries,
+  // so "loading" is simply "the latest result is for an older key".
+  const requestKey = `${nearbyKey}|${activeCategory}|${radiusKm}|${refreshKey}`;
+  const [result, setResult] = useState<{ key: string; places: MapPlace[]; error: string | null }>({ key: '', places: [], error: null });
+
+  useEffect(() => {
+    // Without a key the screen shows its own "key missing" message instead.
+    if (!activeLocation || !HAS_MAPBOX_TOKEN) return;
+    let live = true;
+    nearbyPlaces(activeLocation, activeCategory, radiusKm).then(
+      (list) => live && setResult({ key: requestKey, places: list, error: null }),
+      (e) => live && setResult((prev) => ({ key: requestKey, places: prev.places, error: errorText(e) })),
+    );
+    return () => {
+      live = false;
+    };
+    // requestKey covers position (rounded to about 100 m), category, radius and retries.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestKey]);
+
+  const rawPlaces = result.places;
+  const placesState: LoadState = !activeLocation || !HAS_MAPBOX_TOKEN ? 'idle' : result.key !== requestKey ? 'loading' : result.error ? 'error' : 'ready';
+  const placesError = result.error;
+
+  const refreshPlaces = useCallback(() => setRefreshKey((n) => n + 1), []);
+
+  // Card recommendations update instantly when the wallet changes, without refetching.
+  const places = useMemo(() => {
+    const fallback: MerchantCategory = activeCategory === 'All' ? 'Unknown' : activeCategory;
+    return rawPlaces.map((p) => enrichPlace(p, fallback, activeLocation, cards));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawPlaces, cards, nearbyKey]);
+
+  // ── Search ─────────────────────────────────────────
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<MapPlace[]>([]);
+  const [searchState, setSearchState] = useState<LoadState>('idle');
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const latestSearch = useRef(0);
+
   useEffect(() => {
     const q = searchQuery.trim();
-    latestSearchQuery.current = q;
-    
-    if (!activeLocation || q.length < 2) {
-      setSearchResults([]);
-      return;
-    }
-
-    const fetchSearch = async () => {
-      try {
-        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?proximity=${activeLocation.lon},${activeLocation.lat}&access_token=${MAPBOX_TOKEN}&limit=5`;
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        // Ensure latest request wins
-        if (latestSearchQuery.current === q && data.features) {
-          // Basic ranking: exact match > partial match
-          const ranked = data.features.sort((a: any, b: any) => {
-            const aName = a.text.toLowerCase();
-            const bName = b.text.toLowerCase();
-            const lowQ = q.toLowerCase();
-            if (aName === lowQ && bName !== lowQ) return -1;
-            if (bName === lowQ && aName !== lowQ) return 1;
-            return 0;
-          });
-          setSearchResults(ranked);
-        }
-      } catch (err) {}
-    };
-    
-    const timer = setTimeout(fetchSearch, 400); // 400ms debounce
+    const request = ++latestSearch.current;
+    if (q.length < 2) return;
+    const timer = setTimeout(() => {
+      setSearchState('loading');
+      setSearchError(null);
+      searchPlaces(q, activeLocation ?? userLocation).then(
+        (list) => {
+          if (request !== latestSearch.current) return;
+          setSearchResults(list);
+          setSearchState('ready');
+        },
+        (e) => {
+          if (request !== latestSearch.current) return;
+          setSearchResults([]);
+          setSearchState('error');
+          setSearchError(errorText(e));
+        },
+      );
+    }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [searchQuery, activeLocation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
 
-  // 3. Nearby Places Algorithm (Triggers on Category or Location change)
-  useEffect(() => {
-    if (!activeLocation) return;
-    
-    const queryMap: Record<string, string> = {
-      'Fuel': 'petrol pump',
-      'Dining': 'restaurant',
-      'Grocery': 'supermarket',
-      'Electronics': 'electronics store',
-      'Shopping': 'mall',
-      'Pharmacy / Health': 'pharmacy',
-      'Entertainment': 'cinema',
-      'Business': 'office',
-      'Travel': 'hotel',
-      'All': 'store'
-    };
-    const mappedQuery = queryMap[activeCategory] || activeCategory;
-    
-    const currentQuery = { center: activeLocation, cat: mappedQuery };
-    latestNearbyQuery.current = currentQuery;
+  const clearSearch = useCallback(() => {
+    setSearchQuery('');
+    setSearchResults([]);
+    setIsSearching(false);
+  }, []);
 
-    const fetchPlaces = async () => {
-      try {
-        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(mappedQuery)}.json?proximity=${activeLocation.lon},${activeLocation.lat}&access_token=${MAPBOX_TOKEN}&limit=12`;
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (latestNearbyQuery.current === currentQuery && data.features) {
-          const enriched: EnrichedPlace[] = data.features.map((feature: any) =>
-            enrichFeature(feature, activeCategory as MerchantCategory, activeLocation, cards),
-          );
-          
-          // Sort by distance
-          enriched.sort((a, b) => a.distanceKm - b.distanceKm);
-          
-          setPlaces(enriched);
-          setSelectedPlaceId(null);
-        }
-      } catch (err) {}
-    };
-    fetchPlaces();
-  }, [activeCategory, activeLocation, cards]);
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
 
   return {
-    activeCategory, setActiveCategory,
-    searchQuery, setSearchQuery,
-    searchResults, setSearchResults,
-    isSearching, setIsSearching,
-    userLocation, setUserLocation,
-    customCenter, setCustomCenter,
-    places, setPlaces,
-    selectedPlaceId, setSelectedPlaceId,
-    isLoading,
-    activeLocation
+    // location
+    permission,
+    retryLocation,
+    userLocation,
+    customCenter,
+    setCustomCenter,
+    backToMyLocation,
+    activeLocation,
+    areaLabel,
+    // nearby
+    activeCategory,
+    setActiveCategory,
+    radiusKm,
+    setRadiusKm,
+    places,
+    placesState,
+    placesError,
+    refreshPlaces,
+    // search
+    searchQuery,
+    setSearchQuery,
+    searchResults,
+    // Under two characters there is no search, whatever the last request did.
+    searchState: searchQuery.trim().length < 2 ? ('idle' as LoadState) : searchState,
+    searchError,
+    isSearching,
+    setIsSearching,
+    clearSearch,
+    // selection
+    selectedPlaceId,
+    setSelectedPlaceId,
+    hasMapboxKey: HAS_MAPBOX_TOKEN,
   };
 }

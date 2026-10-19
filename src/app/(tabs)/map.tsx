@@ -1,480 +1,773 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, Text, View, Pressable, Dimensions, TextInput } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Keyboard, Linking, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MapView, { Marker, UrlTile } from 'react-native-maps';
-import * as Location from 'expo-location';
-import Animated, {
-  useSharedValue, useAnimatedStyle, withSpring, withTiming,
-  withRepeat, withSequence, interpolate, Extrapolation,
-  Easing, runOnJS,
-} from 'react-native-reanimated';
-import { Gesture, GestureDetector, ScrollView as RNGHScrollView } from 'react-native-gesture-handler';
+import MapView, { Circle, Marker, UrlTile } from 'react-native-maps';
+import type { Region } from 'react-native-maps';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { FlatList, Gesture, GestureDetector, ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
-import { colors, typography } from '../../theme';
+
 import { CardArt } from '../../components/CardArt';
-import { enrichFeature, useBestCardLogic } from '../../hooks/useBestCardLogic';
-import type { EnrichedPlace } from '../../hooks/useBestCardLogic';
+import { Icon } from '../../components/Icon';
 import { PlacePanel } from '../../components/PlacePanel';
 import type { RankMode } from '../../components/PlacePanel';
+import { enrichPlace, RADIUS_OPTIONS, useBestCardLogic } from '../../hooks/useBestCardLogic';
+import type { EnrichedPlace } from '../../hooks/useBestCardLogic';
+import { MAPBOX_TILE_URL, SPEND_FILTERS } from '../../services/mapbox';
+import type { MapPlace, SpendFilter } from '../../services/mapbox';
 import { useCardStore } from '../../store/useCardStore';
+import { theme } from '../../theme';
+import { haversineDistance } from '../../utils/geospatial';
 import type { MerchantCategory } from '../../utils/merchantClassifier';
+import type { RecommendationResult } from '../../utils/recommendationEngine';
 
-const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
+// Whole of India, used until the phone's location is known.
+const INDIA_REGION: Region = { latitude: 20.59, longitude: 78.96, latitudeDelta: 22, longitudeDelta: 22 };
+/** Map zoom (as a lat/lon span in degrees) that shows about a 5 km radius. */
+const AREA_DELTA = 0.09;
+const PLACE_DELTA = 0.012;
+/** Distance the map must be dragged before "Search this area" appears, in km. */
+const SEARCH_AREA_THRESHOLD_KM = 1;
+const CAMERA_MS = 700;
 
-const CATEGORIES = ['All', 'Dining', 'Grocery', 'Fuel', 'Electronics', 'Shopping', 'Travel', 'Pharmacy / Health', 'Entertainment'];
+const CATEGORY_ICON: Record<string, string> = {
+  Dining: '🍴',
+  Grocery: '🛒',
+  Fuel: '⛽',
+  Electronics: '📱',
+  Shopping: '🛍️',
+  Travel: '🏨',
+  'Pharmacy / Health': '💊',
+  Entertainment: '🎬',
+  Business: '🏢',
+  Unknown: '📍',
+};
+const FILTER_LABEL = (f: SpendFilter) => (f === 'Pharmacy / Health' ? 'Pharmacy' : f);
+const inr = (n: number) => `₹${n >= 100 ? Math.round(n).toLocaleString('en-IN') : n.toFixed(2).replace(/\.00$/, '')}`;
+const distanceText = (km: number) => (km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`);
 
-const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN;
-const MAPBOX_URL = `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`;
+/** Best card for a place under the chosen mode. Max Value counts transfer value; Cashback only guaranteed value. */
+function bestFor(place: EnrichedPlace, mode: RankMode): RecommendationResult | null {
+  if (place.ranked.length === 0) return null;
+  if (mode === 'Cashback') return place.ranked[0];
+  return [...place.ranked].sort((a, b) => b.bestValue - a.bestValue || b.estimatedValue - a.estimatedValue)[0];
+}
 
-// Snaps (Distance from bottom of screen to top of sheet)
-const SNAP_EXPANDED = SCREEN_HEIGHT * 0.85;
-const SNAP_MID = SCREEN_HEIGHT * 0.55;
-const SNAP_COLLAPSED = SCREEN_HEIGHT * 0.18;
-
-// Map Markers
-function AnimatedMarker({ coordinate, isSelected, onPress, title }: any) {
-  const scale = useSharedValue(0.6);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    scale.value = withSpring(1, { damping: 15 });
-    opacity.value = withTiming(1, { duration: 400 });
-  }, []);
-
-  useEffect(() => {
-    scale.value = withSpring(isSelected ? 1.2 : 1, { damping: 12 });
-  }, [isSelected]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ scale: scale.value }],
-  }));
-
+// ── Place row in the sheet ─────────────────────────────
+const PlaceRow = React.memo(function PlaceRow({
+  place,
+  mode,
+  selected,
+  onOpen,
+}: {
+  place: EnrichedPlace;
+  mode: RankMode;
+  selected: boolean;
+  onOpen: (p: EnrichedPlace) => void;
+}) {
+  const best = bestFor(place, mode);
+  const earns = !!best && best.estimatedValue > 0;
+  const amount = mode === 'Max Value' && best ? best.bestValue : best?.estimatedValue ?? 0;
+  const units = best && best.rewardUnit !== 'CASHBACK' ? `${best.pointsEarned.toLocaleString('en-IN')} ${best.rewardUnit === 'MILES' ? 'miles' : 'pts'}` : 'cashback';
   return (
-    <Marker coordinate={coordinate} onPress={onPress} style={{ zIndex: isSelected ? 100 : 1 }}>
-      <Animated.View style={[styles.markerWrapper, animatedStyle]}>
-        <View style={styles.markerCore}>
-          <Text style={styles.markerIcon}>●</Text>
+    <Pressable
+      onPress={() => onOpen(place)}
+      accessibilityRole="button"
+      accessibilityLabel={`${place.name}, ${place.category}, ${distanceText(place.distanceKm)} away. ${
+        best ? `Best card ${best.card.bankName} ${best.card.cardName}, ${inr(amount)} back on ₹2,000` : 'No card in wallet'
+      }`}
+      style={({ pressed }) => [styles.placeCard, selected && styles.placeCardSelected, pressed && styles.pressed]}
+    >
+      <View style={styles.placeHeader}>
+        <View style={styles.placeIcon}>
+          <Text style={styles.placeIconText}>{CATEGORY_ICON[place.category] ?? '📍'}</Text>
         </View>
-      </Animated.View>
-    </Marker>
-  );
-}
-
-function UserLocationMarker({ coordinate }: any) {
-  const pulse = useSharedValue(1);
-  const opacity = useSharedValue(0.35);
-
-  useEffect(() => {
-    pulse.value = withRepeat(withTiming(1.6, { duration: 2000, easing: Easing.out(Easing.ease) }), -1, false);
-    opacity.value = withRepeat(withTiming(0, { duration: 2000, easing: Easing.out(Easing.ease) }), -1, false);
-  }, []);
-
-  const ringStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: pulse.value }],
-    opacity: opacity.value,
-  }));
-
-  return (
-    <Marker coordinate={coordinate} anchor={{ x: 0.5, y: 0.5 }} zIndex={999}>
-      <View style={styles.userMarkerWrapper}>
-        <Animated.View style={[styles.userMarkerRing, ringStyle]} />
-        <View style={styles.userMarkerCore} />
+        <View style={styles.flex}>
+          <Text style={[theme.text.body, styles.placeName]} numberOfLines={1}>
+            {place.name}
+          </Text>
+          <Text style={theme.text.caption} numberOfLines={1}>
+            {place.category === 'Unknown' ? 'Shop' : FILTER_LABEL(place.category as SpendFilter)} · {distanceText(place.distanceKm)}
+          </Text>
+        </View>
+        <Icon name="chevron-right" color={theme.colors.textMuted} size={theme.sizes.icon} />
       </View>
-    </Marker>
+      {best ? (
+        <View style={styles.bestRow}>
+          <View style={styles.bestArt}>
+            <CardArt card={best.card} />
+          </View>
+          <View style={styles.flex}>
+            <Text style={[theme.text.caption, earns ? styles.bestLabel : undefined]}>{earns ? 'BEST CARD HERE' : 'NO REWARD LISTED'}</Text>
+            <Text style={[theme.text.body, styles.bestName]} numberOfLines={1}>
+              {best.card.bankName} {best.card.cardName}
+            </Text>
+          </View>
+          <View style={styles.bestValue}>
+            <Text style={[theme.text.body, styles.bestAmount]}>{inr(amount)}</Text>
+            <Text style={theme.text.caption}>{earns ? units : 'on ₹2,000'}</Text>
+          </View>
+        </View>
+      ) : (
+        <Text style={[theme.text.caption, styles.noCard]}>Add a card to see which one to use here</Text>
+      )}
+    </Pressable>
   );
-}
+});
 
-// MAIN COMPONENT
+// ── Screen ─────────────────────────────────────────────
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { height: screenHeight } = useWindowDimensions();
   const mapRef = useRef<MapView>(null);
-  
-  const {
-    activeCategory, setActiveCategory,
-    searchQuery, setSearchQuery,
-    searchResults,
-    isSearching, setIsSearching,
-    userLocation,
-    customCenter,
-    places,
-    selectedPlaceId, setSelectedPlaceId,
-    isLoading,
-    activeLocation
-  } = useBestCardLogic();
-
-  // Bottom Sheet Shared Values
-  const sheetHeight = useSharedValue(SNAP_MID); 
-  const isDragging = useSharedValue(false);
-  const contextOffset = useSharedValue(0);
-
   const cards = useCardStore((s) => s.cards);
 
-  // Max Value counts what points are worth when transferred; Cashback counts only guaranteed value.
+  const {
+    permission,
+    retryLocation,
+    userLocation,
+    customCenter,
+    setCustomCenter,
+    backToMyLocation,
+    activeLocation,
+    areaLabel,
+    activeCategory,
+    setActiveCategory,
+    radiusKm,
+    setRadiusKm,
+    places,
+    placesState,
+    placesError,
+    refreshPlaces,
+    searchQuery,
+    setSearchQuery,
+    searchResults,
+    searchState,
+    searchError,
+    isSearching,
+    setIsSearching,
+    clearSearch,
+    selectedPlaceId,
+    setSelectedPlaceId,
+    hasMapboxKey,
+  } = useBestCardLogic();
+
   const [rankMode, setRankMode] = useState<RankMode>('Max Value');
-  // The place whose card ranking is open in the sheet.
   const [openPlace, setOpenPlace] = useState<EnrichedPlace | null>(null);
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lon: number } | null>(null);
 
-  const openPlacePanel = (place: EnrichedPlace) => {
-    const [lon, lat] = place.center;
-    setOpenPlace(place);
-    setSelectedPlaceId(place.id);
-    sheetHeight.value = withSpring(SNAP_EXPANDED, { damping: 18, stiffness: 150, overshootClamping: true });
-    mapRef.current?.animateCamera({ center: { latitude: lat, longitude: lon }, zoom: 15.5 }, { duration: 800 });
-  };
-
-  // A searched place ("DMart Karve Nagar") opens straight into its card ranking.
-  const onSearchResultSelect = (feature: any) => {
-    setIsSearching(false);
-    setSearchQuery('');
-    openPlacePanel(enrichFeature(feature, activeCategory as MerchantCategory, userLocation, cards));
-  };
-
-  const onMarkerPress = (place: EnrichedPlace) => openPlacePanel(place);
-
-  // Bulletproof Bottom Sheet Pan Gesture
+  // ── Bottom sheet ───────────────────────────────────
+  const snaps = useMemo(
+    () => ({ expanded: screenHeight * 0.85, mid: screenHeight * 0.5, collapsed: screenHeight * 0.2 }),
+    [screenHeight],
+  );
+  const sheetHeight = useSharedValue(snaps.mid);
+  const dragStart = useSharedValue(0);
+  const snapTo = useCallback(
+    (h: number) => {
+      sheetHeight.set(withSpring(h, { damping: 18, stiffness: 150, overshootClamping: true }));
+    },
+    [sheetHeight],
+  );
   const panGesture = Gesture.Pan()
     .onBegin(() => {
-      isDragging.value = true;
-      contextOffset.value = sheetHeight.value;
+      dragStart.set(sheetHeight.get());
     })
-    .onUpdate((event) => {
-      const newHeight = contextOffset.value - event.translationY;
-      sheetHeight.value = Math.max(0, Math.min(SNAP_EXPANDED + 50, newHeight));
+    .onUpdate((e) => {
+      sheetHeight.set(Math.max(snaps.collapsed / 2, Math.min(snaps.expanded, dragStart.get() - e.translationY)));
     })
-    .onEnd((event) => {
-      isDragging.value = false;
-      const vy = -event.velocityY;
-      const projectedHeight = sheetHeight.value + vy * 0.1;
-      let dest = sheetHeight.value;
-      
-      if (projectedHeight > (SNAP_EXPANDED + SNAP_MID) / 2) dest = SNAP_EXPANDED;
-      else if (projectedHeight > (SNAP_MID + SNAP_COLLAPSED) / 2) dest = SNAP_MID;
-      else dest = SNAP_COLLAPSED;
-      
-      sheetHeight.value = withSpring(dest, { velocity: vy, damping: 18, stiffness: 150, overshootClamping: true });
+    .onEnd((e) => {
+      const projected = sheetHeight.get() - e.velocityY * 0.1;
+      const dest =
+        projected > (snaps.expanded + snaps.mid) / 2 ? snaps.expanded : projected > (snaps.mid + snaps.collapsed) / 2 ? snaps.mid : snaps.collapsed;
+      sheetHeight.set(withSpring(dest, { velocity: -e.velocityY, damping: 18, stiffness: 150, overshootClamping: true }));
     });
+  const sheetStyle = useAnimatedStyle(() => ({ height: sheetHeight.get() }));
 
-  const sheetAnimatedStyle = useAnimatedStyle(() => ({ height: sheetHeight.value }));
+  // ── Camera ─────────────────────────────────────────
+  const flyTo = useCallback((lat: number, lon: number, delta: number) => {
+    mapRef.current?.animateToRegion({ latitude: lat, longitude: lon, latitudeDelta: delta, longitudeDelta: delta }, CAMERA_MS);
+  }, []);
 
-  if (isLoading) {
-    return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={{ fontSize: 40, color: '#F5D06F' }}>◎</Text>
-      </View>
-    );
+  // Centre the map once the first location (or a new search area) is known.
+  const centerKey = activeLocation ? `${activeLocation.lat.toFixed(3)},${activeLocation.lon.toFixed(3)}` : null;
+  useEffect(() => {
+    if (activeLocation) flyTo(activeLocation.lat, activeLocation.lon, AREA_DELTA);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [centerKey]);
+
+  const openPlacePanel = useCallback(
+    (place: EnrichedPlace) => {
+      Keyboard.dismiss();
+      setOpenPlace(place);
+      setSelectedPlaceId(place.id);
+      snapTo(snaps.expanded);
+      flyTo(place.center[1], place.center[0], PLACE_DELTA);
+    },
+    [setSelectedPlaceId, snapTo, snaps.expanded, flyTo],
+  );
+
+  const closePlacePanel = useCallback(() => {
+    setOpenPlace(null);
+    setSelectedPlaceId(null);
+    snapTo(snaps.mid);
+  }, [setSelectedPlaceId, snapTo, snaps.mid]);
+
+  // A shop opens its card ranking; an area ("Karve Nagar") becomes the new search centre.
+  const onSearchResult = useCallback(
+    (p: MapPlace) => {
+      clearSearch();
+      Keyboard.dismiss();
+      if (p.isPoi) {
+        const fallback: MerchantCategory = activeCategory === 'All' ? 'Unknown' : activeCategory;
+        openPlacePanel(enrichPlace(p, fallback, userLocation ?? activeLocation, cards));
+      } else {
+        setOpenPlace(null);
+        setCustomCenter({ lat: p.lat, lon: p.lon });
+      }
+    },
+    [clearSearch, activeCategory, openPlacePanel, userLocation, activeLocation, cards, setCustomCenter],
+  );
+
+  const onRegionChangeComplete = useCallback((r: Region) => setMapCenter({ lat: r.latitude, lon: r.longitude }), []);
+  const movedAway =
+    !!mapCenter && !!activeLocation && haversineDistance(mapCenter.lat, mapCenter.lon, activeLocation.lat, activeLocation.lon) > SEARCH_AREA_THRESHOLD_KM;
+
+  const searchThisArea = useCallback(() => {
+    if (mapCenter) setCustomCenter(mapCenter);
+  }, [mapCenter, setCustomCenter]);
+
+  const goToMyLocation = useCallback(() => {
+    if (permission !== 'granted') {
+      retryLocation();
+      return;
+    }
+    backToMyLocation();
+    if (userLocation) flyTo(userLocation.lat, userLocation.lon, AREA_DELTA);
+  }, [permission, retryLocation, backToMyLocation, userLocation, flyTo]);
+
+  const renderPlace = useCallback(
+    ({ item }: { item: EnrichedPlace }) => <PlaceRow place={item} mode={rankMode} selected={item.id === selectedPlaceId} onOpen={openPlacePanel} />,
+    [rankMode, selectedPlaceId, openPlacePanel],
+  );
+
+  // ── Status shown above the list ────────────────────
+  let status: { title: string; body: string; action?: { label: string; onPress: () => void } } | null = null;
+  if (!hasMapboxKey) {
+    status = {
+      title: 'Map key missing',
+      body: 'Add EXPO_PUBLIC_MAPBOX_TOKEN to the .env file in the project folder, then restart with "npx expo start -c".',
+    };
+  } else if (!activeLocation && (permission === 'denied' || permission === 'services-off')) {
+    status = {
+      title: permission === 'services-off' ? 'Location is turned off' : 'Location permission needed',
+      body: 'Allow location to see places within 5 km, or search for an area above.',
+      action: { label: permission === 'denied' ? 'Open settings' : 'Try again', onPress: permission === 'denied' ? () => Linking.openSettings() : retryLocation },
+    };
+  } else if (!activeLocation) {
+    status = { title: 'Finding your location…', body: 'You can also search for an area or a shop above.' };
+  } else if (placesState === 'error') {
+    status = { title: 'Could not load places', body: placesError ?? '', action: { label: 'Retry', onPress: refreshPlaces } };
   }
 
-  const getCategoryIcon = (cat: string) => {
-    const c = cat.toLowerCase();
-    if (c.includes('dining')) return '🍴';
-    if (c.includes('grocery')) return '🛒';
-    if (c.includes('electronics')) return '📱';
-    if (c.includes('shopping')) return '🛍️';
-    return '📍';
-  };
+  const listHeader = (
+    <View>
+      {status && (
+        <View style={styles.statusBox}>
+          <Text style={[theme.text.body, styles.statusTitle]}>{status.title}</Text>
+          <Text style={theme.text.body}>{status.body}</Text>
+          {status.action && (
+            <Pressable
+              onPress={status.action.onPress}
+              accessibilityRole="button"
+              accessibilityLabel={status.action.label}
+              style={({ pressed }) => [styles.statusButton, pressed && styles.pressed]}
+            >
+              <Text style={[theme.text.body, styles.statusButtonText]}>{status.action.label}</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
+      {activeLocation && placesState !== 'error' && (
+        <View style={styles.listHeader}>
+          <Text style={[theme.text.body, styles.listTitle]}>
+            {placesState === 'loading' ? 'Finding places…' : `${places.length} ${places.length === 1 ? 'place' : 'places'} within ${radiusKm} km`}
+          </Text>
+          {placesState === 'loading' && <ActivityIndicator color={theme.colors.gold} />}
+          {placesState === 'ready' && <Text style={theme.text.caption}>Values on ₹2,000 · tap for any amount</Text>}
+        </View>
+      )}
+    </View>
+  );
+
+  const emptyList =
+    activeLocation && placesState === 'ready' ? (
+      <View style={styles.statusBox}>
+        <Text style={[theme.text.body, styles.statusTitle]}>No {activeCategory === 'All' ? '' : `${FILTER_LABEL(activeCategory).toLowerCase()} `}places found</Text>
+        <Text style={theme.text.body}>Try a bigger radius, another category, or search for a shop by name.</Text>
+      </View>
+    ) : null;
 
   return (
     <View style={styles.container}>
-      {/* MAP LAYER */}
-      <MapView 
+      {/* MAP */}
+      <MapView
         ref={mapRef}
         style={StyleSheet.absoluteFill}
-        mapType="none"
-        showsUserLocation={false}
-        pitchEnabled={true}
+        mapType={hasMapboxKey ? 'none' : 'standard'}
+        userInterfaceStyle="dark"
+        initialRegion={INDIA_REGION}
         showsCompass={false}
-        initialRegion={userLocation ? {
-          latitude: customCenter ? customCenter.lat : userLocation.lat,
-          longitude: customCenter ? customCenter.lon : userLocation.lon,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
-        } : undefined}
+        toolbarEnabled={false}
+        onRegionChangeComplete={onRegionChangeComplete}
+        onPress={() => Keyboard.dismiss()}
       >
-        <UrlTile urlTemplate={MAPBOX_URL} maximumZ={19} flipY={false} />
-        {userLocation && <UserLocationMarker coordinate={{ latitude: userLocation.lat, longitude: userLocation.lon }} />}
-        
-        {places.map((place) => {
-          const [lon, lat] = place.center;
-          return (
-            <AnimatedMarker
-              key={place.id}
-              coordinate={{ latitude: lat, longitude: lon }}
-              isSelected={selectedPlaceId === place.id}
-              onPress={() => onMarkerPress(place)}
-            />
-          );
-        })}
-        {openPlace && !places.some((p) => p.id === openPlace.id) && (
-          <AnimatedMarker
-            coordinate={{ latitude: openPlace.center[1], longitude: openPlace.center[0] }}
-            isSelected
-            onPress={() => {}}
+        {hasMapboxKey && <UrlTile urlTemplate={MAPBOX_TILE_URL} maximumZ={19} flipY={false} tileSize={256} />}
+        {activeLocation && (
+          <Circle
+            center={{ latitude: activeLocation.lat, longitude: activeLocation.lon }}
+            radius={radiusKm * 1000}
+            strokeColor={theme.colors.goldBorder}
+            fillColor={theme.colors.goldSoft}
           />
+        )}
+        {userLocation && (
+          <Marker coordinate={{ latitude: userLocation.lat, longitude: userLocation.lon }} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false} zIndex={999}>
+            <View style={styles.userDot} accessibilityLabel="Your location" />
+          </Marker>
+        )}
+        {places.map((p) => (
+          <Marker
+            key={p.id}
+            coordinate={{ latitude: p.center[1], longitude: p.center[0] }}
+            onPress={() => openPlacePanel(p)}
+            tracksViewChanges={false}
+            zIndex={p.id === selectedPlaceId ? 100 : 1}
+            accessibilityLabel={p.name}
+          >
+            <View style={[styles.marker, p.id === selectedPlaceId && styles.markerSelected]}>
+              <Text style={styles.markerText}>{CATEGORY_ICON[p.category] ?? '📍'}</Text>
+            </View>
+          </Marker>
+        ))}
+        {openPlace && !places.some((p) => p.id === openPlace.id) && (
+          <Marker coordinate={{ latitude: openPlace.center[1], longitude: openPlace.center[0] }} tracksViewChanges={false} zIndex={200}>
+            <View style={[styles.marker, styles.markerSelected]}>
+              <Text style={styles.markerText}>{CATEGORY_ICON[openPlace.category] ?? '📍'}</Text>
+            </View>
+          </Marker>
         )}
       </MapView>
 
-      {/* FLOATING SEARCH BAR OVERLAY */}
-      <View style={[styles.headerContainer, { top: insets.top + 10 }]}>
+      {/* SEARCH */}
+      <View style={[styles.searchWrap, { top: insets.top + theme.spacing.sm }]}>
         <View style={styles.searchBox}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <TextInput 
-            style={styles.searchInput}
-            placeholder="Search location or merchant..."
-            placeholderTextColor="#777"
+          <Icon name="pin" color={theme.colors.gold} size={theme.sizes.icon} />
+          <TextInput
+            style={[theme.text.body, styles.searchInput]}
+            placeholder="Search a shop or area, e.g. DMart Karve Nagar"
+            placeholderTextColor={theme.colors.textMuted}
             keyboardAppearance="dark"
+            returnKeyType="search"
             value={searchQuery}
-            onChangeText={(text) => {
-              setSearchQuery(text);
+            onChangeText={(t) => {
+              setSearchQuery(t);
               setIsSearching(true);
             }}
             onFocus={() => setIsSearching(true)}
+            accessibilityLabel="Search for a shop or area"
           />
+          {searchState === 'loading' && <ActivityIndicator color={theme.colors.gold} />}
           {searchQuery.length > 0 && (
-            <Pressable onPress={() => { setSearchQuery(''); setIsSearching(false); }}>
-              <Text style={styles.clearIcon}>✕</Text>
+            <Pressable
+              onPress={clearSearch}
+              accessibilityRole="button"
+              accessibilityLabel="Clear search"
+              hitSlop={theme.spacing.sm}
+              style={styles.clearButton}
+            >
+              <Text style={[theme.text.body, styles.clearText]}>✕</Text>
             </Pressable>
           )}
         </View>
 
-        {isSearching && searchResults.length > 0 && (
+        {isSearching && searchQuery.trim().length >= 2 && searchState !== 'idle' && (
           <View style={styles.dropdown}>
-            {searchResults.map(res => (
-              <Pressable key={res.id} style={styles.dropdownRow} onPress={() => onSearchResultSelect(res)}>
-                <View style={styles.dropdownIconBox}><Text style={styles.dropdownIcon}>📍</Text></View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.dropdownTitle} numberOfLines={1}>{res.text}</Text>
-                  <Text style={styles.dropdownSub} numberOfLines={1}>{res.place_name}</Text>
-                </View>
-              </Pressable>
-            ))}
+            <ScrollView keyboardShouldPersistTaps="handled" style={styles.dropdownScroll}>
+              {searchState === 'error' && <Text style={[theme.text.body, styles.dropdownMessage]}>{searchError}</Text>}
+              {searchState === 'ready' && searchResults.length === 0 && (
+                <Text style={[theme.text.body, styles.dropdownMessage]}>No matches. Try the shop name and area.</Text>
+              )}
+              {searchResults.map((r) => (
+                <Pressable
+                  key={r.id}
+                  onPress={() => onSearchResult(r)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${r.name}, ${r.address}`}
+                  style={({ pressed }) => [styles.dropdownRow, pressed && styles.pressed]}
+                >
+                  <View style={styles.dropdownIcon}>
+                    <Text>{r.isPoi ? '🏪' : '📍'}</Text>
+                  </View>
+                  <View style={styles.flex}>
+                    <Text style={[theme.text.body, styles.dropdownTitle]} numberOfLines={1}>
+                      {r.name}
+                    </Text>
+                    <Text style={theme.text.caption} numberOfLines={1}>
+                      {r.isPoi ? '' : 'Area · '}
+                      {r.address}
+                    </Text>
+                  </View>
+                  {activeLocation && (
+                    <Text style={theme.text.caption}>{distanceText(haversineDistance(activeLocation.lat, activeLocation.lon, r.lat, r.lon))}</Text>
+                  )}
+                </Pressable>
+              ))}
+            </ScrollView>
           </View>
+        )}
+
+        {!isSearching && movedAway && (
+          <Pressable
+            onPress={searchThisArea}
+            accessibilityRole="button"
+            accessibilityLabel="Search this area"
+            style={({ pressed }) => [styles.searchAreaButton, pressed && styles.pressed]}
+          >
+            <Text style={[theme.text.body, styles.searchAreaText]}>Search this area</Text>
+          </Pressable>
         )}
       </View>
 
-      {/* DRAGGABLE BOTTOM SHEET */}
-      <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.bottomSheet, sheetAnimatedStyle]}>
-          <View style={styles.sheetHandleContainer}>
-            <View style={styles.sheetHandle} />
-          </View>
+      {/* MY LOCATION */}
+      <Pressable
+        onPress={goToMyLocation}
+        accessibilityRole="button"
+        accessibilityLabel="Show places near my location"
+        style={({ pressed }) => [styles.locateButton, { top: insets.top + theme.sizes.touch + theme.spacing.lg }, pressed && styles.pressed]}
+      >
+        <Icon name="pin" color={customCenter ? theme.colors.textPrimary : theme.colors.gold} size={theme.sizes.iconLarge} />
+      </Pressable>
 
-          {/* STATIC SHEET HEADER */}
-          <View style={styles.sheetHeader}>
-            <View style={styles.sheetHeaderTopRow}>
-              <View>
-                <Text style={styles.sheetHeaderLogo}>Best Card</Text>
-                <View style={styles.locationBadge}>
-                  <View style={styles.locationDot} />
-                  <Text style={styles.locationBadgeText}>{customCenter ? 'Custom area' : 'Near you'}</Text>
+      {/* SHEET */}
+      <Animated.View style={[styles.sheet, sheetStyle]}>
+        <GestureDetector gesture={panGesture}>
+          <View style={styles.handleArea} accessibilityLabel="Drag to resize the list" accessibilityRole="adjustable">
+            <View style={styles.handle} />
+          </View>
+        </GestureDetector>
+
+        {openPlace ? (
+          <PlacePanel place={openPlace} cards={cards} mode={rankMode} onClose={closePlacePanel} />
+        ) : (
+          <>
+            <View style={styles.sheetHeader}>
+              <View style={styles.titleRow}>
+                <View style={styles.flex}>
+                  <Text style={theme.text.title}>Best Card</Text>
+                  <View style={styles.areaRow}>
+                    <View style={[styles.areaDot, customCenter && styles.areaDotCustom]} />
+                    <Text style={theme.text.caption} numberOfLines={1}>
+                      {customCenter ? `Around ${areaLabel ?? 'the chosen area'}` : areaLabel ? `Near you · ${areaLabel}` : 'Near you'}
+                    </Text>
+                  </View>
                 </View>
+                <Pressable
+                  onPress={() => router.push('/trip-planner')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Open Trip Planner"
+                  style={({ pressed }) => [styles.tripButton, pressed && styles.pressed]}
+                >
+                  <Icon name="plane" color={theme.colors.gold} size={theme.sizes.icon} />
+                  <Text style={[theme.text.caption, styles.tripText]}>Trip Planner</Text>
+                </Pressable>
               </View>
-              
-              <Pressable style={styles.actionBtn} onPress={() => router.push('/trip-planner')}>
-                <Text style={styles.actionBtnText}>✈ Trip Planner</Text>
-              </Pressable>
-            </View>
 
-            <View style={styles.segmentedControl}>
-              <Pressable onPress={() => router.push('/trip-planner')}>
-                <Text style={styles.segmentText}>Dream Goal ✈</Text>
-              </Pressable>
-              {(['Max Value', 'Cashback'] as const).map((m) =>
-                rankMode === m ? (
-                  <View key={m} style={styles.segmentActive}>
-                    <Text style={styles.segmentTextActive}>{m}</Text>
-                  </View>
-                ) : (
-                  <Pressable key={m} onPress={() => setRankMode(m)}>
-                    <Text style={styles.segmentText}>{m}</Text>
+              <View style={styles.segment} accessibilityRole="radiogroup">
+                {(['Max Value', 'Cashback'] as const).map((m) => (
+                  <Pressable
+                    key={m}
+                    onPress={() => setRankMode(m)}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: rankMode === m }}
+                    accessibilityLabel={m === 'Max Value' ? 'Rank by maximum value including transfers' : 'Rank by guaranteed value'}
+                    style={[styles.segmentItem, rankMode === m && styles.segmentItemOn]}
+                  >
+                    <Text style={[theme.text.body, styles.segmentText, rankMode === m && styles.segmentTextOn]}>{m}</Text>
                   </Pressable>
-                ),
-              )}
-            </View>
-
-            <RNGHScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
-              {CATEGORIES.map((cat) => {
-                const isActive = activeCategory === cat;
-                return (
-                  <Pressable key={cat} onPress={() => setActiveCategory(cat)}>
-                    <View style={[styles.categoryChip, isActive && styles.categoryChipActive]}>
-                      <Text style={[styles.categoryChipText, isActive && styles.categoryChipTextActive]}>{cat}</Text>
-                    </View>
-                  </Pressable>
-                );
-              })}
-            </RNGHScrollView>
-          </View>
-
-          {openPlace ? (
-            <PlacePanel place={openPlace} cards={cards} mode={rankMode} onClose={() => { setOpenPlace(null); setSelectedPlaceId(null); }} />
-          ) : (
-          /* SCROLLABLE LIST OF PLACES */
-          <RNGHScrollView contentContainerStyle={styles.sheetContent} showsVerticalScrollIndicator={false}>
-            <View style={styles.listHeaderRow}>
-              <Text style={styles.listHeaderTitle}>
-                {activeCategory} ({places.length})
-              </Text>
-            </View>
-
-            {places.length > 0 && (
-              <View style={styles.altEarnBanner}>
-                <Text style={styles.altEarnIcon}>⚲</Text>
-                <Text style={styles.altEarnText}>Tap a place to compare all your cards</Text>
-                <Text style={styles.altEarnSub}>₹2,000 shown</Text>
+                ))}
               </View>
-            )}
 
-            <View style={styles.placeList}>
-              {places.map((place) => {
-                const bestRec = place.recommendation;
-                const distanceStr = place.distanceKm < 1 ? `${Math.round(place.distanceKm * 1000)} m` : `${place.distanceKm.toFixed(1)} km`;
-                const catName = place.category;
-                
-                return (
-                  <View key={place.id} style={styles.placeCard}>
-                    {/* Outer Info: tap to see every card ranked for this place */}
-                    <Pressable style={styles.placeHeader} onPress={() => openPlacePanel(place)}>
-                      <View style={styles.placeIconBox}>
-                        <Text style={styles.placeIconTxt}>{getCategoryIcon(catName)}</Text>
-                      </View>
-                      <View style={styles.placeInfo}>
-                        <Text style={styles.placeName} numberOfLines={1}>{place.name}</Text>
-                        <Text style={styles.placeMeta}>{catName} • {distanceStr}</Text>
-                      </View>
-                      <Text style={styles.placeMeta}>All cards ›</Text>
-                    </Pressable>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+                {SPEND_FILTERS.map((f) => (
+                  <Pressable
+                    key={f}
+                    onPress={() => setActiveCategory(f)}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: activeCategory === f }}
+                    accessibilityLabel={`Show ${FILTER_LABEL(f)} places`}
+                    style={[styles.chip, activeCategory === f && styles.chipOn]}
+                  >
+                    <Text style={[theme.text.body, styles.chipText, activeCategory === f && styles.chipTextOn]}>
+                      {f === 'All' ? 'All' : `${CATEGORY_ICON[f]} ${FILTER_LABEL(f)}`}
+                    </Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
 
-                    {/* Inner Card Recommendation */}
-                    {bestRec && (
-                      <Pressable style={styles.recCard} onPress={() => openPlacePanel(place)}>
-                        <View style={styles.recCardTop}>
-                          <View style={styles.recCardArt}>
-                             <CardArt card={bestRec.card} />
-                          </View>
-                          <View style={styles.recCardInfo}>
-                            <View style={styles.recBadge}><Text style={styles.recBadgeTxt}>Best card</Text></View>
-                            <Text style={styles.recCardName}>{bestRec.card.cardName.toUpperCase()}</Text>
-                          </View>
-                          <View style={styles.recCardAction}>
-                             <Text style={styles.recPinIcon}>📍</Text>
-                          </View>
-                        </View>
-                        
-                        <View style={styles.recDivider} />
-                        
-                        <View style={styles.recFooter}>
-                           <Text style={styles.recPointsNum}>₹{Math.round(bestRec.estimatedValue)}</Text>
-                           <Text style={styles.recPointsLbl}>back on ₹{bestRec.spendAmount.toLocaleString('en-IN')}</Text>
-                        </View>
-                      </Pressable>
-                    )}
-                  </View>
-                );
-              })}
+              <View style={styles.radiusRow}>
+                <Text style={theme.text.caption}>RADIUS</Text>
+                {RADIUS_OPTIONS.map((r) => (
+                  <Pressable
+                    key={r}
+                    onPress={() => setRadiusKm(r)}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: radiusKm === r }}
+                    accessibilityLabel={`Within ${r} kilometres`}
+                    style={[styles.radiusChip, radiusKm === r && styles.radiusChipOn]}
+                  >
+                    <Text style={[theme.text.body, styles.radiusText, radiusKm === r && styles.radiusTextOn]}>{r} km</Text>
+                  </Pressable>
+                ))}
+              </View>
             </View>
-          </RNGHScrollView>
-          )}
-        </Animated.View>
-      </GestureDetector>
+
+            <FlatList
+              data={activeLocation && placesState !== 'error' ? places : []}
+              keyExtractor={(p) => p.id}
+              renderItem={renderPlace}
+              extraData={`${rankMode}|${selectedPlaceId}`}
+              ListHeaderComponent={listHeader}
+              ListEmptyComponent={emptyList}
+              contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + theme.sizes.tabBarHeight + theme.spacing.lg }]}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              initialNumToRender={8}
+            />
+          </>
+        )}
+      </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#070707' },
-  
-  // Custom Markers
-  markerWrapper: { width: 32, height: 32, justifyContent: 'center', alignItems: 'center' },
-  markerCore: { width: 20, height: 20, borderRadius: 10, backgroundColor: '#111', borderWidth: 2, borderColor: '#F5D06F', justifyContent: 'center', alignItems: 'center' },
-  markerIcon: { fontSize: 8, color: '#F5D06F' },
+  container: { flex: 1, backgroundColor: theme.colors.background },
+  flex: { flex: 1 },
+  pressed: { opacity: 0.8 },
 
-  userMarkerWrapper: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
-  userMarkerRing: { position: 'absolute', width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(245,208,111,0.2)' },
-  userMarkerCore: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#F5D06F', borderWidth: 2, borderColor: '#111' },
-
-  // Floating Search Dropdown
-  headerContainer: { position: 'absolute', left: 20, right: 20, zIndex: 10, gap: 8 },
-  searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(17,17,17,0.95)', borderRadius: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: '#333', height: 52, shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 10 },
-  searchIcon: { fontSize: 18, marginRight: 12, color: '#A0A0A0' },
-  clearIcon: { fontSize: 16, color: '#888', paddingLeft: 12 },
-  searchInput: { flex: 1, color: '#F5F5F5', fontFamily: typography.fontFamily, fontSize: 16 },
-  
-  dropdown: { backgroundColor: '#111', borderRadius: 16, borderWidth: 1, borderColor: '#333', overflow: 'hidden', shadowColor: '#000', shadowOpacity: 0.5, shadowRadius: 15, elevation: 20 },
-  dropdownRow: { flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#222' },
-  dropdownIconBox: { width: 32, height: 32, borderRadius: 8, backgroundColor: 'rgba(245,208,111,0.1)', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  dropdownIcon: { fontSize: 14 },
-  dropdownTitle: { fontFamily: typography.fontFamily, fontSize: 15, fontWeight: '600', color: '#FFF', marginBottom: 2 },
-  dropdownSub: { fontFamily: typography.fontFamily, fontSize: 12, color: '#888' },
-
-  // Bottom Sheet
-  bottomSheet: {
-    position: 'absolute', bottom: 0, left: 0, right: 0,
-    backgroundColor: '#0A0A0A',
-    borderTopLeftRadius: 28, borderTopRightRadius: 28,
-    borderTopWidth: 1, borderTopColor: '#222',
-    overflow: 'hidden',
-    shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.5, shadowRadius: 15, elevation: 20
+  // Map markers
+  userDot: {
+    width: theme.spacing.md,
+    height: theme.spacing.md,
+    borderRadius: theme.spacing.sm,
+    backgroundColor: theme.colors.gold,
+    borderWidth: 3,
+    borderColor: theme.colors.background,
   },
-  sheetHandleContainer: { alignItems: 'center', paddingTop: 12, paddingBottom: 12 },
-  sheetHandle: { width: 42, height: 4, borderRadius: 2, backgroundColor: '#333' },
-  
-  sheetHeader: { paddingHorizontal: 20, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#1A1A1A' },
-  sheetHeaderTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 },
-  sheetHeaderLogo: { fontFamily: typography.fontFamily, fontSize: 28, fontWeight: '800', color: '#FFF', letterSpacing: -0.5 },
-  locationBadge: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-  locationDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#54C78A', marginRight: 6 },
-  locationBadgeText: { fontFamily: typography.fontFamily, fontSize: 13, color: '#888', fontWeight: '500' },
-  
-  actionBtn: { backgroundColor: 'rgba(164, 137, 246, 1)', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 100 },
-  actionBtnText: { color: '#FFF', fontWeight: '700', fontSize: 13, fontFamily: typography.fontFamily },
-  actionBtnSecondary: { backgroundColor: '#111', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 100, borderWidth: 1, borderColor: 'rgba(164, 137, 246, 0.3)' },
-  actionBtnTextSec: { color: '#A489F6', fontWeight: '600', fontSize: 13, fontFamily: typography.fontFamily },
+  marker: {
+    width: theme.sizes.badgeSmall + theme.spacing.xs,
+    height: theme.sizes.badgeSmall + theme.spacing.xs,
+    borderRadius: theme.radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.goldBorder,
+  },
+  markerSelected: { backgroundColor: theme.colors.gold, borderColor: theme.colors.gold, transform: [{ scale: 1.2 }] },
+  markerText: { fontSize: theme.fontSize.body },
 
-  segmentedControl: { flexDirection: 'row', backgroundColor: '#111', borderRadius: 12, padding: 4, marginBottom: 16, borderWidth: 1, borderColor: '#222', alignItems: 'center', justifyContent: 'space-between' },
-  segmentActive: { backgroundColor: '#222', borderRadius: 10, paddingVertical: 8, paddingHorizontal: 16, borderWidth: 1, borderColor: '#333' },
-  segmentText: { fontFamily: typography.fontFamily, color: '#6F6F6F', fontSize: 13, fontWeight: '600', paddingHorizontal: 16 },
-  segmentTextActive: { color: '#F5D06F', fontFamily: typography.fontFamily, fontSize: 13, fontWeight: '700' },
+  // Search
+  searchWrap: { position: 'absolute', left: theme.spacing.md, right: theme.spacing.md + theme.sizes.touch + theme.spacing.sm, gap: theme.spacing.sm },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    minHeight: theme.sizes.touch + theme.spacing.xs,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.lg,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.borderStrong,
+  },
+  searchInput: { flex: 1, color: theme.colors.textPrimary, paddingVertical: theme.spacing.sm },
+  clearButton: { minWidth: theme.sizes.touch / 2, alignItems: 'center' },
+  clearText: { color: theme.colors.textMuted },
+  dropdown: {
+    borderRadius: theme.radius.lg,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.borderStrong,
+    overflow: 'hidden',
+  },
+  dropdownScroll: { maxHeight: 360 },
+  dropdownMessage: { padding: theme.spacing.md },
+  dropdownRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    minHeight: theme.sizes.touch + theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    borderBottomWidth: theme.sizes.hairline,
+    borderBottomColor: theme.colors.border,
+  },
+  dropdownIcon: {
+    width: theme.sizes.badgeSmall + theme.spacing.xs,
+    height: theme.sizes.badgeSmall + theme.spacing.xs,
+    borderRadius: theme.radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.goldSoft,
+  },
+  dropdownTitle: { color: theme.colors.textPrimary, fontWeight: '600' },
+  searchAreaButton: {
+    alignSelf: 'center',
+    minHeight: theme.sizes.touch,
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.gold,
+  },
+  searchAreaText: { color: theme.colors.onGold, fontWeight: '700' },
+  locateButton: {
+    position: 'absolute',
+    right: theme.spacing.md,
+    width: theme.sizes.touch + theme.spacing.xs,
+    height: theme.sizes.touch + theme.spacing.xs,
+    borderRadius: theme.radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.borderStrong,
+  },
 
-  categoryScroll: { flexDirection: 'row' },
-  categoryChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 100, backgroundColor: '#111', marginRight: 8, borderWidth: 1, borderColor: '#222' },
-  categoryChipActive: { backgroundColor: 'rgba(245,208,111,0.1)', borderColor: 'rgba(245,208,111,0.4)' },
-  categoryChipText: { fontFamily: typography.fontFamily, color: '#888', fontSize: 13, fontWeight: '600' },
-  categoryChipTextActive: { color: '#F5D06F' },
+  // Sheet
+  sheet: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: theme.colors.background,
+    borderTopLeftRadius: theme.radius.lg + theme.spacing.sm,
+    borderTopRightRadius: theme.radius.lg + theme.spacing.sm,
+    borderTopWidth: 1,
+    borderColor: theme.colors.border,
+    overflow: 'hidden',
+  },
+  handleArea: { alignItems: 'center', justifyContent: 'center', minHeight: theme.sizes.touch / 2 + theme.spacing.sm },
+  handle: { width: theme.sizes.badge, height: theme.spacing.xs, borderRadius: theme.spacing.xs, backgroundColor: theme.colors.borderStrong },
+  sheetHeader: { paddingHorizontal: theme.spacing.md, gap: theme.spacing.sm, paddingBottom: theme.spacing.sm },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm },
+  areaRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.xs, marginTop: theme.spacing.xs },
+  areaDot: { width: theme.sizes.dot, height: theme.sizes.dot, borderRadius: theme.sizes.dot / 2, backgroundColor: theme.colors.positive },
+  areaDotCustom: { backgroundColor: theme.colors.gold },
+  tripButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+    minHeight: theme.sizes.touch,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.pill,
+    borderWidth: 1,
+    borderColor: theme.colors.goldBorder,
+  },
+  tripText: { color: theme.colors.gold },
+  segment: {
+    flexDirection: 'row',
+    padding: theme.spacing.xs,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.surface,
+    borderWidth: theme.sizes.hairline,
+    borderColor: theme.colors.border,
+  },
+  segmentItem: { flex: 1, minHeight: theme.sizes.touch - theme.spacing.xs, alignItems: 'center', justifyContent: 'center', borderRadius: theme.radius.sm },
+  segmentItemOn: { backgroundColor: theme.colors.surfaceRaised },
+  segmentText: { color: theme.colors.textMuted, fontWeight: '600' },
+  segmentTextOn: { color: theme.colors.gold },
+  chipRow: { gap: theme.spacing.sm },
+  chip: {
+    minHeight: theme.sizes.touch - theme.spacing.xs,
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.pill,
+    borderWidth: 1,
+    borderColor: theme.colors.borderStrong,
+  },
+  chipOn: { borderColor: theme.colors.gold, backgroundColor: theme.colors.goldSoft },
+  chipText: { color: theme.colors.textSecondary },
+  chipTextOn: { color: theme.colors.gold, fontWeight: '700' },
+  radiusRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm },
+  radiusChip: {
+    minHeight: theme.sizes.touch - theme.spacing.sm,
+    minWidth: theme.sizes.touch + theme.spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: theme.radius.sm,
+    backgroundColor: theme.colors.surfaceRaised,
+  },
+  radiusChipOn: { backgroundColor: theme.colors.gold },
+  radiusText: { color: theme.colors.textPrimary, fontWeight: '600' },
+  radiusTextOn: { color: theme.colors.onGold },
 
-  sheetContent: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 120 },
-  
-  listHeaderRow: { marginBottom: 12 },
-  listHeaderTitle: { fontFamily: typography.fontFamily, fontSize: 15, fontWeight: '700', color: '#888' },
-  
-  altEarnBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(164, 137, 246, 0.08)', padding: 12, borderRadius: 12, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(164, 137, 246, 0.2)' },
-  altEarnIcon: { color: '#A489F6', fontSize: 16, marginRight: 10, transform: [{rotate: '-45deg'}] },
-  altEarnText: { flex: 1, fontFamily: typography.fontFamily, fontSize: 13, fontWeight: '600', color: '#A489F6' },
-  altEarnSub: { fontFamily: typography.fontFamily, fontSize: 12, fontWeight: '500', color: '#A489F6', opacity: 0.8 },
-
-  placeList: { gap: 16 },
-  placeCard: { backgroundColor: '#111', borderRadius: 20, padding: 16, borderWidth: 1, borderColor: '#222' },
-  placeHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
-  placeIconBox: { width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(245,208,111,0.1)', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  placeIconTxt: { fontSize: 20 },
-  placeInfo: { flex: 1 },
-  placeName: { fontFamily: typography.fontFamily, fontSize: 16, fontWeight: '700', color: '#F5F5F5', marginBottom: 2 },
-  placeMeta: { fontFamily: typography.fontFamily, fontSize: 13, color: '#888' },
-  
-  recCard: { backgroundColor: '#070707', borderRadius: 16, borderWidth: 1, borderColor: '#222', overflow: 'hidden' },
-  recCardTop: { flexDirection: 'row', alignItems: 'center', padding: 16 },
-  recCardArt: { width: 60, height: 40, borderRadius: 6, backgroundColor: '#000', overflow: 'hidden', marginRight: 12 },
-  recCardInfo: { flex: 1 },
-  recBadge: { backgroundColor: 'rgba(164, 137, 246, 0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, alignSelf: 'flex-start', marginBottom: 4, borderWidth: 1, borderColor: 'rgba(164, 137, 246, 0.3)' },
-  recBadgeTxt: { fontFamily: typography.fontFamily, fontSize: 10, fontWeight: '700', color: '#A489F6' },
-  recCardName: { fontFamily: typography.fontFamily, fontSize: 14, fontWeight: '800', color: '#F5F5F5' },
-  recCardAction: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#111', borderWidth: 1, borderColor: '#222', justifyContent: 'center', alignItems: 'center' },
-  recPinIcon: { fontSize: 14 },
-  
-  recDivider: { height: 1, backgroundColor: '#1A1A1A', marginHorizontal: 16 },
-  recFooter: { alignItems: 'center', justifyContent: 'center', paddingVertical: 12 },
-  recPointsNum: { fontFamily: typography.fontFamily, fontSize: 18, fontWeight: '800', color: '#F5F5F5' },
-  recPointsLbl: { fontFamily: typography.fontFamily, fontSize: 12, fontWeight: '500', color: '#888', marginTop: 2 },
+  // List
+  listContent: { paddingHorizontal: theme.spacing.md, gap: theme.spacing.sm },
+  listHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: theme.spacing.sm, paddingVertical: theme.spacing.sm, flexWrap: 'wrap' },
+  listTitle: { color: theme.colors.textPrimary, fontWeight: '700' },
+  statusBox: {
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+    marginVertical: theme.spacing.sm,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.warningSoft,
+    borderWidth: 1,
+    borderColor: theme.colors.warning,
+  },
+  statusTitle: { color: theme.colors.textPrimary, fontWeight: '700' },
+  statusButton: {
+    alignSelf: 'flex-start',
+    minHeight: theme.sizes.touch,
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.gold,
+  },
+  statusButtonText: { color: theme.colors.onGold, fontWeight: '700' },
+  placeCard: {
+    padding: theme.spacing.md,
+    gap: theme.spacing.sm,
+    borderRadius: theme.radius.lg,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  placeCardSelected: { borderColor: theme.colors.gold },
+  placeHeader: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm },
+  placeIcon: {
+    width: theme.sizes.badge,
+    height: theme.sizes.badge,
+    borderRadius: theme.radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.goldSoft,
+  },
+  placeIconText: { fontSize: theme.fontSize.title },
+  placeName: { color: theme.colors.textPrimary, fontWeight: '700' },
+  bestRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.sm,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.background,
+  },
+  bestArt: { width: theme.sizes.badge + theme.spacing.lg, height: theme.sizes.badge, borderRadius: theme.radius.sm, overflow: 'hidden' },
+  bestLabel: { color: theme.colors.gold },
+  bestName: { color: theme.colors.textPrimary, fontWeight: '600' },
+  bestValue: { alignItems: 'flex-end' },
+  bestAmount: { color: theme.colors.positive, fontWeight: '700' },
+  noCard: { color: theme.colors.gold },
 });

@@ -71,3 +71,29 @@ export function classifyCategory(merchantName: string, mapboxCategory?: string):
   
   return 'Unknown';
 }
+
+// Ordered rules for Mapbox POI categories. More specific spend types come first, so
+// "food_and_drink_stores" is groceries, not dining.
+const MAPBOX_CATEGORY_RULES: [MerchantCategory, RegExp][] = [
+  ['Fuel', /gas_station|fuel|petrol|charging/],
+  ['Grocery', /supermarket|grocery|convenience|food_and_drink_stores|hypermarket|greengrocer/],
+  ['Pharmacy / Health', /pharmacy|chemist|drugstore|hospital|clinic|doctor|dentist|health/],
+  ['Electronics', /electronic|mobile_phone|computer|appliance/],
+  ['Entertainment', /cinema|movie|theat|amusement|bowling|entertainment|arcade/],
+  ['Travel', /hotel|lodging|motel|hostel|resort|travel|airport|train_station|bus_station/],
+  ['Dining', /restaurant|cafe|coffee|fast_food|food|bakery|bar|pub|dessert|ice_cream/],
+  ['Shopping', /mall|shopping|clothing|apparel|department|shoe|jewel|fashion|boutique|store|shop/],
+];
+
+/**
+ * Spend type for a Mapbox place: its POI categories first, then the name (brands like
+ * DMart or Croma), then the chip the user picked.
+ */
+export function classifyMapboxPlace(name: string, categories: string[], maki: string | null, fallback: MerchantCategory): MerchantCategory {
+  const cats = [...categories, maki ?? ''].join(' ').toLowerCase();
+  const byName = classifyCategory(name);
+  // A known brand in the name beats a generic Mapbox tag ("DMart" tagged "department_store").
+  if (byName !== 'Unknown' && CATEGORY_MAP[byName].some((k) => k.length > 3 && name.toLowerCase().includes(k))) return byName;
+  for (const [category, re] of MAPBOX_CATEGORY_RULES) if (re.test(cats)) return category;
+  return byName !== 'Unknown' ? byName : fallback;
+}

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 
@@ -60,6 +60,14 @@ export function PlacePanel({ place, cards, mode, onClose }: Props) {
       <Text style={styles.meta} numberOfLines={2}>
         {distance} away · {place.address}
       </Text>
+      <Pressable
+        onPress={() => Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${place.center[1]},${place.center[0]}`)}
+        accessibilityRole="link"
+        accessibilityLabel={`Directions to ${place.name}`}
+        style={({ pressed }) => [styles.directions, pressed && { opacity: 0.8 }]}
+      >
+        <Text style={styles.directionsText}>Directions ↗</Text>
+      </Pressable>
 
       {/* What kind of spend is this? The bank decides rewards by merchant category. */}
       <Text style={styles.label}>SPEND TYPE</Text>
@@ -186,7 +194,9 @@ const styles = StyleSheet.create({
   back: { paddingVertical: 8 },
   backText: { fontFamily: typography.fontFamily, color: colors.accent.goldStart, fontSize: 14, fontWeight: '600' },
   title: { fontFamily: typography.fontFamily, color: '#F5F5F5', fontSize: 24, fontWeight: '700', letterSpacing: -0.5 },
-  meta: { fontFamily: typography.fontFamily, color: '#8A8A8A', fontSize: 13, marginTop: 4, marginBottom: 16 },
+  meta: { fontFamily: typography.fontFamily, color: '#9A9A9A', fontSize: 13, marginTop: 4, marginBottom: 8 },
+  directions: { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', paddingHorizontal: 14, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(245,208,111,0.4)', marginBottom: 12 },
+  directionsText: { fontFamily: typography.fontFamily, color: colors.accent.goldStart, fontSize: 14, fontWeight: '700' },
   label: { fontFamily: typography.fontFamily, color: '#6F6F6F', fontSize: 11, fontWeight: '700', letterSpacing: 1, marginBottom: 8, marginTop: 8 },
   chipRow: { gap: 8, paddingBottom: 8 },
   chipRowWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
