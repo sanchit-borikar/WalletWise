@@ -4,6 +4,7 @@ import * as WebBrowser from 'expo-web-browser';
 
 import { thumbnailUrl, VIDEOS, videoUrl } from '../../data/videos';
 import type { Video } from '../../data/videos';
+import { useCardStore } from '../../store/useCardStore';
 import { theme } from '../../theme';
 import { Icon } from '../Icon';
 import { SectionHeader } from './SectionHeader';
@@ -17,7 +18,7 @@ const LEVEL_COLOR: Record<Video['level'], string> = {
 /** 16:9 video thumbnails. */
 const THUMB_RATIO = 9 / 16;
 
-const VideoCard = React.memo(function VideoCard({ video, width }: { video: Video; width: number }) {
+const VideoCard = React.memo(function VideoCard({ video, width, lite }: { video: Video; width: number; lite: boolean }) {
   const open = () => WebBrowser.openBrowserAsync(videoUrl(video.id));
   return (
     <Pressable
@@ -27,7 +28,8 @@ const VideoCard = React.memo(function VideoCard({ video, width }: { video: Video
       style={({ pressed }) => [{ width }, pressed && styles.pressed]}
     >
       <View style={[styles.thumbWrap, { height: width * THUMB_RATIO }]}>
-        <Image source={{ uri: thumbnailUrl(video.id) }} style={styles.thumb} resizeMode="cover" />
+        {/* Lite mode saves data: no thumbnail download. */}
+        {!lite && <Image source={{ uri: thumbnailUrl(video.id) }} style={styles.thumb} resizeMode="cover" />}
         {/* Mutes bright thumbnails so the dark theme stays calm. */}
         <View style={styles.overlay} />
         <View style={styles.play}>
@@ -52,7 +54,11 @@ const VideoCard = React.memo(function VideoCard({ video, width }: { video: Video
 export function LearnCarousel() {
   const { width: screenWidth } = useWindowDimensions();
   const cardWidth = Math.round(screenWidth * theme.sizes.carouselCardRatio);
-  const renderItem = useCallback(({ item }: { item: Video }) => <VideoCard video={item} width={cardWidth} />, [cardWidth]);
+  const liteMode = useCardStore((s) => s.liteMode === true);
+  const renderItem = useCallback(
+    ({ item }: { item: Video }) => <VideoCard video={item} width={cardWidth} lite={liteMode} />,
+    [cardWidth, liteMode],
+  );
 
   return (
     <View>

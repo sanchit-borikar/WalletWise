@@ -14,6 +14,7 @@ import Animated, {
 import { theme } from '../../theme';
 import { Icon } from '../../components/Icon';
 import type { IconName } from '../../components/Icon';
+import { useCardStore } from '../../store/useCardStore';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -88,10 +89,14 @@ function CenterAuraButton({ onPress, isFocused }: any) {
 
 function CustomTabBar({ state, descriptors, navigation }: any) {
   const insets = useSafeAreaInsets();
+  // Lite mode draws a plain opaque bar; blur is costly on low-end phones.
+  const liteMode = useCardStore((s) => s.liteMode === true);
+  const Bar = liteMode ? View : BlurView;
+  const barProps = liteMode ? {} : { intensity: 50, tint: 'dark' as const };
 
   return (
     <View style={styles.tabBarContainer}>
-      <BlurView intensity={50} tint="dark" style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, theme.spacing.sm) }]}>
+      <Bar {...barProps} style={[styles.tabBar, liteMode && styles.tabBarLite, { paddingBottom: Math.max(insets.bottom, theme.spacing.sm) }]}>
         <View style={styles.topBorder} />
 
         {state.routes.map((route: any, index: number) => {
@@ -108,7 +113,7 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
           }
           return <TabItem key={route.key} route={route} isFocused={isFocused} options={options} onPress={onPress} />;
         })}
-      </BlurView>
+      </Bar>
     </View>
   );
 }
@@ -140,6 +145,7 @@ const styles = StyleSheet.create({
     paddingTop: theme.spacing.xs,
     backgroundColor: theme.colors.tabBar,
   },
+  tabBarLite: { backgroundColor: theme.colors.background },
   topBorder: {
     position: 'absolute',
     top: 0,

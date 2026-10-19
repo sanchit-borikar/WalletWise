@@ -131,6 +131,7 @@ export default function MapScreen() {
   const { height: screenHeight } = useWindowDimensions();
   const mapRef = useRef<MapView>(null);
   const cards = useCardStore((s) => s.cards);
+  const liteMode = useCardStore((s) => s.liteMode === true);
 
   const {
     permission,
@@ -166,12 +167,18 @@ export default function MapScreen() {
   const [openPlace, setOpenPlace] = useState<EnrichedPlace | null>(null);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lon: number } | null>(null);
 
+  // Lite mode opens a list of places; the map is one tap away (Map button in the sheet).
+  const [showMap, setShowMap] = useState(MAP_AVAILABLE && !liteMode);
+
   // ── Bottom sheet ───────────────────────────────────
   const snaps = useMemo(
     () => ({ expanded: screenHeight * 0.85, mid: screenHeight * 0.5, collapsed: screenHeight * 0.2 }),
     [screenHeight],
   );
-  const sheetHeight = useSharedValue(snaps.mid);
+  /** Sheet height in list view: everything below the search box and the location button. */
+  const listHeight = screenHeight - (insets.top + theme.sizes.touch * 2 + theme.spacing.lg * 2);
+  const restHeight = showMap ? snaps.mid : listHeight;
+  const sheetHeight = useSharedValue(restHeight);
   const dragStart = useSharedValue(0);
   const snapTo = useCallback(
     (h: number) => {
@@ -211,17 +218,23 @@ export default function MapScreen() {
       Keyboard.dismiss();
       setOpenPlace(place);
       setSelectedPlaceId(place.id);
-      snapTo(snaps.expanded);
+      snapTo(showMap ? snaps.expanded : listHeight);
       flyTo(place.center[1], place.center[0], PLACE_DELTA);
     },
-    [setSelectedPlaceId, snapTo, snaps.expanded, flyTo],
+    [setSelectedPlaceId, snapTo, snaps.expanded, flyTo, showMap, listHeight],
   );
 
   const closePlacePanel = useCallback(() => {
     setOpenPlace(null);
     setSelectedPlaceId(null);
-    snapTo(snaps.mid);
-  }, [setSelectedPlaceId, snapTo, snaps.mid]);
+    snapTo(restHeight);
+  }, [setSelectedPlaceId, snapTo, restHeight]);
+
+  const toggleMap = useCallback(() => {
+    const next = !showMap;
+    setShowMap(next);
+    snapTo(next ? snaps.mid : listHeight);
+  }, [showMap, snapTo, snaps.mid, listHeight]);
 
   // A shop opens its card ranking; an area ("Karve Nagar") becomes the new search centre.
   const onSearchResult = useCallback(
@@ -323,13 +336,18 @@ export default function MapScreen() {
   return (
     <View style={styles.container}>
       {/* MAP */}
-      {MAP_AVAILABLE && (
+      {showMap && (
         <MapView
           ref={mapRef}
           style={StyleSheet.absoluteFill}
           mapType={hasMapboxKey ? 'none' : 'standard'}
           userInterfaceStyle="dark"
-          initialRegion={INDIA_REGION}
+          // Opened from the list view, the map starts on the current area.
+          initialRegion={
+            activeLocation
+              ? { latitude: activeLocation.lat, longitude: activeLocation.lon, latitudeDelta: AREA_DELTA, longitudeDelta: AREA_DELTA }
+              : INDIA_REGION
+          }
           showsCompass={false}
           toolbarEnabled={false}
           onRegionChangeComplete={onRegionChangeComplete}
@@ -374,7 +392,7 @@ export default function MapScreen() {
       )}
 
       {/* SEARCH */}
-      <View style={[styles.searchWrap, { top: insets.top + theme.spacing.sm }]}>
+      <View style={[styles.searchWrap, !showMap && styles.searchOnTop, { top: insets.top + theme.spacing.sm }]}>
         <View style={styles.searchBox}>
           <Icon name="pin" color={theme.colors.gold} size={theme.sizes.icon} />
           <TextInput
@@ -486,6 +504,17 @@ export default function MapScreen() {
                     </Text>
                   </View>
                 </View>
+                {MAP_AVAILABLE && (
+                  <Pressable
+                    onPress={toggleMap}
+                    accessibilityRole="button"
+                    accessibilityLabel={showMap ? 'Show places as a list' : 'Show places on the map'}
+                    style={({ pressed }) => [styles.tripButton, pressed && styles.pressed]}
+                  >
+                    <Icon name="pin" color={theme.colors.gold} size={theme.sizes.icon} />
+                    <Text style={[theme.text.caption, styles.tripText]}>{showMap ? 'List' : 'Map'}</Text>
+                  </Pressable>
+                )}
                 <Pressable
                   onPress={() => router.push('/trip-planner')}
                   accessibilityRole="button"
@@ -673,6 +702,8 @@ const styles = StyleSheet.create({
   },
   handleArea: { alignItems: 'center', justifyContent: 'center', minHeight: theme.sizes.touch / 2 + theme.spacing.sm },
   handle: { width: theme.sizes.badge, height: theme.spacing.xs, borderRadius: theme.spacing.xs, backgroundColor: theme.colors.borderStrong },
+  // In list view the sheet is tall, so search results must draw above it.
+  searchOnTop: { zIndex: 10, elevation: 10 },
   sheetHeader: { paddingHorizontal: theme.spacing.md, gap: theme.spacing.sm, paddingBottom: theme.spacing.sm },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm },
   areaRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.xs, marginTop: theme.spacing.xs },
