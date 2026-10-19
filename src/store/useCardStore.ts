@@ -154,7 +154,11 @@ const DEMO_HOLDINGS: Holding[] = [
   { id: '5', catalogId: 'hdfc-marriott-bonvoy', bankName: 'HDFC BANK', cardName: 'Marriott Bonvoy', lastFour: '9012', points: 18000 },
 ];
 
+/** Random id for this install. Sent to the Aura server only for rate limiting. */
+const newUserId = () => `u-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+
 interface CardStore {
+  userId: string;
   holdings: Holding[];
   cards: CardData[];
   profile: UserProfile;
@@ -188,6 +192,7 @@ export function newHolding(catalogId: string, lastFour: string, points: number):
 export const useCardStore = create<CardStore>()(
   persist(
     (set) => ({
+      userId: newUserId(),
       holdings: DEMO_HOLDINGS,
       cards: derive(DEMO_HOLDINGS),
       profile: DEFAULT_PROFILE,
@@ -217,7 +222,7 @@ export const useCardStore = create<CardStore>()(
       name: 'walletwise-wallet',
       storage: createJSONStorage(() => AsyncStorage),
       // Card facts always come from the bundled catalog, so only the user's own data is saved.
-      partialize: (s) => ({ holdings: s.holdings, profile: s.profile, isDemo: s.isDemo, profileSaved: s.profileSaved }),
+      partialize: (s) => ({ userId: s.userId, holdings: s.holdings, profile: s.profile, isDemo: s.isDemo, profileSaved: s.profileSaved }),
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<CardStore>;
         const holdings = saved.holdings ?? current.holdings;
