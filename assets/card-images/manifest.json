@@ -1,0 +1,2584 @@
+{
+ "amex-gold": {
+  "id": "amex-gold",
+  "name": "American Express Gold Card",
+  "issuer": "AMEX",
+  "status": "downloaded",
+  "sourcePage": "https://www.americanexpress.com/in/charge-cards/gold-card/",
+  "imageUrl": "https://icm.aexp-static.com/Internet/internationalcardshop/en_in/images/cards/Gold_Card.png",
+  "via": "img",
+  "file": "amex-gold.png",
+  "bytes": 839256,
+  "width": 1920,
+  "height": 1216
+ },
+ "amex-mrcc": {
+  "id": "amex-mrcc",
+  "name": "American Express Membership Rewards Credit Card",
+  "issuer": "AMEX",
+  "status": "downloaded",
+  "sourcePage": "https://www.americanexpress.com/in/credit-cards/membership-rewards-card/",
+  "imageUrl": "https://icm.aexp-static.com/Internet/internationalcardshop/en_in/images/cards/Membership_Rewards_Card.png",
+  "via": "img",
+  "file": "amex-mrcc.png",
+  "bytes": 1206851,
+  "width": 1920,
+  "height": 1216
+ },
+ "amex-centurion": {
+  "id": "amex-centurion",
+  "name": "American Express Centurion Card",
+  "issuer": "AMEX",
+  "status": "error",
+  "sourcePage": "https://www.americanexpress.com/en-in/support/digital/consumer-experience-updates/",
+  "detail": "TypeError: fetch failed"
+ },
+ "amex-platinum-reserve": {
+  "id": "amex-platinum-reserve",
+  "name": "American Express Platinum Reserve Credit Card",
+  "issuer": "AMEX",
+  "status": "downloaded",
+  "sourcePage": "https://www.americanexpress.com/in/credit-cards/platinum-reserve-credit-card/",
+  "imageUrl": "https://icm.aexp-static.com/Internet/internationalcardshop/en_in/images/cards/bold_reserve_in_960x608.png",
+  "via": "img",
+  "file": "amex-platinum-reserve.png",
+  "bytes": 377606,
+  "width": 960,
+  "height": 608
+ },
+ "amex-platinum-charge": {
+  "id": "amex-platinum-charge",
+  "name": "American Express Platinum Card",
+  "issuer": "AMEX",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.americanexpress.com/in/charge-cards/platinum-card/",
+  "imageUrl": "https://icm.aexp-static.com/Internet/internationalcardshop/en_in/images/layout/PPC/platinum_banner_3.jpg",
+  "via": "img",
+  "bytes": 45143,
+  "width": 1082,
+  "height": 608,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "amex-platinum-travel": {
+  "id": "amex-platinum-travel",
+  "name": "American Express Platinum Travel Credit Card",
+  "issuer": "AMEX",
+  "status": "downloaded",
+  "sourcePage": "https://www.americanexpress.com/in/credit-cards/platinum-travel-credit-card/",
+  "imageUrl": "https://icm.aexp-static.com/Internet/internationalcardshop/en_in/images/cards/bold_plat_travel_in.jpg",
+  "via": "img",
+  "file": "amex-platinum-travel.png",
+  "bytes": 475775,
+  "width": 960,
+  "height": 608
+ },
+ "au-altura": {
+  "id": "au-altura",
+  "name": "AU Altura Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/altura-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-altura-plus": {
+  "id": "au-altura-plus",
+  "name": "AU Altura Plus Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/altura-plus-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "amex-smartearn": {
+  "id": "amex-smartearn",
+  "name": "American Express SmartEarn Credit Card",
+  "issuer": "AMEX",
+  "status": "downloaded",
+  "sourcePage": "https://www.americanexpress.com/in/credit-cards/smart-earn-credit-card/",
+  "imageUrl": "https://icm.aexp-static.com/Internet/internationalcardshop/en_in/images/cards/en_in-smart-earn-credit-card.png",
+  "via": "img",
+  "file": "amex-smartearn.png",
+  "bytes": 111009,
+  "width": 480,
+  "height": 304
+ },
+ "au-ananta": {
+  "id": "au-ananta",
+  "name": "AU Ananta Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/ananta-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-ca": {
+  "id": "au-ca",
+  "name": "AU CA Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/ca-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-cs": {
+  "id": "au-cs",
+  "name": "AU CS Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/au-cs-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-instapay": {
+  "id": "au-instapay",
+  "name": "AU InstaPay Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/instapay-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-ixigo": {
+  "id": "au-ixigo",
+  "name": "ixigo AU Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/ixigo-au-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-kosmo": {
+  "id": "au-kosmo",
+  "name": "AU Kosmo Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/kosmo-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-laksya": {
+  "id": "au-laksya",
+  "name": "AU Laksya Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/laksya-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-lit": {
+  "id": "au-lit",
+  "name": "AU LIT Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/lit-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-nomo": {
+  "id": "au-nomo",
+  "name": "AU NOMO Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/nomo-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-paytm": {
+  "id": "au-paytm",
+  "name": "Paytm AU Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/paytm-au-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-prathama": {
+  "id": "au-prathama",
+  "name": "AU Prathama Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/prathama-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-spont": {
+  "id": "au-spont",
+  "name": "AU SPONT Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/au-spont-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-tejas": {
+  "id": "au-tejas",
+  "name": "AU Tejas Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/tejas-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-traverse": {
+  "id": "au-traverse",
+  "name": "AU Traverse Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/premium-banking/credit-cards/traverse-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-vetta": {
+  "id": "au-vetta",
+  "name": "AU Bank Vetta Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/vetta-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-xcite": {
+  "id": "au-xcite",
+  "name": "AU Bank Xcite Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/swipeup-program/xcite-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-xcite-ace": {
+  "id": "au-xcite-ace",
+  "name": "AU Xcite Ace Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/swipeup-program/xcite-ace-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-xcite-ultra": {
+  "id": "au-xcite-ultra",
+  "name": "AU Xcite Ultra Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/swipeup-program/xcite-ultra-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-zenith": {
+  "id": "au-zenith",
+  "name": "AU Zenith Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/zenith-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "au-zenith-plus": {
+  "id": "au-zenith-plus",
+  "name": "AU Zenith Plus Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/premium-banking/credit-cards/zenith-plus-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "axis-ace": {
+  "id": "axis-ace",
+  "name": "Axis Bank ACE Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/ace-credit-card"
+ },
+ "axis-airtel": {
+  "id": "axis-airtel",
+  "name": "Axis Bank Airtel Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/airtel-axis-bank-credit-card"
+ },
+ "axis-atlas": {
+  "id": "axis-atlas",
+  "name": "Axis Bank Atlas Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/atlas-credit-card"
+ },
+ "axis-burgundy-private": {
+  "id": "axis-burgundy-private",
+  "name": "Axis Bank Burgundy Private Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/burgundy-private/the-one-card"
+ },
+ "axis-cashback": {
+  "id": "axis-cashback",
+  "name": "Axis Bank Cashback Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/cashback-credit-card"
+ },
+ "axis-fibe": {
+  "id": "axis-fibe",
+  "name": "Fibe Axis Bank Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/fibe-axis-bank-credit-card"
+ },
+ "axis-flipkart": {
+  "id": "axis-flipkart",
+  "name": "Axis Bank Flipkart Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/flipkart-axisbank-credit-card"
+ },
+ "axis-flipkart-super-elite": {
+  "id": "axis-flipkart-super-elite",
+  "name": "Flipkart Axis Bank Super Elite Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/flipkart-axis-bank-super-elite-credit-card"
+ },
+ "axis-google-pay-flex": {
+  "id": "axis-google-pay-flex",
+  "name": "Google Pay Flex Axis Bank Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/google-pay-flex-axis-bank-credit-card"
+ },
+ "axis-freecharge-plus": {
+  "id": "axis-freecharge-plus",
+  "name": "Axis Bank Freecharge Plus Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/axis-bank-freecharge-plus-credit-card"
+ },
+ "axis-horizon": {
+  "id": "axis-horizon",
+  "name": "Axis Bank Horizon Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/axis-horizon-credit-card"
+ },
+ "axis-indianoil": {
+  "id": "axis-indianoil",
+  "name": "IndianOil Axis Bank Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/indianoil-axis-bank-credit-card"
+ },
+ "axis-freecharge": {
+  "id": "axis-freecharge",
+  "name": "Axis Bank Freecharge Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/axis-bank-freecharge-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "axis-indianoil-premium": {
+  "id": "axis-indianoil-premium",
+  "name": "IndianOil Axis Bank Premium Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/indianoil-premium-credit-card"
+ },
+ "axis-indigo": {
+  "id": "axis-indigo",
+  "name": "IndiGo Axis Bank Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/indigo-axis-bank-credit-card"
+ },
+ "axis-indigo-premium": {
+  "id": "axis-indigo-premium",
+  "name": "IndiGo Axis Bank Premium Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/indigo-axis-bank-premium-credit-card"
+ },
+ "axis-lic": {
+  "id": "axis-lic",
+  "name": "LIC Axis Bank Signature Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/lic-axis-bank-signature-credit-card"
+ },
+ "axis-magnus": {
+  "id": "axis-magnus",
+  "name": "Axis Bank Magnus Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/axis-bank-magnus-credit-card"
+ },
+ "axis-miles-more": {
+  "id": "axis-miles-more",
+  "name": "Miles & More Axis Bank World Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/miles-more-credit-card"
+ },
+ "axis-miles-more-select": {
+  "id": "axis-miles-more-select",
+  "name": "Miles & More Axis Bank World Select Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/miles-more-credit-card"
+ },
+ "axis-neo": {
+  "id": "axis-neo",
+  "name": "Axis Bank Neo Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/neo-credit-card"
+ },
+ "axis-myzone": {
+  "id": "axis-myzone",
+  "name": "Axis Bank MyZone Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/my-zone-credit-card"
+ },
+ "axis-olympus": {
+  "id": "axis-olympus",
+  "name": "Axis Bank Olympus Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card"
+ },
+ "axis-primus": {
+  "id": "axis-primus",
+  "name": "Axis Bank Primus Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card"
+ },
+ "axis-reserve": {
+  "id": "axis-reserve",
+  "name": "Axis Bank Reserve Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/axis-bank-reserve-credit-card"
+ },
+ "axis-rewards": {
+  "id": "axis-rewards",
+  "name": "Axis Bank Rewards Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/rewards-credit-card"
+ },
+ "axis-samsung-infinite": {
+  "id": "axis-samsung-infinite",
+  "name": "Samsung Axis Bank Infinite Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/samsung-axis-bank-infinite-credit-card"
+ },
+ "axis-samsung-signature": {
+  "id": "axis-samsung-signature",
+  "name": "Samsung Axis Bank Signature Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/samsung-axis-bank-signature-credit-card"
+ },
+ "axis-privilege": {
+  "id": "axis-privilege",
+  "name": "Axis Bank Privilege Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/privilege-credit-card-with-unlimited-benefits",
+  "detail": "image HTTP 404"
+ },
+ "axis-select": {
+  "id": "axis-select",
+  "name": "Axis Bank Select Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/axis-bank-select-credit-card"
+ },
+ "axis-shoppers-stop": {
+  "id": "axis-shoppers-stop",
+  "name": "Axis Bank Shoppers Stop Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axisbank.com/retail/cards/credit-card/axis-bank-shoppers-stop-credit-card"
+ },
+ "axis-spicejet-voyage": {
+  "id": "axis-spicejet-voyage",
+  "name": "SpiceJet Axis Bank Voyage Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/spicejet-axis-bank-voyage-credit-card"
+ },
+ "axis-spicejet-voyage-black": {
+  "id": "axis-spicejet-voyage-black",
+  "name": "SpiceJet Axis Bank Voyage Black Credit Card",
+  "issuer": "AXIS",
+  "status": "no-card-face",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/spicejet-axis-bank-voyage-black-credit-card"
+ },
+ "axis-supermoney": {
+  "id": "axis-supermoney",
+  "name": "Axis Bank SUPERMONEY RuPay Credit Card",
+  "issuer": "AXIS",
+  "status": "no-image-found",
+  "sourcePage": "https://www.axis.bank.in/cards/credit-card/supermoney-credit-card"
+ },
+ "bharatpe": {
+  "id": "bharatpe",
+  "name": "Unity Bank BharatPe Credit Card",
+  "issuer": "UNITY",
+  "status": "no-image-found",
+  "sourcePage": "https://unity.bank.in/personal-banking/cards/credit-card/usfb-bharatpe-credit-card"
+ },
+ "bob-cashback": {
+  "id": "bob-cashback",
+  "name": "BOBCARD Cashback Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/bobcard-cashback",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-cma-one": {
+  "id": "bob-cma-one",
+  "name": "CMA One BOBCARD Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/cma-one",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-easy": {
+  "id": "bob-easy",
+  "name": "BOBCARD Easy Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/easy",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-eterna": {
+  "id": "bob-eterna",
+  "name": "Bank of Baroda Eterna Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/eterna",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-etihad-guest": {
+  "id": "bob-etihad-guest",
+  "name": "BOBCARD Etihad Guest Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/bobcard-etihad-guest",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-etihad-guest-premium": {
+  "id": "bob-etihad-guest-premium",
+  "name": "BOBCARD Etihad Guest Premium Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/bobcard-etihad-guest-premium",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-hpcl-energie": {
+  "id": "bob-hpcl-energie",
+  "name": "HPCL ENERGIE BOBCARD Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/hpcl-energie",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-icai-exclusive": {
+  "id": "bob-icai-exclusive",
+  "name": "ICAI Exclusive BOBCARD Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/icai-exclusive-bobcard",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-icsi-diamond": {
+  "id": "bob-icsi-diamond",
+  "name": "ICSI Diamond BOBCARD Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/icsi-diamond",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-premier": {
+  "id": "bob-premier",
+  "name": "Bank of Baroda Premier Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/premier",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-irctc": {
+  "id": "bob-irctc",
+  "name": "IRCTC BOBCARD RuPay Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/irctc-credit-card",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-prime": {
+  "id": "bob-prime",
+  "name": "BOBCARD Prime Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/prime",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-select": {
+  "id": "bob-select",
+  "name": "BOBCARD Select Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/select",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-snapdeal": {
+  "id": "bob-snapdeal",
+  "name": "Snapdeal BOBCARD Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/snapdeal-bobcard",
+  "detail": "TypeError: fetch failed"
+ },
+ "bob-tiara": {
+  "id": "bob-tiara",
+  "name": "Bank of Baroda Tiara Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/tiara",
+  "detail": "TypeError: fetch failed"
+ },
+ "cheq-au": {
+  "id": "cheq-au",
+  "name": "CheQ AU Credit Card",
+  "issuer": "AU",
+  "status": "blocked",
+  "sourcePage": "https://www.au.bank.in/personal-banking/credit-cards/cheq-au-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "cub-salaryse": {
+  "id": "cub-salaryse",
+  "name": "CUB SalarySe Level Up Credit Card",
+  "issuer": "CUB",
+  "status": "no-image-found",
+  "sourcePage": "https://www.cityunionbank.bank.in/cub-salaryse-level-up-credit-card"
+ },
+ "cred-sovereign": {
+  "id": "cred-sovereign",
+  "name": "CRED Sovereign Credit Card",
+  "issuer": "INDUSIND",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/pinnacle-world-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/IB_Pinnacle-Card_397x257.webp",
+  "via": "img",
+  "bytes": 25778,
+  "width": 397,
+  "height": 257
+ },
+ "federal-signet": {
+  "id": "federal-signet",
+  "name": "Federal Bank Signet Credit Card",
+  "issuer": "FEDERAL",
+  "status": "blocked",
+  "sourcePage": "https://www.federal.bank.in/visa-signet-credit-card",
+  "detail": "bot check page"
+ },
+ "federal-celesta": {
+  "id": "federal-celesta",
+  "name": "Federal Bank Celesta Credit Card",
+  "issuer": "FEDERAL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.federal.bank.in/visa-celesta-credit-card",
+  "detail": "not a raster image (text/html; charset=UTF-8)"
+ },
+ "federal-imperio": {
+  "id": "federal-imperio",
+  "name": "Federal Bank Imperio Credit Card",
+  "issuer": "FEDERAL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.federal.bank.in/visa-imperio-credit-card",
+  "detail": "not a raster image (text/html; charset=UTF-8)"
+ },
+ "hdfc-diners-black": {
+  "id": "hdfc-diners-black",
+  "name": "HDFC Diners Club Black Metal Edition",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/diners-club-black-metal-edition",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-diners-privilege": {
+  "id": "hdfc-diners-privilege",
+  "name": "HDFC Bank Diners Club Privilege Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfc.bank.in/credit-cards/diners-privilege-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-freedom": {
+  "id": "hdfc-freedom",
+  "name": "HDFC Bank Freedom Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfc.bank.in/credit-cards/freedom-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-indianoil": {
+  "id": "hdfc-indianoil",
+  "name": "IndianOil HDFC Bank Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/indianoil-hdfc-bank-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-infinia": {
+  "id": "hdfc-infinia",
+  "name": "HDFC Bank Infinia Metal Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/infinia-credit-card",
+  "detail": "not card shaped (1272x1314)"
+ },
+ "hdfc-marriott-bonvoy": {
+  "id": "hdfc-marriott-bonvoy",
+  "name": "Marriott Bonvoy HDFC Bank Credit Card",
+  "issuer": "HDFC",
+  "status": "no-image-found",
+  "sourcePage": "https://connect.hdfc.bank.in/applications/webforms/apply/MarriotBonvoy_Campaign/index.aspx?product=MB"
+ },
+ "hdfc-millennia": {
+  "id": "hdfc-millennia",
+  "name": "HDFC Millennia Credit Card",
+  "issuer": "HDFC",
+  "status": "no-image-found",
+  "sourcePage": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/millennia-credit-card"
+ },
+ "hdfc-irctc": {
+  "id": "hdfc-irctc",
+  "name": "IRCTC HDFC Bank Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfc.bank.in/credit-cards/irctc-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-phonepe-ultimo": {
+  "id": "hdfc-phonepe-ultimo",
+  "name": "PhonePe HDFC Bank Ultimo Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfc.bank.in/credit-cards/phonepe-hdfc-bank-ultimo-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-phonepe-uno": {
+  "id": "hdfc-phonepe-uno",
+  "name": "PhonePe HDFC Bank Uno Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfc.bank.in/credit-cards/phonepe-hdfc-bank-uno-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-pixel-go": {
+  "id": "hdfc-pixel-go",
+  "name": "HDFC PIXEL Go Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfc.bank.in/credit-cards/pixel-go-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-pixel-play": {
+  "id": "hdfc-pixel-play",
+  "name": "HDFC PIXEL Play Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/pixel-play-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-regalia-gold": {
+  "id": "hdfc-regalia-gold",
+  "name": "HDFC Regalia Gold Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/regalia-gold-credit-card",
+  "detail": "not card shaped (611x579)"
+ },
+ "hdfc-shoppers-stop": {
+  "id": "hdfc-shoppers-stop",
+  "name": "Shoppers Stop HDFC Bank Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfc.bank.in/credit-cards/shoppers-stop-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-shoppers-stop-black": {
+  "id": "hdfc-shoppers-stop-black",
+  "name": "Shoppers Stop Black HDFC Bank Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfc.bank.in/credit-cards/shoppers-stop-black-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-swiggy-blck": {
+  "id": "hdfc-swiggy-blck",
+  "name": "Swiggy BLCK HDFC Bank Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfc.bank.in/credit-cards/swiggy-blck-hdfc-bank-credit-card",
+  "detail": "not card shaped (611x579)"
+ },
+ "hdfc-swiggy-orange": {
+  "id": "hdfc-swiggy-orange",
+  "name": "Swiggy Ornge HDFC Bank Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfc.bank.in/credit-cards/swiggy-ornge-hdfc-bank-credit-card",
+  "detail": "not card shaped (611x579)"
+ },
+ "hdfc-moneyback-plus": {
+  "id": "hdfc-moneyback-plus",
+  "name": "HDFC MoneyBack+ Credit Card",
+  "issuer": "HDFC",
+  "status": "blocked",
+  "sourcePage": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/moneyback-plus-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "hdfc-tata-neu-infinity": {
+  "id": "hdfc-tata-neu-infinity",
+  "name": "Tata Neu Infinity HDFC Bank Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/tata-neu-infinity-hdfc-bank-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hdfc-tata-neu-plus": {
+  "id": "hdfc-tata-neu-plus",
+  "name": "Tata Neu Plus HDFC Bank Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/tata-neu-plus-hdfc-bank-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hsbc-live-plus": {
+  "id": "hsbc-live-plus",
+  "name": "HSBC Live+ Credit Card",
+  "issuer": "HSBC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hsbc.bank.in/credit-cards/products/live-plus/",
+  "detail": "not card shaped (1200x1200)"
+ },
+ "hdfc-upi-rupay": {
+  "id": "hdfc-upi-rupay",
+  "name": "HDFC Bank UPI RuPay Credit Card",
+  "issuer": "HDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.hdfc.bank.in/credit-cards/hdfc-bank-upi-rupay-credit-card",
+  "detail": "image HTTP 404"
+ },
+ "hsbc-platinum": {
+  "id": "hsbc-platinum",
+  "name": "HSBC Visa Platinum Credit Card",
+  "issuer": "HSBC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.hsbc.bank.in/credit-cards/products/visa-platinum/",
+  "imageUrl": "https://www.hsbc.bank.in/content/dam/hsbc/in/images/credit-card/16-9/18405-platinum-revamp-1600x900.jpg",
+  "via": "img",
+  "bytes": 68590,
+  "width": 1600,
+  "height": 900,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "hsbc-premier": {
+  "id": "hsbc-premier",
+  "name": "HSBC Premier World Mastercard",
+  "issuer": "HSBC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.hsbc.bank.in/credit-cards/products/premier/",
+  "imageUrl": "https://www.hsbc.bank.in/content/dam/hsbc/in/images/premier/16-9/18544-hsbc-premier-credit-card-cropped-hex-left-1600x900.jpg",
+  "via": "img",
+  "bytes": 170685,
+  "width": 1600,
+  "height": 900,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "hsbc-rupay-cashback": {
+  "id": "hsbc-rupay-cashback",
+  "name": "HSBC RuPay Cashback Credit Card",
+  "issuer": "HSBC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.hsbc.bank.in/credit-cards/products/rupay-cashback-credit-card/",
+  "imageUrl": "https://www.hsbc.bank.in/content/dam/hsbc/en/images/pictograms/white-bg/16-9-tile/cardplane-colour-2025.jpg",
+  "via": "img",
+  "bytes": 34002,
+  "width": 1600,
+  "height": 900,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "hsbc-rupay-platinum": {
+  "id": "hsbc-rupay-platinum",
+  "name": "HSBC RuPay Platinum Credit Card",
+  "issuer": "HSBC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.hsbc.bank.in/credit-cards/products/rupay-platinum-credit-card/",
+  "imageUrl": "https://www.hsbc.bank.in/content/dam/hsbc/in/images/credit-card/16-9/17252-hsbc-rupay-platinum-credit-card-ver-grey-bg-1600x900.jpg",
+  "via": "img",
+  "bytes": 145310,
+  "width": 1600,
+  "height": 900,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "hsbc-taj": {
+  "id": "hsbc-taj",
+  "name": "HSBC Taj Credit Card",
+  "issuer": "HSBC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.hsbc.bank.in/credit-cards/products/taj/",
+  "imageUrl": "https://www.hsbc.bank.in/content/dam/hsbc/in/images/account/16-9/15990-india-hsbc-taj-card-face-vertical-2000x1125.jpg/jcr:content/renditions/cq5dam.web.1680.1000.jpeg",
+  "via": "img",
+  "bytes": 56220,
+  "width": 1280,
+  "height": 720,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "hsbc-travelone": {
+  "id": "hsbc-travelone",
+  "name": "HSBC TravelOne Credit Card",
+  "issuer": "HSBC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.hsbc.bank.in/credit-cards/products/travelone/",
+  "imageUrl": "https://www.hsbc.bank.in/content/dam/hsbc/in/images/16-9/15957-hsbc-travelone-credit-t1-front-1280x720.jpg",
+  "via": "img",
+  "bytes": 156942,
+  "width": 1280,
+  "height": 720,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "icici-adani-platinum": {
+  "id": "icici-adani-platinum",
+  "name": "Adani One ICICI Bank Platinum Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icici.bank.in/personal-banking/cards/credit-card/adani-icici-credit-card/platinum-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "hdfc-swiggy": {
+  "id": "hdfc-swiggy",
+  "name": "Swiggy HDFC Bank Credit Card",
+  "issuer": "HDFC",
+  "status": "blocked",
+  "sourcePage": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/swiggy-credit-card",
+  "detail": "issuer page HTTP 403"
+ },
+ "icici-adani-signature": {
+  "id": "icici-adani-signature",
+  "name": "Adani One ICICI Bank Signature Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icici.bank.in/personal-banking/cards/credit-card/adani-icici-credit-card/signature-credit-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-amazon-pay": {
+  "id": "icici-amazon-pay",
+  "name": "Amazon Pay ICICI Bank Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icicibank.com/personal-banking/cards/credit-card/amazon-pay-credit-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-coral": {
+  "id": "icici-coral",
+  "name": "ICICI Bank Coral Credit Card",
+  "issuer": "ICICI",
+  "status": "downloaded",
+  "sourcePage": "https://www.icicibank.com/personal-banking/cards/credit-card/coral-credit-card",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank-revamp/credit-card/pdp/coral.webp",
+  "via": "img",
+  "file": "icici-coral.webp",
+  "bytes": 22456,
+  "width": 472,
+  "height": 298
+ },
+ "icici-emeralde": {
+  "id": "icici-emeralde",
+  "name": "ICICI Bank Emeralde Credit Card (Metal)",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icicibank.com/personal-banking/cards/credit-card/emeralde-credit-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-emeralde-private": {
+  "id": "icici-emeralde-private",
+  "name": "ICICI Bank Emeralde Private Metal Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icicibank.com/personal-banking/cards/credit-card/emeralde-private-metal-credit-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-emirates-emeralde": {
+  "id": "icici-emirates-emeralde",
+  "name": "Emirates Skywards ICICI Bank Emeralde Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icici.bank.in/personal-banking/cards/credit-card/emirates-emeralde-credit-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-emirates-rubyx": {
+  "id": "icici-emirates-rubyx",
+  "name": "Emirates Skywards ICICI Bank Rubyx Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icici.bank.in/personal-banking/cards/credit-card/emirates-skywards/emirates-rubyx",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-expressions": {
+  "id": "icici-expressions",
+  "name": "ICICI Bank Expressions Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icici.bank.in/personal-banking/cards/credit-card/expressions-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-emirates-sapphiro": {
+  "id": "icici-emirates-sapphiro",
+  "name": "Emirates Skywards ICICI Bank Sapphiro Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icici.bank.in/personal-banking/cards/credit-card/emirates-skywards/emirates-sapphiro",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-hpcl-coral": {
+  "id": "icici-hpcl-coral",
+  "name": "ICICI Bank HPCL Coral Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icici.bank.in/personal-banking/cards/credit-card/hpcl-coral-credit-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-mmt": {
+  "id": "icici-mmt",
+  "name": "MakeMyTrip ICICI Bank Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icicibank.com/personal-banking/cards/credit-card/travel-mmt",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/revamp-page-images/cards/mmt-credit-card/makemytrip-desk-banner.png",
+  "via": "img",
+  "bytes": 19703,
+  "width": 599,
+  "height": 388,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "icici-hpcl-super-saver": {
+  "id": "icici-hpcl-super-saver",
+  "name": "ICICI HPCL Super Saver Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icicibank.com/personal-banking/cards/credit-card/hpcl-super-saver",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-platinum": {
+  "id": "icici-platinum",
+  "name": "ICICI Bank Platinum Chip Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icicibank.com/personal-banking/cards/credit-card/platinum-chip",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-rubyx": {
+  "id": "icici-rubyx",
+  "name": "ICICI Bank Rubyx Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icicibank.com/personal-banking/cards/credit-card/rubyx-credit-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-sapphiro": {
+  "id": "icici-sapphiro",
+  "name": "ICICI Bank Sapphiro Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icicibank.com/personal-banking/cards/credit-card/sapphiro-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "icici-times-black": {
+  "id": "icici-times-black",
+  "name": "Times Black ICICI Bank Credit Card",
+  "issuer": "ICICI",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.icicibank.com/personal-banking/cards/credit-card/times-black-icici-credit-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.icici.bank.in/content/dam/icicibank/india/managed-assets/images/blog/how-to-check-credit-card-expiry-m.webp",
+  "via": "img",
+  "bytes": 32158,
+  "width": 450,
+  "height": 253
+ },
+ "idfc-diamond-reserve": {
+  "id": "idfc-diamond-reserve",
+  "name": "IDFC FIRST Diamond Reserve Credit Card",
+  "issuer": "IDFC",
+  "status": "downloaded",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/diamond-reserve-credit-card",
+  "imageUrl": "https://www.idfcfirst.bank.in/content/dam/idfcfirstbank/images/diamond-reserve/dresbanmi-card.png",
+  "via": "img",
+  "file": "idfc-diamond-reserve.png",
+  "bytes": 291811,
+  "width": 646,
+  "height": 408
+ },
+ "idfc-earn": {
+  "id": "idfc-earn",
+  "name": "IDFC FIRST EAâ‚¹N Credit Card",
+  "issuer": "IDFC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/secured-rupay-credit-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.idfcfirst.bank.in/content/dam/idfcfirstbank/images/credit-card/View-all-cards-Desktop-first-wow-image-001.png",
+  "via": "img",
+  "bytes": 40912,
+  "width": 304,
+  "height": 194
+ },
+ "idfc-ashva": {
+  "id": "idfc-ashva",
+  "name": "IDFC FIRST Ashva Credit Card",
+  "issuer": "IDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/metal-credit-card/ashva",
+  "detail": "too small (2187 bytes)"
+ },
+ "idfc-first-classic": {
+  "id": "idfc-first-classic",
+  "name": "IDFC FIRST Classic Credit Card",
+  "issuer": "IDFC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/classic",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.idfcfirst.bank.in/content/dam/idfcfirstbank/images/first-cc-rewamp/first-classic/first-classic-credit-card-eligibility-blog-01.webp",
+  "via": "img",
+  "bytes": 18258,
+  "width": 328,
+  "height": 219
+ },
+ "idfc-first-private": {
+  "id": "idfc-first-private",
+  "name": "IDFC FIRST Private Credit Card",
+  "issuer": "IDFC",
+  "status": "downloaded",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/FIRSTPrivateCreditCard",
+  "imageUrl": "https://www.idfcfirst.bank.in/content/dam/idfcfirstbank/images/credit-card/first-private-landing-page/private-card.webp",
+  "via": "img",
+  "file": "idfc-first-private.webp",
+  "bytes": 37454,
+  "width": 409,
+  "height": 290
+ },
+ "idfc-first-wealth": {
+  "id": "idfc-first-wealth",
+  "name": "IDFC FIRST Wealth Credit Card",
+  "issuer": "IDFC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/wealth",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.idfcfirst.bank.in/content/dam/idfcfirstbank/images/blog/credit-card/first-select-vs-first-wealth-credit-card-comparison-717x404.jpg",
+  "via": "img",
+  "bytes": 40381,
+  "width": 717,
+  "height": 404
+ },
+ "idfc-gaj": {
+  "id": "idfc-gaj",
+  "name": "IDFC FIRST Gaj Credit Card",
+  "issuer": "IDFC",
+  "status": "downloaded",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/metal-credit-card/gaj",
+  "imageUrl": "https://www.idfcfirst.bank.in/content/dam/idfcfirstbank/images/gaj-cc/gaj-card.png",
+  "via": "img",
+  "file": "idfc-gaj.png",
+  "bytes": 672417,
+  "width": 1888,
+  "height": 1191
+ },
+ "idfc-hello-cashback": {
+  "id": "idfc-hello-cashback",
+  "name": "IDFC FIRST Hello Cashback Credit Card",
+  "issuer": "IDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/hello-cashback-credit-card",
+  "detail": "not card shaped (357x412)"
+ },
+ "idfc-indigo": {
+  "id": "idfc-indigo",
+  "name": "IndiGo IDFC FIRST Credit Card",
+  "issuer": "IDFC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/indigo-credit-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.idfcfirst.bank.in/content/dam/idfcfirstbank/images/cc-indigo/indtcard-img-back.png",
+  "via": "img",
+  "bytes": 58738,
+  "width": 514,
+  "height": 311
+ },
+ "idfc-digital-rupay": {
+  "id": "idfc-digital-rupay",
+  "name": "IDFC FIRST Digital RuPay Credit Card",
+  "issuer": "IDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/rupay-credit-card",
+  "detail": "too small (2187 bytes)"
+ },
+ "idfc-lic-classic": {
+  "id": "idfc-lic-classic",
+  "name": "LIC Classic Credit Card",
+  "issuer": "IDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/lic-classic-credit-card",
+  "detail": "too small (3448 bytes)"
+ },
+ "idfc-lic-select": {
+  "id": "idfc-lic-select",
+  "name": "LIC Select Credit Card",
+  "issuer": "IDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/lic-credit-card",
+  "detail": "too small (3448 bytes)"
+ },
+ "idfc-millennia": {
+  "id": "idfc-millennia",
+  "name": "IDFC FIRST Millennia Credit Card",
+  "issuer": "IDFC",
+  "status": "no-image-found",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/first-millennia"
+ },
+ "idfc-hpcl-power": {
+  "id": "idfc-hpcl-power",
+  "name": "IDFC FIRST HPCL Power+ Credit Card",
+  "issuer": "IDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/hpcl-power-fuel-credit-card",
+  "detail": "not card shaped (163x163)"
+ },
+ "idfc-mayura": {
+  "id": "idfc-mayura",
+  "name": "IDFC FIRST Mayura Credit Card",
+  "issuer": "IDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/metal-credit-card/mayura",
+  "detail": "too small (2187 bytes)"
+ },
+ "idfc-select": {
+  "id": "idfc-select",
+  "name": "IDFC FIRST Select Credit Card",
+  "issuer": "IDFC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.idfcfirstbank.com/credit-card/select",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.idfcfirst.bank.in/content/dam/idfcfirstbank/images/blog/credit-card/credit-cards-with-lounge-access-to-elevate-travel-experience-717x404.jpg",
+  "via": "img",
+  "bytes": 38957,
+  "width": 717,
+  "height": 404
+ },
+ "idfc-power": {
+  "id": "idfc-power",
+  "name": "IDFC FIRST Power Credit Card",
+  "issuer": "IDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/hpcl-power-fuel-credit-card",
+  "detail": "not card shaped (163x163)"
+ },
+ "idfc-wow": {
+  "id": "idfc-wow",
+  "name": "IDFC FIRST WOW! Credit Card",
+  "issuer": "IDFC",
+  "status": "downloaded",
+  "sourcePage": "https://www.idfcfirstbank.com/credit-card/wow",
+  "imageUrl": "https://www.idfcfirst.bank.in/content/dam/idfcfirstbank/images/cc-landing-nobs/WOW-2x-credit-card-image-updated.webp",
+  "via": "img",
+  "file": "idfc-wow.webp",
+  "bytes": 18412,
+  "width": 576,
+  "height": 364
+ },
+ "idfc-swyp": {
+  "id": "idfc-swyp",
+  "name": "IDFC FIRST SWYP Credit Card",
+  "issuer": "IDFC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/swyp-emi-credit-card",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.idfcfirst.bank.in/content/dam/idfcfirstbank/images/swpy/first-swyp-credit-card-benefits-717X404-01.webp",
+  "via": "img",
+  "bytes": 23354,
+  "width": 717,
+  "height": 404
+ },
+ "indusind-avios": {
+  "id": "indusind-avios",
+  "name": "IndusInd Bank Avios Visa Infinite Credit Card",
+  "issuer": "INDUSIND",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/avios-visa-infinite-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/banner-images/forex/forex_card.jpg",
+  "via": "img",
+  "bytes": 14072,
+  "width": 488,
+  "height": 302
+ },
+ "indusind-celesta": {
+  "id": "indusind-celesta",
+  "name": "IndusInd Bank Celesta Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/celesta-credit-card.html",
+  "detail": "not card shaped (640x466)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/celesta-credit-card.jpg",
+  "via": "img",
+  "file": "indusind-celesta.jpg",
+  "bytes": 22188,
+  "width": 396,
+  "height": 251
+ },
+ "indusind-cred": {
+  "id": "indusind-cred",
+  "name": "CRED IndusInd Bank RuPay Credit Card",
+  "issuer": "INDUSIND",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/CRED-IndusInd-Bank-ruPay-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/banner-images/platinum-rupay-credit-card/Poonawalla_IB_eLITE_Benefit_1182x318_Mobile.png",
+  "via": "img",
+  "bytes": 114347,
+  "width": 556,
+  "height": 318
+ },
+ "indusind-crest": {
+  "id": "indusind-crest",
+  "name": "IndusInd Bank Crest Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/crest-credit-card.html",
+  "detail": "not card shaped (505x255)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/crest_world_elite.jpg",
+  "via": "img",
+  "file": "indusind-crest.jpg",
+  "bytes": 21292,
+  "width": 397,
+  "height": 250
+ },
+ "idfc-wow-black": {
+  "id": "idfc-wow-black",
+  "name": "IDFC FIRST WOW! Black Credit Card",
+  "issuer": "IDFC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.idfcfirst.bank.in/credit-card/wow-black-credit-card",
+  "detail": "not card shaped (99x64)"
+ },
+ "indusind-eazydiner": {
+  "id": "indusind-eazydiner",
+  "name": "IndusInd Bank EazyDiner Signature Credit Card",
+  "issuer": "INDUSIND",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.indusind.com/in/en/personal/cards/credit-card/eazydiner-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/banner-images/forex/forex_card.jpg",
+  "via": "img",
+  "bytes": 14072,
+  "width": 488,
+  "height": 302
+ },
+ "indusind-eazydiner-platinum": {
+  "id": "indusind-eazydiner-platinum",
+  "name": "EazyDiner IndusInd Bank Platinum Credit Card",
+  "issuer": "INDUSIND",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/eazydiner-platinum-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/banner-images/forex/forex_card.jpg",
+  "via": "img",
+  "bytes": 14072,
+  "width": 488,
+  "height": 302
+ },
+ "indusind-duo": {
+  "id": "indusind-duo",
+  "name": "IndusInd Bank Duo Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/duo-card.html",
+  "detail": "not card shaped (640x466)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/debitCard/duo-card_Visa_front.jpg",
+  "via": "img",
+  "file": "indusind-duo.jpg",
+  "bytes": 45811,
+  "width": 396,
+  "height": 250
+ },
+ "indusind-epay-amex": {
+  "id": "indusind-epay-amex",
+  "name": "IndusInd Bank ePay Amex Credit Card",
+  "issuer": "INDUSIND",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/epay-amex-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/banner-images/e-pay-amex-card/ePay-Webiste-Collaterals_Card-Dimensions-397-257px.jpg",
+  "via": "img",
+  "bytes": 52752,
+  "width": 397,
+  "height": 257
+ },
+ "indusind-indulge": {
+  "id": "indusind-indulge",
+  "name": "IndusInd Bank Indulge Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/indulge-credit-card.html",
+  "detail": "not card shaped (640x466)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/indulge_credit_card.jpg",
+  "via": "img",
+  "file": "indusind-indulge.jpg",
+  "bytes": 21081,
+  "width": 396,
+  "height": 250
+ },
+ "indusind-jio-bp": {
+  "id": "indusind-jio-bp",
+  "name": "IndusInd Bank Jio-bp Mobility+ Credit Card",
+  "issuer": "INDUSIND",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/jio-bp-mobility-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/banner-images/jio-bp-credit-card/Jio-BP-Card_397x257px-WEBP.webp",
+  "via": "img",
+  "bytes": 36124,
+  "width": 397,
+  "height": 257
+ },
+ "indusind-nexxt": {
+  "id": "indusind-nexxt",
+  "name": "IndusInd Bank Nexxt Credit Card",
+  "issuer": "INDUSIND",
+  "status": "no-image-found",
+  "sourcePage": "https://www.indusind.com/in/en/personal/cards/credit-card/nexxt.html"
+ },
+ "indusind-legend": {
+  "id": "indusind-legend",
+  "name": "IndusInd Bank Legend Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.com/in/en/personal/cards/credit-card/legend-credit-card.html",
+  "detail": "not card shaped (640x466)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/Legend_card-image_396x257px.png",
+  "via": "img",
+  "file": "indusind-legend.png",
+  "bytes": 20518,
+  "width": 396,
+  "height": 257
+ },
+ "indusind-pinnacle": {
+  "id": "indusind-pinnacle",
+  "name": "IndusInd Bank Pinnacle Credit Card",
+  "issuer": "INDUSIND",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/pinnacle-world-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/IB_Pinnacle-Card_397x257.webp",
+  "via": "img",
+  "bytes": 25778,
+  "width": 397,
+  "height": 257
+ },
+ "indusind-pioneer-heritage": {
+  "id": "indusind-pioneer-heritage",
+  "name": "IndusInd Bank Pioneer Heritage Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/pioneer-heritage-credit-card.html",
+  "detail": "not card shaped (505x255)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/th-pioneer-heritage-credit-card1.png",
+  "via": "img",
+  "file": "indusind-pioneer-heritage.png",
+  "bytes": 13775,
+  "width": 397,
+  "height": 251
+ },
+ "indusind-pioneer-legacy": {
+  "id": "indusind-pioneer-legacy",
+  "name": "IndusInd Bank Pioneer Legacy Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/pioneer-legacy-credit-card.html",
+  "detail": "not card shaped (505x255)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/pioneer_legacy_world_card.jpg",
+  "via": "img",
+  "file": "indusind-pioneer-legacy.jpg",
+  "bytes": 26423,
+  "width": 397,
+  "height": 251
+ },
+ "indusind-pioneer-private": {
+  "id": "indusind-pioneer-private",
+  "name": "IndusInd Bank Pioneer Private Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/pioneer-private.html",
+  "detail": "not card shaped (505x255)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/product/productdetails/desktopImages/pioneer-private/Private_Card-img_397x257px.jpg",
+  "via": "img",
+  "file": "indusind-pioneer-private.jpg",
+  "bytes": 94411,
+  "width": 397,
+  "height": 257
+ },
+ "indusind-platinum": {
+  "id": "indusind-platinum",
+  "name": "IndusInd Bank Platinum Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/platinum-visa-credit-card.html",
+  "detail": "not card shaped (640x466)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/Platinum_card-image_396x257px.png",
+  "via": "img",
+  "file": "indusind-platinum.png",
+  "bytes": 112271,
+  "width": 396,
+  "height": 257
+ },
+ "indusind-platinum-aura-edge": {
+  "id": "indusind-platinum-aura-edge",
+  "name": "IndusInd Bank Platinum Aura Edge Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/platinum-aura-edge-visa-and-mastercard-credit-card-easy-credit.html",
+  "detail": "not card shaped (505x255)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/Aura_Edge_card-image_396x257px.png",
+  "via": "img",
+  "file": "indusind-platinum-aura-edge.png",
+  "bytes": 167474,
+  "width": 396,
+  "height": 257
+ },
+ "indusind-platinum-rupay": {
+  "id": "indusind-platinum-rupay",
+  "name": "IndusInd Bank Platinum RuPay Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/platinum-rupay-credit-card.html",
+  "detail": "not card shaped (641x467)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/IndusInd-Platinum-Rupay-Credit-Card-397x257.png",
+  "via": "img",
+  "file": "indusind-platinum-rupay.png",
+  "bytes": 99746,
+  "width": 397,
+  "height": 257
+ },
+ "indusind-samman": {
+  "id": "indusind-samman",
+  "name": "IndusInd Bank Samman Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/samman-credit-card.html",
+  "detail": "not card shaped (505x255)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/Samman-card-img-397x257px.jpg",
+  "via": "img",
+  "file": "indusind-samman.jpg",
+  "bytes": 171928,
+  "width": 397,
+  "height": 257
+ },
+ "indusind-solitaire": {
+  "id": "indusind-solitaire",
+  "name": "IndusInd Bank Indus Solitaire Credit Card",
+  "issuer": "INDUSIND",
+  "status": "downloaded",
+  "sourcePage": "https://www.indusind.bank.in/in/en/personal/cards/credit-card/solitaire-credit-card.html",
+  "detail": "not card shaped (505x255)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/productCategory/desktopImage/creditCard/Solitaire_card-img_397x257px.png",
+  "via": "img",
+  "file": "indusind-solitaire.png",
+  "bytes": 40272,
+  "width": 827,
+  "height": 536
+ },
+ "kiwi": {
+  "id": "kiwi",
+  "name": "Kiwi RuPay Credit Card",
+  "issuer": "YES",
+  "status": "no-card-face",
+  "sourcePage": "https://gokiwi.in/",
+  "detail": "not card shaped (1200x600)"
+ },
+ "indusind-tiger": {
+  "id": "indusind-tiger",
+  "name": "IndusInd Bank Tiger Credit Card",
+  "issuer": "INDUSIND",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.indusind.com/in/en/personal/cards/credit-card/tiger-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.indusind.bank.in/content/dam/indusind-platform-images/banner-images/tiger-credit-card/Card-Tiger-CC.png",
+  "via": "img",
+  "bytes": 12440,
+  "width": 488,
+  "height": 302
+ },
+ "kotak-811": {
+  "id": "kotak-811",
+  "name": "Kotak 811 #DreamDifferent Credit Card",
+  "issuer": "KOTAK",
+  "status": "no-image-found",
+  "sourcePage": "https://www.kotak.com/en/personal-banking/cards/credit-cards/811-dream-different-credit-card.html"
+ },
+ "kotak-air": {
+  "id": "kotak-air",
+  "name": "Kotak Air Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.bank.in/en/personal-banking/cards/credit-cards/kotak-air-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/mobile_images/kotak-air-credit-card-new-m.jpg",
+  "via": "img",
+  "bytes": 9925,
+  "width": 640,
+  "height": 430
+ },
+ "kotak-air-plus-prime": {
+  "id": "kotak-air-plus-prime",
+  "name": "Kotak Air+ Prime Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.bank.in/en/personal-banking/cards/credit-cards/kotak-air-plus-prime-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/mobile_images/kotak-air-plus-prime-credit-card-m.jpg",
+  "via": "img",
+  "bytes": 8345,
+  "width": 640,
+  "height": 430
+ },
+ "jupiter-edge": {
+  "id": "jupiter-edge",
+  "name": "Jupiter Edge+ CSB Bank RuPay Credit Card",
+  "issuer": "CSB",
+  "status": "no-card-face",
+  "sourcePage": "https://jptr.onelink.me/TOMp/84d06e4a32",
+  "detail": "not card shaped (1200x600)"
+ },
+ "kotak-cashback-plus-prime": {
+  "id": "kotak-cashback-plus-prime",
+  "name": "Kotak Cashback+ Prime Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.bank.in/en/personal-banking/cards/credit-cards/kotak-cashback-plus-prime-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/mobile_images/kotak-cashback-plus-prime-credit-card-new-m.jpg",
+  "via": "img",
+  "bytes": 6615,
+  "width": 640,
+  "height": 430
+ },
+ "kotak-indianoil": {
+  "id": "kotak-indianoil",
+  "name": "IndianOil Kotak Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.bank.in/en/personal-banking/cards/credit-cards/indian-oil-credit-card.html",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/article-images/top-premium-credit-cards-in-india-t.jpg",
+  "via": "img",
+  "bytes": 8356,
+  "width": 358,
+  "height": 201,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "kotak-indigo": {
+  "id": "kotak-indigo",
+  "name": "IndiGo Kotak Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.bank.in/en/personal-banking/cards/credit-cards/indigo-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/product_card_images/indigo-xl-t.jpg.transform/transformer-width-711-height-399/image.jpg",
+  "via": "img",
+  "bytes": 19771,
+  "width": 711,
+  "height": 399
+ },
+ "kotak-league-platinum": {
+  "id": "kotak-league-platinum",
+  "name": "Kotak League Platinum Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.com/en/personal-banking/cards/credit-cards/league-platinum-card.html",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/article-images/top-premium-credit-cards-in-india-t.jpg",
+  "via": "img",
+  "bytes": 8356,
+  "width": 358,
+  "height": 201,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "kotak-indigo-premium": {
+  "id": "kotak-indigo-premium",
+  "name": "IndiGo XL Kotak Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.bank.in/en/personal-banking/cards/credit-cards/indigo-xl-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/product_card_images/indigo-credit-card-base-t.jpg.transform/transformer-width-711-height-399/image.jpg",
+  "via": "img",
+  "bytes": 19624,
+  "width": 711,
+  "height": 399
+ },
+ "kotak-pvr-inox": {
+  "id": "kotak-pvr-inox",
+  "name": "PVR INOX Kotak Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.bank.in/en/personal-banking/cards/credit-cards/pvr-inox-kotak-credit-card.html",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/article-images/top-premium-credit-cards-in-india-t.jpg",
+  "via": "img",
+  "bytes": 8356,
+  "width": 358,
+  "height": 201,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "kotak-solitaire": {
+  "id": "kotak-solitaire",
+  "name": "Kotak Solitaire Credit Card",
+  "issuer": "KOTAK",
+  "status": "no-card-face",
+  "sourcePage": "https://www.kotak.bank.in/en/personal-banking/cards/credit-cards/kotak-solitaire-credit-card.html",
+  "detail": "not card shaped (1440x400)"
+ },
+ "kotak-upi-rupay": {
+  "id": "kotak-upi-rupay",
+  "name": "Kotak UPI RuPay Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.bank.in/en/personal-banking/cards/credit-cards/kotak-upi-rupay-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/herosliderbanner/kotak-upi-rupay-credit-card-new-m.jpg",
+  "via": "img",
+  "bytes": 26547,
+  "width": 640,
+  "height": 430
+ },
+ "kotak-white": {
+  "id": "kotak-white",
+  "name": "Kotak White Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.bank.in/en/personal-banking/cards/credit-cards/white-credit-card.html",
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/mobile_images/whitecard-features.jpg",
+  "via": "img",
+  "bytes": 29910,
+  "width": 640,
+  "height": 430
+ },
+ "kotak-white-reserve": {
+  "id": "kotak-white-reserve",
+  "name": "Kotak White Reserve Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.com/en/personal-banking/cards/credit-cards/white-reserve-credit-card.html",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/herosliderbanner/white-credit-card-desk.jpg.transform/transformer-width-711-height-399/image.jpg",
+  "via": "img",
+  "bytes": 29272,
+  "width": 711,
+  "height": 399,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "kotak-zen-signature": {
+  "id": "kotak-zen-signature",
+  "name": "Kotak Zen Signature Credit Card",
+  "issuer": "KOTAK",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.kotak.com/en/personal-banking/cards/credit-cards/zen-signature-credit-card.html",
+  "imageUrl": "https://www.kotak.bank.in/content/dam/Kotak/article-images/top-premium-credit-cards-in-india-t.jpg",
+  "via": "img",
+  "bytes": 8356,
+  "width": 358,
+  "height": 201,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "onecard": {
+  "id": "onecard",
+  "name": "OneCard Credit Card",
+  "issuer": "BOB",
+  "status": "no-card-face",
+  "sourcePage": "https://www.getonecard.app/",
+  "detail": "unreadable image header"
+ },
+ "rbl-apex": {
+  "id": "rbl-apex",
+  "name": "RBL Bank Apex Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/apex-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-bankbazaar-savemax": {
+  "id": "rbl-bankbazaar-savemax",
+  "name": "RBL Bank BankBazaar SaveMax Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/rbl-bank-bankbazaar-savemax-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-bankbazaar-savemax-pro": {
+  "id": "rbl-bankbazaar-savemax-pro",
+  "name": "RBL Bank BankBazaar SaveMax Pro Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/rbl-bank-bankbazaar-savemax-pro-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-binge": {
+  "id": "rbl-binge",
+  "name": "RBL Bank Binge Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/binge-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-blockbuster": {
+  "id": "rbl-blockbuster",
+  "name": "RBL Bank Blockbuster Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/rbl-bank-blockbuster-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-cookies": {
+  "id": "rbl-cookies",
+  "name": "RBL Bank Cookies Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/cookies-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-dmi-finance": {
+  "id": "rbl-dmi-finance",
+  "name": "RBL Bank DMI Finance Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/dmi-finance-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-icon": {
+  "id": "rbl-icon",
+  "name": "RBL Bank Icon Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/icon-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-indianoil": {
+  "id": "rbl-indianoil",
+  "name": "RBL Bank IndianOil Credit Card",
+  "issuer": "RBL",
+  "status": "error",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/indianoil-rbl-bank-credit-card",
+  "detail": "TypeError: fetch failed"
+ },
+ "rbl-indianoil-xtra": {
+  "id": "rbl-indianoil-xtra",
+  "name": "RBL Bank IndianOil XTRA Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/indianoil-rbl-bank-xtra-credit-card",
+  "detail": "not card shaped (420x505)"
+ },
+ "rbl-irctc": {
+  "id": "rbl-irctc",
+  "name": "RBL Bank IRCTC Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/irctc-rbl-bank-credit-card",
+  "detail": "not card shaped (421x428)"
+ },
+ "rbl-lumiere": {
+  "id": "rbl-lumiere",
+  "name": "RBL Bank LumiÃ¨re Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/lumiere-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "pop-club": {
+  "id": "pop-club",
+  "name": "YES Bank POP-CLUB Credit Card",
+  "issuer": "YES",
+  "status": "error",
+  "sourcePage": "https://www.yes.bank.in/personal-banking/yes-individual/cards/credit-cards/pop-club-credit-card",
+  "detail": "TimeoutError: The operation was aborted due to timeout"
+ },
+ "rbl-nova": {
+  "id": "rbl-nova",
+  "name": "RBL Bank Nova Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/nova-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-paisabazaar-duet": {
+  "id": "rbl-paisabazaar-duet",
+  "name": "RBL Bank Paisabazaar Duet Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/rbl-bank-paisabazaar-duet-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-paisabazaar-duet-plus": {
+  "id": "rbl-paisabazaar-duet-plus",
+  "name": "RBL Bank Paisabazaar Duet Plus Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/rbl-bank-paisabazaar-duet-plus-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-patanjali-swarn": {
+  "id": "rbl-patanjali-swarn",
+  "name": "RBL Bank Patanjali Swarn Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/rbl-bank-patanjali-swarn-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-patanjali-vishisht": {
+  "id": "rbl-patanjali-vishisht",
+  "name": "RBL Bank Patanjali Vishisht Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/rbl-bank-patanjali-vishisht-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-platinum-maxima": {
+  "id": "rbl-platinum-maxima",
+  "name": "RBL Bank Platinum Maxima Plus Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/platinum-maxima-plus-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-play": {
+  "id": "rbl-play",
+  "name": "RBL Bank Play Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/rbl-bank-play-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-salaryse-up": {
+  "id": "rbl-salaryse-up",
+  "name": "RBL Bank SalarySe UP Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/salaryse-up-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-shoprite": {
+  "id": "rbl-shoprite",
+  "name": "RBL Bank ShopRite Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/shoprite-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-tvs-credit": {
+  "id": "rbl-tvs-credit",
+  "name": "RBL Bank TVS Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/tvs-credit-rbl-bank-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-world-safari": {
+  "id": "rbl-world-safari",
+  "name": "RBL Bank World Safari Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/world-safari-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "rbl-tvs-credit-gold": {
+  "id": "rbl-tvs-credit-gold",
+  "name": "RBL Bank TVS Gold Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/tvs-credit-rbl-bank-gold-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "roarbank": {
+  "id": "roarbank",
+  "name": "Roarbank RuPay Credit Card",
+  "issuer": "UNITY",
+  "status": "no-card-face",
+  "sourcePage": "https://roar.bank.in/en/credit-card",
+  "detail": "not card shaped (2400x1260)"
+ },
+ "rbl-world-safari-lite": {
+  "id": "rbl-world-safari-lite",
+  "name": "RBL Bank World Safari Lite Credit Card",
+  "issuer": "RBL",
+  "status": "no-card-face",
+  "sourcePage": "https://www.rbl.bank.in/personal-banking/cards/credit-cards/world-safari-lite-credit-card",
+  "detail": "not card shaped (422x160)"
+ },
+ "sbi-apollo-select": {
+  "id": "sbi-apollo-select",
+  "name": "Apollo SBI Card SELECT",
+  "issuer": "SBI",
+  "status": "no-image-found",
+  "sourcePage": "https://www.sbicard.com/sprint/c/ApolloSelect"
+ },
+ "sbi-apollo": {
+  "id": "sbi-apollo",
+  "name": "Apollo SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/apollo-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-aurum": {
+  "id": "sbi-aurum",
+  "name": "SBI Card AURUM",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/aurum-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-bpcl": {
+  "id": "sbi-bpcl",
+  "name": "BPCL SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/bpcl-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-bpcl-octane": {
+  "id": "sbi-bpcl-octane",
+  "name": "BPCL SBI Card Octane",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/bpcl-sbi-card-octane.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-cashback": {
+  "id": "sbi-cashback",
+  "name": "SBI Cashback Credit Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/cashback-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-doctors": {
+  "id": "sbi-doctors",
+  "name": "Doctor's SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/doctors-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-doctors-ima": {
+  "id": "sbi-doctors-ima",
+  "name": "Doctor's SBI Card (in Association with IMA)",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/doctors-ima-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-flipkart": {
+  "id": "sbi-flipkart",
+  "name": "Flipkart SBI Card",
+  "issuer": "SBI",
+  "status": "no-image-found",
+  "sourcePage": "https://www.sbicard.com/sprint/flipkart-sbi-card/"
+ },
+ "sbi-elite": {
+  "id": "sbi-elite",
+  "name": "SBI Card ELITE",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/sbi-card-elite.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-indigo": {
+  "id": "sbi-indigo",
+  "name": "IndiGo SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/indigo-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-indigo-elite": {
+  "id": "sbi-indigo-elite",
+  "name": "IndiGo SBI Card ELITE",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/indigo-sbi-card-elite.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-irctc-platinum": {
+  "id": "sbi-irctc-platinum",
+  "name": "IRCTC SBI Platinum Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/irctc-sbi-platinum-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-irctc-premier": {
+  "id": "sbi-irctc-premier",
+  "name": "IRCTC SBI Card Premier",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/irctc-premier-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-krisflyer": {
+  "id": "sbi-krisflyer",
+  "name": "KrisFlyer SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/krisflyer-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-krisflyer-apex": {
+  "id": "sbi-krisflyer-apex",
+  "name": "KrisFlyer SBI Card Apex",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/krisflyer-sbi-card-apex.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-landmark": {
+  "id": "sbi-landmark",
+  "name": "Landmark Rewards SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/landmark-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-landmark-prime": {
+  "id": "sbi-landmark-prime",
+  "name": "Landmark Rewards SBI Card PRIME",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/landmark-sbi-card-prime.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-landmark-select": {
+  "id": "sbi-landmark-select",
+  "name": "Landmark Rewards SBI Card SELECT",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/landmark-sbi-card-select.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-miles": {
+  "id": "sbi-miles",
+  "name": "SBI Card MILES",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/sbi-card-miles.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-miles-elite": {
+  "id": "sbi-miles-elite",
+  "name": "SBI Card Miles Elite",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/sbi-card-miles-elite.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-miles-prime": {
+  "id": "sbi-miles-prime",
+  "name": "SBI Card MILES PRIME",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/sbi-card-miles-prime.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-paytm": {
+  "id": "sbi-paytm",
+  "name": "Paytm SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/paytm-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-paytm-select": {
+  "id": "sbi-paytm-select",
+  "name": "Paytm SBI Card SELECT",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/paytm-sbi-card-select.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-phonepe-purple": {
+  "id": "sbi-phonepe-purple",
+  "name": "PhonePe SBI Card PURPLE",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/phonepe-sbi-card-purple.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-phonepe-select-black": {
+  "id": "sbi-phonepe-select-black",
+  "name": "PhonePe SBI Card SELECT BLACK",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/rewards/phonepe-sbi-card-select-black.page",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-prime": {
+  "id": "sbi-prime",
+  "name": "SBI Card PRIME",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/sbi-card-prime.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-pulse": {
+  "id": "sbi-pulse",
+  "name": "SBI Card PULSE",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/lifestyle/sbi-card-pulse.page",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-reliance": {
+  "id": "sbi-reliance",
+  "name": "Reliance SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/reliance-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-reliance-prime": {
+  "id": "sbi-reliance-prime",
+  "name": "Reliance SBI Card PRIME",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/reliance-sbi-card-prime.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-shaurya": {
+  "id": "sbi-shaurya",
+  "name": "Shaurya SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/shaurya-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-shaurya-select": {
+  "id": "sbi-shaurya-select",
+  "name": "Shaurya Select SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/shaurya-select-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-simply-click": {
+  "id": "sbi-simply-click",
+  "name": "SBI SimplyCLICK Credit Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/shopping/simplyclick-sbi-card.page",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-simply-save": {
+  "id": "sbi-simply-save",
+  "name": "SBI SimplySAVE Credit Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/shopping/simplysave-sbi-card.page",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-tata-neu-infinity": {
+  "id": "sbi-tata-neu-infinity",
+  "name": "Tata Neu Infinity SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/lifestyle/tata-neu-infinity-sbi-card.page",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-tata-neu-plus": {
+  "id": "sbi-tata-neu-plus",
+  "name": "Tata Neu Plus SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/lifestyle/tata-neu-plus-sbi-card.page",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbm-zet": {
+  "id": "sbm-zet",
+  "name": "SBM ZET Credit Card",
+  "issuer": "SBM",
+  "status": "no-card-face",
+  "sourcePage": "https://www.zetapp.in/sbm-zet-credit-card",
+  "detail": "not card shaped (1200x630)"
+ },
+ "sbi-titan": {
+  "id": "sbi-titan",
+  "name": "Titan SBI Card",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/titan-sbi-card.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sbi-unnati": {
+  "id": "sbi-unnati",
+  "name": "SBI Card Unnati",
+  "issuer": "SBI",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sbicard.com/en/personal/credit-cards/sbi-card-unnati.html",
+  "detail": "too small (1272 bytes)"
+ },
+ "sc-beyond": {
+  "id": "sc-beyond",
+  "name": "Standard Chartered Beyond Credit Card",
+  "issuer": "SC",
+  "status": "rejected-on-review",
+  "sourcePage": "https://www.sc.bank.in/credit-cards/beyond-credit-card/",
+  "imageUrl": "https://www.sc.bank.in/content/dam/sc/in/credit-cards/bbc-desktop-banner.jpg",
+  "via": "img",
+  "bytes": 333401,
+  "width": 1920,
+  "height": 1078,
+  "detail": "not a clean card face (lifestyle photo, banner, partial or vertical card)"
+ },
+ "sc-digismart": {
+  "id": "sc-digismart",
+  "name": "Standard Chartered DigiSmart Credit Card",
+  "issuer": "SC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sc.bank.in/credit-cards/digismart-card/",
+  "detail": "not card shaped (400x400)"
+ },
+ "sc-easemytrip": {
+  "id": "sc-easemytrip",
+  "name": "Standard Chartered EaseMyTrip Credit Card",
+  "issuer": "SC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sc.bank.in/credit-cards/easemytrip-credit-card/",
+  "detail": "not card shaped (400x400)"
+ },
+ "sc-manhattan-platinum": {
+  "id": "sc-manhattan-platinum",
+  "name": "Standard Chartered Manhattan Platinum Credit Card",
+  "issuer": "SC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sc.bank.in/credit-cards/manhattan-platinum/",
+  "detail": "not card shaped (400x400)"
+ },
+ "sc-platinum-rewards": {
+  "id": "sc-platinum-rewards",
+  "name": "Standard Chartered Platinum Rewards Credit Card",
+  "issuer": "SC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sc.bank.in/credit-cards/platinum-rewards/",
+  "detail": "not card shaped (400x400)"
+ },
+ "sc-priority-visa-infinite": {
+  "id": "sc-priority-visa-infinite",
+  "name": "Standard Chartered Priority Visa Infinite Credit Card",
+  "issuer": "SC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sc.bank.in/credit-cards/priority-banking-visa-infinite/",
+  "detail": "not card shaped (672x927)"
+ },
+ "sc-rewards": {
+  "id": "sc-rewards",
+  "name": "Standard Chartered Rewards Credit Card",
+  "issuer": "SC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sc.bank.in/credit-cards/rewards-credit-card/",
+  "detail": "not card shaped (400x400)"
+ },
+ "sc-smart": {
+  "id": "sc-smart",
+  "name": "Standard Chartered Smart Credit Card",
+  "issuer": "SC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sc.bank.in/credit-cards/smart-credit-card/",
+  "detail": "not card shaped (400x400)"
+ },
+ "scapia-federal": {
+  "id": "scapia-federal",
+  "name": "Scapia Credit Card",
+  "issuer": "FEDERAL",
+  "status": "blocked",
+  "sourcePage": "https://www.scapia.cards/",
+  "detail": "issuer page HTTP 403"
+ },
+ "sc-super-value-titanium": {
+  "id": "sc-super-value-titanium",
+  "name": "Standard Chartered Super Value Titanium Credit Card",
+  "issuer": "SC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sc.bank.in/credit-cards/super-value-titanium/",
+  "detail": "not card shaped (400x400)"
+ },
+ "sc-ultimate": {
+  "id": "sc-ultimate",
+  "name": "Standard Chartered Ultimate Credit Card",
+  "issuer": "SC",
+  "status": "no-card-face",
+  "sourcePage": "https://www.sc.bank.in/credit-cards/ultimate-card/",
+  "detail": "not card shaped (400x400)"
+ },
+ "uni-goldx": {
+  "id": "uni-goldx",
+  "name": "BOBCARD Uni GoldX Credit Card",
+  "issuer": "BOB",
+  "status": "error",
+  "sourcePage": "https://www.bobcard.co.in/credit-card-types/bobcard-uni-goldx",
+  "detail": "TypeError: fetch failed"
+ },
+ "utkarsh-supercard": {
+  "id": "utkarsh-supercard",
+  "name": "super.money superCard (Utkarsh SFB)",
+  "issuer": "UTKARSH",
+  "status": "no-card-face",
+  "sourcePage": "https://www.utkarsh.bank.in/personal/cards/credit-card/supercard",
+  "detail": "not card shaped (274x184)"
+ },
+ "slice": {
+  "id": "slice",
+  "name": "slice UPI Credit Card",
+  "issuer": "SLICE",
+  "status": "no-card-face",
+  "sourcePage": "https://slice.bank.in/credit-card/",
+  "detail": "not card shaped (450x450)"
+ },
+ "yes-ace": {
+  "id": "yes-ace",
+  "name": "YES Bank Ace Credit Card",
+  "issuer": "YES",
+  "status": "error",
+  "sourcePage": "https://www.yesbank.in/personal-banking/yes-individual/cards/credit-cards/ace-credit-card",
+  "detail": "TimeoutError: The operation was aborted due to timeout"
+ },
+ "yes-elite-plus": {
+  "id": "yes-elite-plus",
+  "name": "YES Bank Elite+ Credit Card",
+  "issuer": "YES",
+  "status": "error",
+  "sourcePage": "https://www.yesbank.in/personal-banking/yes-individual/cards/credit-cards/elite-plus-credit-card",
+  "detail": "TimeoutError: The operation was aborted due to timeout"
+ },
+ "yes-essence": {
+  "id": "yes-essence",
+  "name": "YES Bank Essence Credit Card",
+  "issuer": "YES",
+  "status": "error",
+  "sourcePage": "https://www.yesbank.in/personal-banking/yes-individual/cards/credit-cards/essence-credit-card",
+  "detail": "TimeoutError: The operation was aborted due to timeout"
+ },
+ "yes-first-exclusive": {
+  "id": "yes-first-exclusive",
+  "name": "YES First Exclusive Credit Card (now YES Bank RESERV)",
+  "issuer": "YES",
+  "status": "error",
+  "sourcePage": "https://www.yesbank.in/personal-banking/yes-first/cards/credit-card/yes-first-exclusive-credit-card",
+  "detail": "TimeoutError: The operation was aborted due to timeout"
+ },
+ "yes-marquee": {
+  "id": "yes-marquee",
+  "name": "YES Bank Marquee Credit Card",
+  "issuer": "YES",
+  "status": "error",
+  "sourcePage": "https://www.yesbank.in/personal-banking/yes-individual/cards/credit-cards/marquee-credit-card",
+  "detail": "TimeoutError: The operation was aborted due to timeout"
+ },
+ "yes-private": {
+  "id": "yes-private",
+  "name": "YES Private Credit Card",
+  "issuer": "YES",
+  "status": "error",
+  "sourcePage": "https://www.yesbank.in/personal-banking/yes-private-credit-card",
+  "detail": "TimeoutError: The operation was aborted due to timeout"
+ },
+ "yes-private-prime": {
+  "id": "yes-private-prime",
+  "name": "YES Private Prime Credit Card",
+  "issuer": "YES",
+  "status": "error",
+  "sourcePage": "https://www.yesbank.in/personal-banking/yes-private/yes-private-prime",
+  "detail": "TimeoutError: The operation was aborted due to timeout"
+ },
+ "yes-select": {
+  "id": "yes-select",
+  "name": "YES Bank Select Credit Card",
+  "issuer": "YES",
+  "status": "error",
+  "sourcePage": "https://www.yesbank.in/personal-banking/yes-individual/cards/credit-cards/select-credit-card",
+  "detail": "TimeoutError: The operation was aborted due to timeout"
+ },
+ "yes-wellness-plus": {
+  "id": "yes-wellness-plus",
+  "name": "YES Bank Wellness Plus Credit Card",
+  "issuer": "YES",
+  "status": "error",
+  "sourcePage": "https://www.yesbank.in/personal-banking/yes-individual/cards/credit-cards/wellness-plus-cards",
+  "detail": "TimeoutError: The operation was aborted due to timeout"
+ },
+ "zagg": {
+  "id": "zagg",
+  "name": "YES Bank Zagg Credit Card",
+  "issuer": "YES",
+  "status": "error",
+  "sourcePage": "https://www.yes.bank.in/personal-banking/yes-individual/cards/credit-cards/zagg-credit-card",
+  "detail": "TimeoutError: The operation was aborted due to timeout"
+ }
+}
