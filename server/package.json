@@ -5,10 +5,10 @@
   "type": "module",
   "description": "Aura backend: Groq LLM agent with WalletWise engine tools and card knowledge search (RAG).",
   "scripts": {
-    "start": "node --env-file-if-exists=../.env --env-file-if-exists=.env --import ../scripts/register-ts.mjs src/index.ts",
-    "ingest": "node --env-file-if-exists=../.env --env-file-if-exists=.env --import ../scripts/register-ts.mjs src/rag/ingest.ts",
+    "start": "node --env-file-if-exists=../.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ../scripts/register-ts.mjs src/index.ts",
+    "ingest": "node --env-file-if-exists=../.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ../scripts/register-ts.mjs src/rag/ingest.ts",
     "chroma": "node scripts/run-chroma.mjs",
-    "test": "node --import ../scripts/register-ts.mjs --test \"src/**/*.test.ts\""
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ../scripts/register-ts.mjs --test \"src/**/*.test.ts\""
   },
   "engines": {
     "node": ">=22.6"

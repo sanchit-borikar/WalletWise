@@ -9,7 +9,9 @@
  */
 import { catalog } from '../../../src/data/catalog';
 import { collectChunks } from './documents.ts';
+import { config } from '../config.ts';
 import { embed } from './embeddings.ts';
+import { writeLocalIndex } from './localIndex.ts';
 import { resetCollection, upsertChunks } from './store.ts';
 
 const EMBED_BATCH = 32;
@@ -27,16 +29,24 @@ async function main() {
   }
   process.stdout.write('\n');
 
-  await resetCollection();
-  await upsertChunks(
-    chunks.map((c, i) => ({
-      id: c.id,
-      text: c.text,
-      embedding: vectors[i],
-      metadata: { cardId: c.meta.cardId, cardName: c.meta.cardName, bank: c.meta.bank, section: c.section, last_updated: c.meta.last_updated, source: c.meta.source },
-    })),
-  );
-  console.log(`Stored ${chunks.length} chunks in Chroma in ${Math.round((Date.now() - started) / 1000)} s.`);
+  const records = chunks.map((c, i) => ({
+    id: c.id,
+    text: c.text,
+    embedding: vectors[i],
+    metadata: { cardId: c.meta.cardId, cardName: c.meta.cardName, bank: c.meta.bank, section: c.section, last_updated: c.meta.last_updated, source: c.meta.source },
+  }));
+
+  // The backup file always gets written, so search works even without Chroma.
+  writeLocalIndex(records, config.embeddingsModel);
+  console.log('Wrote the backup index to server/.cache/knowledge-index.json.');
+
+  try {
+    await resetCollection();
+    await upsertChunks(records);
+    console.log(`Stored ${chunks.length} chunks in Chroma in ${Math.round((Date.now() - started) / 1000)} s.`);
+  } catch (error) {
+    console.warn(`Chroma is not reachable (${error instanceof Error ? error.message.split('.')[0] : error}). Aura will use the backup index file. Start Chroma with: npm run aura:chroma, then run ingest again.`);
+  }
 }
 
 main().catch((error) => {

@@ -9,6 +9,7 @@ import { ChromaClient } from 'chromadb';
 import type { Collection } from 'chromadb';
 
 import { config } from '../config.ts';
+import { queryLocalIndex } from './localIndex.ts';
 
 export type ChunkMetadata = {
   cardId: string;
@@ -66,8 +67,29 @@ export async function upsertChunks(chunks: StoredChunk[], batchSize = 100): Prom
   }
 }
 
-/** Nearest chunks by cosine similarity (score = 1 - cosine distance). */
+let warnedFallback = false;
+
+/**
+ * Nearest chunks by cosine similarity. Uses Chroma; if Chroma is not reachable, uses the
+ * backup index file written by ingest, so answers keep working.
+ */
 export async function queryChunks(embedding: number[], topK: number, cardIds?: string[]): Promise<ScoredChunk[]> {
+  try {
+    return await queryChroma(embedding, topK, cardIds);
+  } catch (error) {
+    const local = queryLocalIndex(embedding, topK, cardIds);
+    if (!local) throw error;
+    if (!warnedFallback) {
+      console.warn('[aura] Chroma is not reachable; using the backup index file. Start Chroma with: npm run aura:chroma');
+      warnedFallback = true;
+    }
+    collection = null; // try Chroma again next time
+    return local;
+  }
+}
+
+/** Nearest chunks from Chroma (score = 1 - cosine distance). */
+async function queryChroma(embedding: number[], topK: number, cardIds?: string[]): Promise<ScoredChunk[]> {
   const col = await getCollection();
   const result = await col.query({
     queryEmbeddings: [embedding],
