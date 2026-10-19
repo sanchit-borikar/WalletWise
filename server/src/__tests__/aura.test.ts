@@ -4,7 +4,7 @@ import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { after, describe, it } from 'node:test';
 
-import { runAgent } from '../agent/agent.ts';
+import { buildSystemPrompt, runAgent } from '../agent/agent.ts';
 import type { AgentEvent } from '../agent/agent.ts';
 import { resolveCard, runTool, TOOL_DEFINITIONS } from '../agent/tools.ts';
 import type { ToolContext } from '../agent/tools.ts';
@@ -263,5 +263,44 @@ describe('RAG', () => {
     assert.deepEqual(new Set(out.chunks.map((c: { cardId: string }) => c.cardId)), new Set(['axis-atlas', 'axis-magnus']));
     setQueryForTests(null);
     setEmbedderForTests(null);
+  });
+});
+
+describe('reply language and simple answers', () => {
+  it('adds the Hindi rule only when Hindi is chosen', () => {
+    const hi = buildSystemPrompt('2026-10-20', { language: 'hi' });
+    assert.match(hi, /Reply language/);
+    assert.match(hi, /Devanagari/);
+    assert.match(hi, /Indian grouping/);
+    assert.match(hi, /card names, bank names/);
+    assert.doesNotMatch(buildSystemPrompt('2026-10-20'), /Reply language/);
+  });
+
+  it('adds the simple-answer rule', () => {
+    const p = buildSystemPrompt('2026-10-20', { simple: true });
+    assert.match(p, /Simple answers/);
+    assert.match(p, /no transfer partners/);
+  });
+
+  it('tells the model to search in English', () => {
+    assert.match(buildSystemPrompt('2026-10-20'), /query in English, whatever language/);
+    const search = TOOL_DEFINITIONS.find((t) => t.name === 'search_card_knowledge');
+    assert.match(JSON.stringify(search?.parameters), /Always English/);
+  });
+
+  it('sends the language rule to the model', async () => {
+    const llm = new ScriptedLLM([[{ type: 'text', delta: 'ठीक है' }, { type: 'done' }]]);
+    await collect(runAgent(llm, [{ role: 'user', content: 'नमस्ते' }], WALLET, { language: 'hi', simple: true }));
+    assert.match(llm.calls[0].messages[0].content as string, /Reply language[\s\S]*Simple answers/);
+  });
+
+  it('validates language and simple in the request', () => {
+    const base = { userId: 'u1', messages: [{ role: 'user', content: 'hi' }] };
+    const def = parseChatRequest(base);
+    assert.ok(typeof def !== 'string' && def.language === 'en' && def.simple === false);
+    const hi = parseChatRequest({ ...base, language: 'hi', simple: true });
+    assert.ok(typeof hi !== 'string' && hi.language === 'hi' && hi.simple === true);
+    assert.equal(typeof parseChatRequest({ ...base, language: 'fr' }), 'string');
+    assert.equal(typeof parseChatRequest({ ...base, simple: 'yes' }), 'string');
   });
 });

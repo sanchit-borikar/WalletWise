@@ -1,34 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-// unused imports removed
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ReducedMotionConfig, ReduceMotion } from 'react-native-reanimated';
 
 import { WalletWiseIntro } from '../components/WalletWiseIntro';
+import { useCardStore } from '../store/useCardStore';
 
 // Keep the native splash screen visible until our React hierarchy mounts
 SplashScreen.preventAutoHideAsync();
 
+/** True once the saved store (intro flag, lite mode) has loaded from AsyncStorage. */
+function useStoreHydrated() {
+  const [hydrated, setHydrated] = useState(() => useCardStore.persist.hasHydrated());
+  useEffect(() => {
+    if (hydrated) return;
+    return useCardStore.persist.onFinishHydration(() => setHydrated(true));
+  }, [hydrated]);
+  return hydrated;
+}
+
 export default function RootLayout() {
-  const [isIntroFinished, setIsIntroFinished] = useState(false);
+  const hydrated = useStoreHydrated();
+  const introSeen = useCardStore((s) => s.introSeen === true);
+  const liteMode = useCardStore((s) => s.liteMode === true);
+  const setIntroSeen = useCardStore((s) => s.setIntroSeen);
+
+  // The intro plays once, on first launch, and never in lite mode.
+  const showIntro = hydrated && !introSeen && !liteMode;
 
   useEffect(() => {
-    // We will hide the splash screen inside WalletWiseIntro once the video is ready
-  }, []);
+    if (hydrated && !showIntro) SplashScreen.hideAsync();
+  }, [hydrated, showIntro]);
 
-  const handleIntroFinish = () => {
-    setIsIntroFinished(true);
-  };
+  // Splash stays up until the saved settings are known.
+  if (!hydrated) return null;
 
-  // If intro hasn't been finished/seen, return ONLY the intro component
-  // This explicitly blocks the Stack (and Home screen) from rendering/mounting
-  if (!isIntroFinished) {
-    return <WalletWiseIntro onFinish={handleIntroFinish} />;
+  if (showIntro) {
+    return <WalletWiseIntro onFinish={setIntroSeen} />;
   }
 
-  // Once finished, mount the actual application routing
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      {/* Lite mode turns Reanimated animations into instant changes. */}
+      <ReducedMotionConfig mode={liteMode ? ReduceMotion.Always : ReduceMotion.System} />
       <Stack screenOptions={{ headerShown: false, gestureEnabled: true }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="card-detail" options={{ headerShown: false, gestureEnabled: true, gestureDirection: 'horizontal' }} />

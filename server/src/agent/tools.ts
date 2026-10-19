@@ -258,7 +258,7 @@ export const TOOLS: Tool[] = [
     parameters: {
       type: 'object',
       properties: {
-        query: { type: 'string', description: 'The question in plain words, including the card names' },
+        query: { type: 'string', description: 'The question in plain English words, including the card names. Always English, even if the user writes in Hindi or another language.' },
         cardIds: {
           type: 'array',
           items: { type: 'string' },

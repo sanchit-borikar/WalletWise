@@ -8,6 +8,26 @@ import type { Cta, WalletContext } from './tools.ts';
 
 const SYSTEM_PROMPT = readFileSync(new URL('./aura.system.md', import.meta.url), 'utf8');
 
+export type AuraLanguage = 'en' | 'hi';
+
+const HINDI_RULE = `
+
+## Reply language
+- The user chose Hindi. Reply in simple, everyday Hindi in Devanagari script, even if they write in English or Hinglish.
+- Keep every ₹ amount as digits with Indian grouping (₹1,50,000). Keep card names, bank names, reward programme names and app screen names in English (for example HDFC Infinia, Axis Bank, Best Card).
+- Tool calls stay in English: always write the \`search_card_knowledge\` query in English.`;
+
+const SIMPLE_RULE = `
+
+## Simple answers
+- The user turned on simple answers. Reply in at most 3 short sentences: the one most important number from a tool and one clear action.
+- No bullet lists, no transfer partners or transfer ratios, no jargon. If a term is needed, explain it in a few plain words.`;
+
+/** The system prompt for one answer, with the user's language and simple-answer rules added. */
+export function buildSystemPrompt(today: string, options: { language?: AuraLanguage; simple?: boolean } = {}): string {
+  return SYSTEM_PROMPT.replace('{{TODAY}}', today) + (options.language === 'hi' ? HINDI_RULE : '') + (options.simple ? SIMPLE_RULE : '');
+}
+
 export type ConversationMessage = { role: 'user' | 'assistant'; content: string };
 
 /** What the agent streams to the route handler (and on to the app). */
@@ -39,10 +59,10 @@ export async function* runAgent(
   llm: LLMClient,
   conversation: ConversationMessage[],
   wallet: WalletContext,
-  options: { signal?: AbortSignal; today?: string } = {},
+  options: { signal?: AbortSignal; today?: string; language?: AuraLanguage; simple?: boolean } = {},
 ): AsyncGenerator<AgentEvent> {
   const today = options.today ?? new Date().toISOString().slice(0, 10);
-  const messages: ChatMessage[] = [{ role: 'system', content: SYSTEM_PROMPT.replace('{{TODAY}}', today) }, ...conversation];
+  const messages: ChatMessage[] = [{ role: 'system', content: buildSystemPrompt(today, options) }, ...conversation];
 
   let cta: Cta | null = null;
   const ctx = { wallet, setCta: (c: Cta) => (cta = c) };

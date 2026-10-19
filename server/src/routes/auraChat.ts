@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import { BUSY_MESSAGE, runAgent } from '../agent/agent.ts';
-import type { AgentEvent, ConversationMessage } from '../agent/agent.ts';
+import type { AgentEvent, AuraLanguage, ConversationMessage } from '../agent/agent.ts';
 import type { WalletContext } from '../agent/tools.ts';
 import { config } from '../config.ts';
 import { getLLMClient } from '../llm/index.ts';
@@ -9,7 +9,7 @@ import type { LLMClient } from '../llm/index.ts';
 
 /**
  * POST /aura/chat
- * Body:     { messages: [{ role: 'user' | 'assistant', content }], userId, wallet? }
+ * Body:     { messages: [{ role: 'user' | 'assistant', content }], userId, wallet?, language?: 'en' | 'hi', simple?: boolean }
  * Response: newline-delimited JSON (application/x-ndjson), one event per line:
  *           {"type":"status","message":"Comparing your cards…"}
  *           {"type":"text","delta":"Use your "}                    (repeated)
@@ -46,7 +46,7 @@ async function readJson(req: IncomingMessage): Promise<unknown> {
   return JSON.parse(Buffer.concat(parts).toString('utf8'));
 }
 
-type ParsedRequest = { userId: string; conversation: ConversationMessage[]; wallet: WalletContext };
+type ParsedRequest = { userId: string; conversation: ConversationMessage[]; wallet: WalletContext; language: AuraLanguage; simple: boolean };
 
 /** Validates the body and keeps only what the agent needs. */
 export function parseChatRequest(body: unknown): ParsedRequest | string {
@@ -62,6 +62,10 @@ export function parseChatRequest(body: unknown): ParsedRequest | string {
     .slice(-config.maxTurns * 2);
   if (conversation.length === 0 || conversation[conversation.length - 1].role !== 'user') return 'The last message must be from the user';
 
+  // Optional reply settings; English and full answers when missing.
+  if (b.language !== undefined && b.language !== 'en' && b.language !== 'hi') return 'language must be "en" or "hi"';
+  if (b.simple !== undefined && typeof b.simple !== 'boolean') return 'simple must be true or false';
+
   const w = (b.wallet ?? {}) as Record<string, unknown>;
   const cards = Array.isArray(w.cards)
     ? w.cards
@@ -71,7 +75,7 @@ export function parseChatRequest(body: unknown): ParsedRequest | string {
     : [];
   const profile = (w.profile && typeof w.profile === 'object' ? w.profile : undefined) as WalletContext['profile'];
 
-  return { userId: b.userId, conversation, wallet: { cards, profile } };
+  return { userId: b.userId, conversation, wallet: { cards, profile }, language: b.language === 'hi' ? 'hi' : 'en', simple: b.simple === true };
 }
 
 export async function handleAuraChat(
@@ -112,7 +116,7 @@ export async function handleAuraChat(
 
   try {
     const llm = options.llm ?? getLLMClient();
-    for await (const event of runAgent(llm, parsed.conversation, parsed.wallet, { signal: controller.signal })) {
+    for await (const event of runAgent(llm, parsed.conversation, parsed.wallet, { signal: controller.signal, language: parsed.language, simple: parsed.simple })) {
       if (res.writableEnded) break;
       send(event);
     }
