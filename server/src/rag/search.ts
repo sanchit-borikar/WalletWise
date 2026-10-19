@@ -46,7 +46,7 @@ export async function searchCardKnowledge(query: string, requestedCardIds?: stri
 
   let hits: ScoredChunk[];
   try {
-    const [vector] = await embed([query]);
+    const [vector] = await embed([query], 'query');
     if (cardIds && cardIds.length > 1) {
       // Comparison: take the best chunks from each card so every card is covered.
       const perCard = Math.max(2, Math.ceil(PER_COMPARISON / cardIds.length));

@@ -13,6 +13,7 @@ import { existsSync, readdirSync, readFileSync, statSync, watch } from 'node:fs'
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseEnv } from 'node:util';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const serverDir = join(root, 'server');
@@ -162,8 +163,11 @@ async function main() {
     else log('chroma', 'not installed; Aura will use the backup index file (see server/README.md to install)');
   }
 
-  // Build the knowledge index once if it does not exist yet.
-  if (!existsSync(join(serverDir, '.cache', 'knowledge-index.json'))) {
+  // Build the knowledge index once if it does not exist yet (each embeddings provider has its own file).
+  const envFile = join(root, '.env');
+  const fileEnv = existsSync(envFile) ? parseEnv(readFileSync(envFile, 'utf8')) : {};
+  const gemini = (process.env.EMBEDDINGS_PROVIDER ?? fileEnv.EMBEDDINGS_PROVIDER ?? 'local').toLowerCase() === 'gemini';
+  if (!existsSync(gemini ? join(serverDir, 'index', 'knowledge-index.gemini.json') : join(serverDir, '.cache', 'knowledge-index.json'))) {
     log('setup', 'Building the card knowledge index (first run only, about 3-4 minutes)…');
     const r = spawnSync(process.execPath, ['--env-file-if-exists=../.env', '--disable-warning=MODULE_TYPELESS_PACKAGE_JSON', '--import', '../scripts/register-ts.mjs', 'src/rag/ingest.ts'], {
       cwd: serverDir,

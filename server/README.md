@@ -52,6 +52,11 @@ Run pieces separately if needed: `npm run aura:chroma`, `npm run aura:server`,
 `npm run aura:ingest` (rebuild the index after `npm run build:data` or editing `knowledge/`),
 `npm run start:expo` (the app only).
 
+## Deploy (Vercel) and Android APK
+
+See [DEPLOY.md](DEPLOY.md): the server runs as one Vercel function (free Hobby plan) with
+Gemini embeddings and a bundled index file instead of the local model and Chroma.
+
 ## Tests
 
 ```bash
@@ -70,6 +75,9 @@ npm test     # agent loop (with a scripted fake model), tools, request validatio
 | `src/agent/tools.ts` | Tool schemas and wrappers around the engine |
 | `src/rag/*` | Embeddings, Chroma store, chunking, card-name check, documents, ingest, search |
 | `src/routes/auraChat.ts` | `POST /aura/chat`, streams newline-delimited JSON |
+| `src/http.ts` | Routes `/health` and `/aura/chat` (shared by `src/index.ts` and `src/vercel.ts`) |
+| `src/vercel.ts`, `scripts/build-vercel.mjs` | Vercel function entry and its esbuild bundle (see DEPLOY.md) |
+| `index/knowledge-index.gemini.json` | Gemini knowledge index used on Vercel (built by ingest) |
 | `knowledge/cards/*.md` | Hand-written seed docs (5 cards) |
 | `knowledge/general/*.md` | Credit-card basics |
 

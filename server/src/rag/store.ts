@@ -1,12 +1,15 @@
 /**
- * Vector store: Chroma, run locally with `npm run chroma` (from the server folder).
- * Chosen because the project has no Postgres (so pgvector is not an option), Chroma's
- * JS client ships a local server command, and it supports metadata filters by cardId.
+ * Vector store, picked with VECTOR_STORE:
+ *  - "chroma" (default): Chroma, run locally with `npm run chroma` (from the server folder).
+ *    Chosen because the project has no Postgres (so pgvector is not an option), Chroma's
+ *    JS client ships a local server command, and it supports metadata filters by cardId.
+ *    If Chroma is down, the index file is used instead.
+ *  - "file": only the index file (./localIndex.ts). Used on Vercel; chromadb is then never
+ *    loaded, so it is left out of the deployed bundle.
  * Vectors are computed by ./embeddings.ts and passed in, so Chroma's own embedding
  * function is not used.
  */
-import { ChromaClient } from 'chromadb';
-import type { Collection } from 'chromadb';
+import type { ChromaClient, Collection } from 'chromadb';
 
 import { config } from '../config.ts';
 import { queryLocalIndex } from './localIndex.ts';
@@ -25,15 +28,21 @@ export type ScoredChunk = { id: string; text: string; metadata: ChunkMetadata; s
 
 let collection: Promise<Collection> | null = null;
 
+async function chromaClient(): Promise<ChromaClient> {
+  const { ChromaClient } = await import('chromadb');
+  return new ChromaClient({ host: config.chromaHost, port: config.chromaPort });
+}
+
 function getCollection(): Promise<Collection> {
   if (!collection) {
-    const client = new ChromaClient({ host: config.chromaHost, port: config.chromaPort });
-    collection = client
-      .getOrCreateCollection({
-        name: config.chromaCollection,
-        configuration: { hnsw: { space: 'cosine' } },
-        embeddingFunction: null,
-      })
+    collection = chromaClient()
+      .then((client) =>
+        client.getOrCreateCollection({
+          name: config.chromaCollection,
+          configuration: { hnsw: { space: 'cosine' } },
+          embeddingFunction: null,
+        }),
+      )
       .catch((e) => {
         collection = null; // retry on the next call
         throw e;
@@ -44,7 +53,7 @@ function getCollection(): Promise<Collection> {
 
 /** Deletes and recreates the collection (used by ingest so removed docs do not linger). */
 export async function resetCollection(): Promise<void> {
-  const client = new ChromaClient({ host: config.chromaHost, port: config.chromaPort });
+  const client = await chromaClient();
   try {
     await client.deleteCollection({ name: config.chromaCollection });
   } catch {
@@ -70,10 +79,15 @@ export async function upsertChunks(chunks: StoredChunk[], batchSize = 100): Prom
 let warnedFallback = false;
 
 /**
- * Nearest chunks by cosine similarity. Uses Chroma; if Chroma is not reachable, uses the
- * backup index file written by ingest, so answers keep working.
+ * Nearest chunks by cosine similarity. With VECTOR_STORE=file, only the index file. Otherwise
+ * Chroma, and if Chroma is not reachable, the backup index file, so answers keep working.
  */
 export async function queryChunks(embedding: number[], topK: number, cardIds?: string[]): Promise<ScoredChunk[]> {
+  if (config.vectorStore === 'file') {
+    const hits = queryLocalIndex(embedding, topK, cardIds);
+    if (!hits) throw new Error(`Knowledge index file not found: ${config.knowledgeIndexFile}. Run npm run aura:ingest.`);
+    return hits;
+  }
   try {
     return await queryChroma(embedding, topK, cardIds);
   } catch (error) {

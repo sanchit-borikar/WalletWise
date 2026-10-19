@@ -8,7 +8,8 @@
     "start": "node --env-file-if-exists=../.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ../scripts/register-ts.mjs src/index.ts",
     "ingest": "node --env-file-if-exists=../.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ../scripts/register-ts.mjs src/rag/ingest.ts",
     "chroma": "node scripts/run-chroma.mjs",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ../scripts/register-ts.mjs --test \"src/**/*.test.ts\""
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ../scripts/register-ts.mjs --test \"src/**/*.test.ts\"",
+    "build:vercel": "node scripts/build-vercel.mjs"
   },
   "engines": {
     "node": ">=22.6"
@@ -17,5 +18,8 @@
     "@huggingface/transformers": "^4.3.1",
     "chromadb": "^3.5.0",
     "groq-sdk": "^1.6.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }

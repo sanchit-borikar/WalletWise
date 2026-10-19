@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Keyboard, Linking, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Linking, Platform, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MapView, { Circle, Marker, UrlTile } from 'react-native-maps';
 import type { Region } from 'react-native-maps';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { FlatList, Gesture, GestureDetector, ScrollView } from 'react-native-gesture-handler';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { useRouter } from 'expo-router';
 
 import { CardArt } from '../../components/CardArt';
@@ -20,6 +21,14 @@ import { theme } from '../../theme';
 import { haversineDistance } from '../../utils/geospatial';
 import type { MerchantCategory } from '../../utils/merchantClassifier';
 import type { RecommendationResult } from '../../utils/recommendationEngine';
+
+/**
+ * Android draws the map with Google Maps, which needs an API key in the build (see
+ * app.config.ts). Expo Go has its own key. Without one the map would crash the app, so
+ * places are shown as a list only.
+ */
+const MAP_AVAILABLE =
+  Platform.OS !== 'android' || Constants.executionEnvironment === ExecutionEnvironment.StoreClient || Constants.expoConfig?.extra?.androidGoogleMapsKeySet === true;
 
 // Whole of India, used until the phone's location is known.
 const INDIA_REGION: Region = { latitude: 20.59, longitude: 78.96, latitudeDelta: 22, longitudeDelta: 22 };
@@ -269,6 +278,8 @@ export default function MapScreen() {
     status = { title: 'Finding your location…', body: 'You can also search for an area or a shop above.' };
   } else if (placesState === 'error') {
     status = { title: 'Could not load places', body: placesError ?? '', action: { label: 'Retry', onPress: refreshPlaces } };
+  } else if (!MAP_AVAILABLE) {
+    status = { title: 'Map view not available', body: 'This build has no Google Maps key, so nearby places are shown as a list.' };
   }
 
   const listHeader = (
@@ -312,53 +323,55 @@ export default function MapScreen() {
   return (
     <View style={styles.container}>
       {/* MAP */}
-      <MapView
-        ref={mapRef}
-        style={StyleSheet.absoluteFill}
-        mapType={hasMapboxKey ? 'none' : 'standard'}
-        userInterfaceStyle="dark"
-        initialRegion={INDIA_REGION}
-        showsCompass={false}
-        toolbarEnabled={false}
-        onRegionChangeComplete={onRegionChangeComplete}
-        onPress={() => Keyboard.dismiss()}
-      >
-        {hasMapboxKey && <UrlTile urlTemplate={MAPBOX_TILE_URL} maximumZ={19} flipY={false} tileSize={256} />}
-        {activeLocation && (
-          <Circle
-            center={{ latitude: activeLocation.lat, longitude: activeLocation.lon }}
-            radius={radiusKm * 1000}
-            strokeColor={theme.colors.goldBorder}
-            fillColor={theme.colors.goldSoft}
-          />
-        )}
-        {userLocation && (
-          <Marker coordinate={{ latitude: userLocation.lat, longitude: userLocation.lon }} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false} zIndex={999}>
-            <View style={styles.userDot} accessibilityLabel="Your location" />
-          </Marker>
-        )}
-        {places.map((p) => (
-          <Marker
-            key={p.id}
-            coordinate={{ latitude: p.center[1], longitude: p.center[0] }}
-            onPress={() => openPlacePanel(p)}
-            tracksViewChanges={false}
-            zIndex={p.id === selectedPlaceId ? 100 : 1}
-            accessibilityLabel={p.name}
-          >
-            <View style={[styles.marker, p.id === selectedPlaceId && styles.markerSelected]}>
-              <Text style={styles.markerText}>{CATEGORY_ICON[p.category] ?? '📍'}</Text>
-            </View>
-          </Marker>
-        ))}
-        {openPlace && !places.some((p) => p.id === openPlace.id) && (
-          <Marker coordinate={{ latitude: openPlace.center[1], longitude: openPlace.center[0] }} tracksViewChanges={false} zIndex={200}>
-            <View style={[styles.marker, styles.markerSelected]}>
-              <Text style={styles.markerText}>{CATEGORY_ICON[openPlace.category] ?? '📍'}</Text>
-            </View>
-          </Marker>
-        )}
-      </MapView>
+      {MAP_AVAILABLE && (
+        <MapView
+          ref={mapRef}
+          style={StyleSheet.absoluteFill}
+          mapType={hasMapboxKey ? 'none' : 'standard'}
+          userInterfaceStyle="dark"
+          initialRegion={INDIA_REGION}
+          showsCompass={false}
+          toolbarEnabled={false}
+          onRegionChangeComplete={onRegionChangeComplete}
+          onPress={() => Keyboard.dismiss()}
+        >
+          {hasMapboxKey && <UrlTile urlTemplate={MAPBOX_TILE_URL} maximumZ={19} flipY={false} tileSize={256} />}
+          {activeLocation && (
+            <Circle
+              center={{ latitude: activeLocation.lat, longitude: activeLocation.lon }}
+              radius={radiusKm * 1000}
+              strokeColor={theme.colors.goldBorder}
+              fillColor={theme.colors.goldSoft}
+            />
+          )}
+          {userLocation && (
+            <Marker coordinate={{ latitude: userLocation.lat, longitude: userLocation.lon }} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false} zIndex={999}>
+              <View style={styles.userDot} accessibilityLabel="Your location" />
+            </Marker>
+          )}
+          {places.map((p) => (
+            <Marker
+              key={p.id}
+              coordinate={{ latitude: p.center[1], longitude: p.center[0] }}
+              onPress={() => openPlacePanel(p)}
+              tracksViewChanges={false}
+              zIndex={p.id === selectedPlaceId ? 100 : 1}
+              accessibilityLabel={p.name}
+            >
+              <View style={[styles.marker, p.id === selectedPlaceId && styles.markerSelected]}>
+                <Text style={styles.markerText}>{CATEGORY_ICON[p.category] ?? '📍'}</Text>
+              </View>
+            </Marker>
+          ))}
+          {openPlace && !places.some((p) => p.id === openPlace.id) && (
+            <Marker coordinate={{ latitude: openPlace.center[1], longitude: openPlace.center[0] }} tracksViewChanges={false} zIndex={200}>
+              <View style={[styles.marker, styles.markerSelected]}>
+                <Text style={styles.markerText}>{CATEGORY_ICON[openPlace.category] ?? '📍'}</Text>
+              </View>
+            </Marker>
+          )}
+        </MapView>
+      )}
 
       {/* SEARCH */}
       <View style={[styles.searchWrap, { top: insets.top + theme.spacing.sm }]}>

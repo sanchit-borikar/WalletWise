@@ -1,0 +1,11 @@
+# Vercel only needs the Aura server and the app code it imports (src/engine, src/data).
+/*
+!/server
+!/src
+!/vercel.json
+/server/node_modules
+/server/.cache
+/server/.chroma
+/server/.venv
+/src/app
+/src/components
