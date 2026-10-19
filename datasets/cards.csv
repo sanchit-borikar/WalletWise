@@ -1,0 +1,282 @@
+# CardAdvisor — India Credit Card Facts Dataset, live snapshot as of 2026-10-16. For a citable, immutable version see https://cardadvisor.in/data/versions. License: CC BY 4.0.
+cardKey,name,issuer,network,tier,annualFeeRs,joiningFeeRs,lifetimeFree,feeWaiverSpendRs,forexMarkupPct,aprMonthlyPct,minSalaryRs,minAgeYears,maxAgeYears,rewardRateMinPct,rewardRateMaxPct,lastVerified,url
+amex-centurion,American Express Centurion Card,AMEX,AMEX,SUPER_PREMIUM,275000,700000,false,,,,,,,1.2,1.2,2026-09-25,https://cardadvisor.in/cards/amex-centurion
+amex-gold,American Express Gold Card,AMEX,AMEX,PREMIUM,4500,1000,false,,3.5,,50000,18,,1,1,2026-10-11,https://cardadvisor.in/cards/amex-gold
+amex-mrcc,American Express Membership Rewards Credit Card,AMEX,AMEX,MID,4500,1000,false,150000,3.5,3.5,37500,18,,1,1,2026-10-11,https://cardadvisor.in/cards/amex-mrcc
+amex-platinum-charge,American Express Platinum Card,AMEX,AMEX,SUPER_PREMIUM,66000,66000,false,,3.5,,208333,18,,1.5,4.5,2026-10-11,https://cardadvisor.in/cards/amex-platinum-charge
+amex-platinum-reserve,American Express Platinum Reserve Credit Card,AMEX,AMEX,PREMIUM,10000,10000,false,1000000,3.5,3.5,50000,18,,1,1,2026-10-11,https://cardadvisor.in/cards/amex-platinum-reserve
+amex-platinum-travel,American Express Platinum Travel Credit Card,AMEX,AMEX,PREMIUM,5000,5000,false,,3.5,3.5,50000,18,,1,1,2026-10-11,https://cardadvisor.in/cards/amex-platinum-travel
+amex-smartearn,American Express SmartEarn Credit Card,AMEX,AMEX,ENTRY,495,495,false,40000,3.5,3.5,37500,18,,1,10,2026-10-11,https://cardadvisor.in/cards/amex-smartearn
+au-altura,AU Altura Credit Card,AU,RUPAY,ENTRY,199,199,false,40000,3.49,3.75,,21,65,1,2,2026-10-11,https://cardadvisor.in/cards/au-altura
+au-altura-plus,AU Altura Plus Credit Card,AU,RUPAY,ENTRY,499,499,false,80000,3.49,3.75,,21,65,1.5,1.5,2026-10-11,https://cardadvisor.in/cards/au-altura-plus
+au-ananta,AU Ananta Credit Card,AU,VISA,MID,2000,2000,false,300000,3.49,3.75,,21,65,0.5,1.25,2026-10-11,https://cardadvisor.in/cards/au-ananta
+au-ca,AU CA Credit Card,AU,VISA,MID,0,0,true,,1.99,2.99,,21,75,0.5,2,2026-10-05,https://cardadvisor.in/cards/au-ca
+au-cs,AU CS Credit Card,AU,VISA,MID,0,0,true,,1.99,2.99,,21,65,0.5,2,2026-10-05,https://cardadvisor.in/cards/au-cs
+au-instapay,AU InstaPay Credit Card,AU,RUPAY,ENTRY,0,0,true,,3.49,3.75,,,,1,1,2026-10-11,https://cardadvisor.in/cards/au-instapay
+au-ixigo,ixigo AU Credit Card,AU,RUPAY,MID,0,0,true,,0,3.75,,21,65,0.63,0.63,2026-10-11,https://cardadvisor.in/cards/au-ixigo
+au-kosmo,AU Kosmo Credit Card,AU,RUPAY,ENTRY,0,0,true,,3.49,3.75,,21,65,1.5,1.5,2026-10-11,https://cardadvisor.in/cards/au-kosmo
+au-laksya,AU Laksya Credit Card,AU,VISA,MID,1000,1000,false,200000,3.49,3.75,,21,65,0.5,1.25,2026-10-11,https://cardadvisor.in/cards/au-laksya
+au-lit,AU LIT Credit Card,AU,VISA,MID,0,0,true,,3.49,3.75,,21,65,0.25,5,2026-10-11,https://cardadvisor.in/cards/au-lit
+au-nomo,AU NOMO Credit Card,AU,VISA,ENTRY,0,199,false,,0.99,3.75,0,18,99,0.5,0.5,2026-10-11,https://cardadvisor.in/cards/au-nomo
+au-paytm,Paytm AU Credit Card,AU,RUPAY,ENTRY,0,0,true,,3.49,3.75,,21,65,1,5,2026-10-11,https://cardadvisor.in/cards/au-paytm
+au-prathama,AU Prathama Credit Card,AU,RUPAY,ENTRY,100,100,false,75000,3.49,3.75,,21,65,0.25,0.25,2026-10-11,https://cardadvisor.in/cards/au-prathama
+au-spont,AU SPONT Credit Card,AU,RUPAY,ENTRY,299,299,false,,3.49,3.75,,21,65,1,1,2026-10-11,https://cardadvisor.in/cards/au-spont
+au-tejas,AU Tejas Credit Card,AU,VISA,ENTRY,500,500,false,150000,3.49,3.75,,21,65,0.25,10,2026-10-06,https://cardadvisor.in/cards/au-tejas
+au-traverse,AU Traverse Credit Card,AU,VISA,PREMIUM,4999,4999,false,600000,0.99,3.75,,18,75,0.5,1,2026-10-11,https://cardadvisor.in/cards/au-traverse
+au-vetta,AU Bank Vetta Credit Card,AU,VISA,MID,2999,2999,false,150000,3.49,3.75,,21,65,0.5,1,2026-10-11,https://cardadvisor.in/cards/au-vetta
+au-xcite,AU Bank Xcite Credit Card,AU,RUPAY,ENTRY,249,249,false,100000,3.49,3.75,,21,65,0.75,3.75,2026-10-11,https://cardadvisor.in/cards/au-xcite
+au-xcite-ace,AU Xcite Ace Credit Card,AU,RUPAY,MID,749,749,false,200000,3.49,3.75,,21,65,2,2,2026-10-11,https://cardadvisor.in/cards/au-xcite-ace
+au-xcite-ultra,AU Xcite Ultra Credit Card,AU,RUPAY,MID,749,749,false,200000,3.49,3.75,,21,65,1,3,2026-10-11,https://cardadvisor.in/cards/au-xcite-ultra
+au-zenith,AU Zenith Credit Card,AU,VISA,PREMIUM,7999,7999,false,500000,3.49,3.75,,21,65,0.75,1.25,2026-10-11,https://cardadvisor.in/cards/au-zenith
+au-zenith-plus,AU Zenith Plus Credit Card,AU,VISA,PREMIUM,4999,4999,false,800000,0.99,1.99,250000,21,65,1,2,2026-10-11,https://cardadvisor.in/cards/au-zenith-plus
+axis-ace,Axis Bank ACE Credit Card,AXIS,VISA,ENTRY,499,499,false,200000,3.5,3.75,,,,1.5,5,2026-10-11,https://cardadvisor.in/cards/axis-ace
+axis-airtel,Axis Bank Airtel Credit Card,AXIS,VISA,MID,500,500,false,200000,3.5,3.75,,18,70,1,25,2026-10-11,https://cardadvisor.in/cards/axis-airtel
+axis-atlas,Axis Bank Atlas Credit Card,AXIS,MASTERCARD,PREMIUM,5000,5000,false,,3.5,3.75,100000,18,70,4,4,2026-10-15,https://cardadvisor.in/cards/axis-atlas
+axis-burgundy-private,Axis Bank Burgundy Private Credit Card,AXIS,VISA,SUPER_PREMIUM,100000,100000,false,,0,1.5,,,,6,6,2026-10-11,https://cardadvisor.in/cards/axis-burgundy-private
+axis-cashback,Axis Bank Cashback Credit Card,AXIS,VISA,MID,1000,1000,false,400000,3.5,3.75,,18,70,0.75,5,2026-10-11,https://cardadvisor.in/cards/axis-cashback
+axis-fibe,Fibe Axis Bank Credit Card,AXIS,RUPAY,ENTRY,0,0,true,,3.5,3.75,,18,70,1,3,2026-10-11,https://cardadvisor.in/cards/axis-fibe
+axis-flipkart,Axis Bank Flipkart Credit Card,AXIS,VISA,MID,500,500,false,350000,3.5,3.75,,18,70,1,7.5,2026-10-11,https://cardadvisor.in/cards/axis-flipkart
+axis-flipkart-super-elite,Flipkart Axis Bank Super Elite Credit Card,AXIS,VISA,MID,500,500,false,200000,3.5,3.75,,18,70,1,6,2026-10-11,https://cardadvisor.in/cards/axis-flipkart-super-elite
+axis-freecharge,Axis Bank Freecharge Credit Card,AXIS,VISA,ENTRY,250,250,false,,3.5,3.75,,,,0.2,0.2,2026-10-11,https://cardadvisor.in/cards/axis-freecharge
+axis-freecharge-plus,Axis Bank Freecharge Plus Credit Card,AXIS,VISA,ENTRY,350,350,false,50000,3.5,3.75,,,,1,5,2026-10-11,https://cardadvisor.in/cards/axis-freecharge-plus
+axis-google-pay-flex,Google Pay Flex Axis Bank Credit Card,AXIS,RUPAY,ENTRY,0,0,true,,3.5,3.75,,18,70,0.4,0.4,2026-10-11,https://cardadvisor.in/cards/axis-google-pay-flex
+axis-horizon,Axis Bank Horizon Credit Card,AXIS,VISA,MID,3000,3000,false,,3.5,3.75,,18,70,2,2,2026-10-11,https://cardadvisor.in/cards/axis-horizon
+axis-indianoil,IndianOil Axis Bank Credit Card,AXIS,VISA,ENTRY,500,500,false,350000,3.5,3.75,,18,70,0.2,4,2026-10-11,https://cardadvisor.in/cards/axis-indianoil
+axis-indianoil-premium,IndianOil Axis Bank Premium Credit Card,AXIS,VISA,MID,1000,1000,false,30000,3.5,3.75,,18,70,0.67,4,2026-10-11,https://cardadvisor.in/cards/axis-indianoil-premium
+axis-indigo,IndiGo Axis Bank Credit Card,AXIS,VISA,ENTRY,799,799,false,,3.5,3.75,,18,70,0.42,1.26,2026-10-15,https://cardadvisor.in/cards/axis-indigo
+axis-indigo-premium,IndiGo Axis Bank Premium Credit Card,AXIS,VISA,PREMIUM,5000,5000,false,,2.5,3.75,50000,18,70,0.84,2.94,2026-10-15,https://cardadvisor.in/cards/axis-indigo-premium
+axis-lic,LIC Axis Bank Signature Credit Card,AXIS,VISA,ENTRY,0,0,true,,3.5,3.75,,18,70,0.95,1.9,2026-10-11,https://cardadvisor.in/cards/axis-lic
+axis-magnus,Axis Bank Magnus Credit Card,AXIS,MASTERCARD,PREMIUM,12500,12500,false,2500000,2,3,200000,18,70,2.4,2.4,2026-10-11,https://cardadvisor.in/cards/axis-magnus
+axis-miles-more,Miles & More Axis Bank World Credit Card,AXIS,MASTERCARD,PREMIUM,3500,3500,false,,3.5,3.75,,18,70,2,2,2026-10-11,https://cardadvisor.in/cards/axis-miles-more
+axis-miles-more-select,Miles & More Axis Bank World Select Credit Card,AXIS,MASTERCARD,PREMIUM,4500,10000,false,,3.5,3.75,,18,70,3,3,2026-10-11,https://cardadvisor.in/cards/axis-miles-more-select
+axis-myzone,Axis Bank MyZone Credit Card,AXIS,VISA,ENTRY,500,500,false,,3.5,3.75,,18,70,0.4,0.4,2026-10-11,https://cardadvisor.in/cards/axis-myzone
+axis-neo,Axis Bank Neo Credit Card,AXIS,VISA,ENTRY,250,250,false,,3.5,3.75,,18,70,0.1,0.1,2026-10-11,https://cardadvisor.in/cards/axis-neo
+axis-olympus,Axis Bank Olympus Credit Card,AXIS,VISA,SUPER_PREMIUM,20000,20000,false,,1.8,3,,,,4,8,2026-10-11,https://cardadvisor.in/cards/axis-olympus
+axis-primus,Axis Bank Primus Credit Card,AXIS,VISA,SUPER_PREMIUM,300000,500000,false,,0,1,,,,5,5,2026-10-11,https://cardadvisor.in/cards/axis-primus
+axis-privilege,Axis Bank Privilege Credit Card,AXIS,VISA,MID,1500,1500,false,500000,3.5,3.75,,18,70,1,1,2026-10-11,https://cardadvisor.in/cards/axis-privilege
+axis-reserve,Axis Bank Reserve Credit Card,AXIS,MASTERCARD,SUPER_PREMIUM,50000,50000,false,3500000,1.5,3,,,,3,6,2026-10-11,https://cardadvisor.in/cards/axis-reserve
+axis-rewards,Axis Bank Rewards Credit Card,AXIS,VISA,MID,1000,1000,false,200000,3.5,3.75,,18,70,0.32,3.2,2026-10-15,https://cardadvisor.in/cards/axis-rewards
+axis-samsung-infinite,Samsung Axis Bank Infinite Credit Card,AXIS,VISA,PREMIUM,5000,5000,false,700000,3.5,3.75,,18,70,1,10,2026-10-11,https://cardadvisor.in/cards/axis-samsung-infinite
+axis-samsung-signature,Samsung Axis Bank Signature Credit Card,AXIS,VISA,MID,500,500,false,200000,3.5,3.75,,18,70,1,10,2026-10-11,https://cardadvisor.in/cards/axis-samsung-signature
+axis-select,Axis Bank Select Credit Card,AXIS,VISA,PREMIUM,3000,3000,false,800000,3.5,3.75,50000,18,70,1,2,2026-10-11,https://cardadvisor.in/cards/axis-select
+axis-shoppers-stop,Axis Bank Shoppers Stop Credit Card,AXIS,VISA,MID,500,500,false,100000,3.5,3.75,,18,70,0.5,5,2026-10-11,https://cardadvisor.in/cards/axis-shoppers-stop
+axis-spicejet-voyage,SpiceJet Axis Bank Voyage Credit Card,AXIS,VISA,MID,750,750,false,,3.5,3.75,,18,70,0.75,4.5,2026-10-11,https://cardadvisor.in/cards/axis-spicejet-voyage
+axis-spicejet-voyage-black,SpiceJet Axis Bank Voyage Black Credit Card,AXIS,VISA,PREMIUM,2000,2000,false,,3.5,3.75,,18,70,1.5,7,2026-10-11,https://cardadvisor.in/cards/axis-spicejet-voyage-black
+axis-supermoney,Axis Bank SUPERMONEY RuPay Credit Card,AXIS,RUPAY,ENTRY,0,0,true,,3.5,3.75,,,,1,3,2026-09-28,https://cardadvisor.in/cards/axis-supermoney
+bharatpe,Unity Bank BharatPe Credit Card,UNITY,RUPAY,ENTRY,0,0,true,,3.5,2,20833,21,65,2,2,2026-10-11,https://cardadvisor.in/cards/bharatpe
+bob-cashback,BOBCARD Cashback Credit Card,BOB,MASTERCARD,MID,499,499,false,,3.5,3.75,25000,25,55,1,5,2026-10-11,https://cardadvisor.in/cards/bob-cashback
+bob-cma-one,CMA One BOBCARD Credit Card,BOB,MASTERCARD,MID,0,1,false,,2,3.75,25000,21,75,0.25,1.25,2026-10-11,https://cardadvisor.in/cards/bob-cma-one
+bob-easy,BOBCARD Easy Credit Card,BOB,RUPAY,ENTRY,500,500,false,35000,3.5,3.75,30000,25,55,0.2,1,2026-10-11,https://cardadvisor.in/cards/bob-easy
+bob-eterna,Bank of Baroda Eterna Credit Card,BOB,VISA,PREMIUM,2499,2499,false,250000,2,3.75,100000,25,55,0.75,3.75,2026-10-11,https://cardadvisor.in/cards/bob-eterna
+bob-etihad-guest,BOBCARD Etihad Guest Credit Card,BOB,VISA,PREMIUM,2500,2500,false,300000,1,3.75,,21,60,0.5,1.5,2026-10-11,https://cardadvisor.in/cards/bob-etihad-guest
+bob-etihad-guest-premium,BOBCARD Etihad Guest Premium Credit Card,BOB,VISA,SUPER_PREMIUM,5000,5000,false,500000,0,3.75,,21,60,1,3,2026-10-11,https://cardadvisor.in/cards/bob-etihad-guest-premium
+bob-hpcl-energie,HPCL ENERGIE BOBCARD Credit Card,BOB,RUPAY,MID,499,499,false,50000,3.5,3.75,30000,21,60,0.33,4,2026-10-11,https://cardadvisor.in/cards/bob-hpcl-energie
+bob-icai-exclusive,ICAI Exclusive BOBCARD Credit Card,BOB,MASTERCARD,MID,0,0,true,,2,3.75,25000,21,75,0.25,1.25,2026-10-11,https://cardadvisor.in/cards/bob-icai-exclusive
+bob-icsi-diamond,ICSI Diamond BOBCARD Credit Card,BOB,RUPAY,MID,0,0,true,,2,3.75,25000,21,75,0.25,1.25,2026-10-11,https://cardadvisor.in/cards/bob-icsi-diamond
+bob-irctc,IRCTC BOBCARD RuPay Credit Card,BOB,RUPAY,MID,350,500,false,,3.5,3.75,30000,21,60,0.5,4,2026-10-11,https://cardadvisor.in/cards/bob-irctc
+bob-premier,Bank of Baroda Premier Credit Card,BOB,VISA,MID,1000,1000,false,120000,3.5,3.75,60000,25,55,0.5,2.5,2026-10-11,https://cardadvisor.in/cards/bob-premier
+bob-prime,BOBCARD Prime Credit Card,BOB,RUPAY,ENTRY,0,0,true,,3.5,3.75,0,18,85,0.4,0.4,2026-10-11,https://cardadvisor.in/cards/bob-prime
+bob-select,BOBCARD Select Credit Card,BOB,VISA,MID,750,750,false,70000,3.5,3.75,40000,25,55,0.2,1,2026-10-11,https://cardadvisor.in/cards/bob-select
+bob-snapdeal,Snapdeal BOBCARD Credit Card,BOB,RUPAY,ENTRY,249,249,false,,3.5,3.75,30000,21,60,1,5,2026-10-11,https://cardadvisor.in/cards/bob-snapdeal
+bob-tiara,Bank of Baroda Tiara Credit Card,BOB,RUPAY,PREMIUM,2499,2499,false,250000,2,3.75,60000,25,55,0.75,3.75,2026-10-11,https://cardadvisor.in/cards/bob-tiara
+cheq-au,CheQ AU Credit Card,AU,RUPAY,MID,0,0,true,,3.49,3.75,25000,21,60,0.5,6,2026-10-11,https://cardadvisor.in/cards/cheq-au
+cred-sovereign,CRED Sovereign Credit Card,INDUSIND,RUPAY,SUPER_PREMIUM,,,false,,,,,,,,,2026-09-28,https://cardadvisor.in/cards/cred-sovereign
+cub-salaryse,CUB SalarySe Level Up Credit Card,CUB,RUPAY,ENTRY,0,0,true,,2,3.5,,18,,0.2,1,2026-09-28,https://cardadvisor.in/cards/cub-salaryse
+federal-celesta,Federal Bank Celesta Credit Card,FEDERAL,VISA,PREMIUM,0,0,true,0,2,3.75,,21,,0.25,0.75,2026-10-11,https://cardadvisor.in/cards/federal-celesta
+federal-imperio,Federal Bank Imperio Credit Card,FEDERAL,VISA,MID,0,0,true,0,3.5,3.75,,21,,0.17,0.5,2026-10-11,https://cardadvisor.in/cards/federal-imperio
+federal-signet,Federal Bank Signet Credit Card,FEDERAL,VISA,ENTRY,0,0,true,0,3.5,3.75,,21,,0.13,0.38,2026-10-11,https://cardadvisor.in/cards/federal-signet
+hdfc-diners-black,HDFC Diners Club Black Metal Edition,HDFC,DINERS,SUPER_PREMIUM,10000,10000,false,800000,2,1.99,250000,21,60,3.33,4.33,2026-10-11,https://cardadvisor.in/cards/hdfc-diners-black
+hdfc-diners-privilege,HDFC Bank Diners Club Privilege Credit Card,HDFC,DINERS,PREMIUM,1000,1000,false,300000,3.5,3.75,35000,21,60,1,5,2026-10-11,https://cardadvisor.in/cards/hdfc-diners-privilege
+hdfc-freedom,HDFC Bank Freedom Credit Card,HDFC,VISA,ENTRY,500,500,false,50000,3.5,3.75,12000,21,60,0.08,0.75,2026-10-16,https://cardadvisor.in/cards/hdfc-freedom
+hdfc-indianoil,IndianOil HDFC Bank Credit Card,HDFC,RUPAY,ENTRY,500,500,false,50000,3.5,3.75,12000,21,60,0.64,4.8,2026-10-11,https://cardadvisor.in/cards/hdfc-indianoil
+hdfc-infinia,HDFC Bank Infinia Metal Credit Card,HDFC,VISA,SUPER_PREMIUM,12500,12500,false,1000000,2,1.99,,,,3.3,3.3,2026-10-15,https://cardadvisor.in/cards/hdfc-infinia
+hdfc-irctc,IRCTC HDFC Bank Credit Card,HDFC,RUPAY,MID,500,500,false,150000,3.5,3.75,25000,21,60,1,1,2026-10-11,https://cardadvisor.in/cards/hdfc-irctc
+hdfc-marriott-bonvoy,Marriott Bonvoy HDFC Bank Credit Card,HDFC,DINERS,PREMIUM,3000,3000,false,,3.5,3.6,100000,21,60,0.8,1.6,2026-10-11,https://cardadvisor.in/cards/hdfc-marriott-bonvoy
+hdfc-millennia,HDFC Millennia Credit Card,HDFC,VISA,MID,1000,1000,false,100000,3.5,3.75,35000,21,40,1,5,2026-10-11,https://cardadvisor.in/cards/hdfc-millennia
+hdfc-moneyback-plus,HDFC MoneyBack+ Credit Card,HDFC,MASTERCARD,ENTRY,500,500,false,50000,3.5,3.75,20000,21,60,0.2,2,2026-10-16,https://cardadvisor.in/cards/hdfc-moneyback-plus
+hdfc-phonepe-ultimo,PhonePe HDFC Bank Ultimo Credit Card,HDFC,RUPAY,MID,999,999,false,200000,3.5,3.75,25000,21,60,1,10,2026-10-11,https://cardadvisor.in/cards/hdfc-phonepe-ultimo
+hdfc-phonepe-uno,PhonePe HDFC Bank Uno Credit Card,HDFC,RUPAY,ENTRY,499,499,false,100000,3.5,3.75,25000,21,60,1,2,2026-10-11,https://cardadvisor.in/cards/hdfc-phonepe-uno
+hdfc-pixel-go,HDFC PIXEL Go Credit Card,HDFC,VISA,ENTRY,250,250,false,50000,3.5,3.75,12000,21,60,1,1,2026-10-11,https://cardadvisor.in/cards/hdfc-pixel-go
+hdfc-pixel-play,HDFC PIXEL Play Credit Card,HDFC,VISA,ENTRY,500,500,false,100000,3.5,3.75,25000,21,60,1,5,2026-10-11,https://cardadvisor.in/cards/hdfc-pixel-play
+hdfc-regalia-gold,HDFC Regalia Gold Credit Card,HDFC,VISA,PREMIUM,2500,2500,false,400000,2,3.75,150000,21,60,1.25,6.25,2026-10-11,https://cardadvisor.in/cards/hdfc-regalia-gold
+hdfc-shoppers-stop,Shoppers Stop HDFC Bank Credit Card,HDFC,RUPAY,ENTRY,299,299,false,,3.5,3.75,20000,21,60,1,3,2026-10-11,https://cardadvisor.in/cards/hdfc-shoppers-stop
+hdfc-shoppers-stop-black,Shoppers Stop Black HDFC Bank Credit Card,HDFC,RUPAY,PREMIUM,4500,4500,false,,3.5,3.75,70000,21,60,2,7,2026-10-11,https://cardadvisor.in/cards/hdfc-shoppers-stop-black
+hdfc-swiggy,Swiggy HDFC Bank Credit Card,HDFC,MASTERCARD,MID,500,500,false,200000,3.5,3.75,15000,21,60,1,10,2026-10-11,https://cardadvisor.in/cards/hdfc-swiggy
+hdfc-swiggy-blck,Swiggy BLCK HDFC Bank Credit Card,HDFC,MASTERCARD,PREMIUM,1000,1000,false,200000,3.5,3.75,100000,21,60,1,10,2026-10-11,https://cardadvisor.in/cards/hdfc-swiggy-blck
+hdfc-swiggy-orange,Swiggy Ornge HDFC Bank Credit Card,HDFC,MASTERCARD,MID,500,500,false,150000,3.5,3.75,20000,21,60,1,5,2026-10-11,https://cardadvisor.in/cards/hdfc-swiggy-orange
+hdfc-tata-neu-infinity,Tata Neu Infinity HDFC Bank Credit Card,HDFC,RUPAY,MID,1499,1499,false,300000,2,3.75,100000,21,60,1.5,5,2026-10-11,https://cardadvisor.in/cards/hdfc-tata-neu-infinity
+hdfc-tata-neu-plus,Tata Neu Plus HDFC Bank Credit Card,HDFC,RUPAY,MID,499,499,false,100000,3.5,3.75,25000,21,60,1,2,2026-10-11,https://cardadvisor.in/cards/hdfc-tata-neu-plus
+hdfc-upi-rupay,HDFC Bank UPI RuPay Credit Card,HDFC,RUPAY,ENTRY,99,99,false,25000,3.5,3.75,,,,0.25,0.75,2026-10-01,https://cardadvisor.in/cards/hdfc-upi-rupay
+hsbc-live-plus,HSBC Live+ Credit Card,HSBC,VISA,MID,999,999,false,200000,1.99,3.75,50000,18,65,1.5,10,2026-10-11,https://cardadvisor.in/cards/hsbc-live-plus
+hsbc-platinum,HSBC Visa Platinum Credit Card,HSBC,VISA,MID,0,0,true,,3.5,3.75,50000,18,65,1.33,1.33,2026-10-11,https://cardadvisor.in/cards/hsbc-platinum
+hsbc-premier,HSBC Premier World Mastercard,HSBC,MASTERCARD,SUPER_PREMIUM,20000,12000,false,,0.99,2.99,300000,,,3,3,2026-10-01,https://cardadvisor.in/cards/hsbc-premier
+hsbc-rupay-cashback,HSBC RuPay Cashback Credit Card,HSBC,RUPAY,MID,499,499,false,200000,3.5,3.75,50000,18,65,1,10,2026-10-11,https://cardadvisor.in/cards/hsbc-rupay-cashback
+hsbc-rupay-platinum,HSBC RuPay Platinum Credit Card,HSBC,RUPAY,ENTRY,0,0,true,,3.5,3.75,50000,18,65,1.33,1.33,2026-10-11,https://cardadvisor.in/cards/hsbc-rupay-platinum
+hsbc-taj,HSBC Taj Credit Card,HSBC,VISA,SUPER_PREMIUM,110000,110000,false,,3.5,3.75,300000,25,75,1.01,3.35,2026-10-11,https://cardadvisor.in/cards/hsbc-taj
+hsbc-travelone,HSBC TravelOne Credit Card,HSBC,MASTERCARD,PREMIUM,4999,4999,false,800000,3.5,3.75,50000,18,65,2,4,2026-10-11,https://cardadvisor.in/cards/hsbc-travelone
+icici-adani-platinum,Adani One ICICI Bank Platinum Credit Card,ICICI,VISA,MID,750,750,false,300000,3.5,3.75,20000,21,,1,3,2026-10-11,https://cardadvisor.in/cards/icici-adani-platinum
+icici-adani-signature,Adani One ICICI Bank Signature Credit Card,ICICI,VISA,PREMIUM,5000,5000,false,600000,3.5,3.75,75000,21,,1.5,7,2026-10-11,https://cardadvisor.in/cards/icici-adani-signature
+icici-amazon-pay,Amazon Pay ICICI Bank Credit Card,ICICI,VISA,ENTRY,0,0,true,,1.99,3.75,30000,21,,1,5,2026-10-11,https://cardadvisor.in/cards/icici-amazon-pay
+icici-coral,ICICI Bank Coral Credit Card,ICICI,VISA,MID,500,500,false,150000,3.5,3.75,20000,21,65,0.5,0.5,2026-10-11,https://cardadvisor.in/cards/icici-coral
+icici-emeralde,ICICI Bank Emeralde Credit Card (Metal),ICICI,VISA,SUPER_PREMIUM,12000,12000,false,1000000,2,3.75,150000,21,65,1.6,1.6,2026-10-11,https://cardadvisor.in/cards/icici-emeralde
+icici-emeralde-private,ICICI Bank Emeralde Private Metal Credit Card,ICICI,VISA,SUPER_PREMIUM,12499,12499,false,1000000,2,,,,,1.2,1.2,2026-09-25,https://cardadvisor.in/cards/icici-emeralde-private
+icici-emirates-emeralde,Emirates Skywards ICICI Bank Emeralde Credit Card,ICICI,VISA,SUPER_PREMIUM,10000,10000,false,,3.5,3.75,250000,21,,2,2,2026-10-11,https://cardadvisor.in/cards/icici-emirates-emeralde
+icici-emirates-rubyx,Emirates Skywards ICICI Bank Rubyx Credit Card,ICICI,VISA,MID,1000,1000,false,,3.5,3.75,75000,21,,1,1,2026-10-11,https://cardadvisor.in/cards/icici-emirates-rubyx
+icici-emirates-sapphiro,Emirates Skywards ICICI Bank Sapphiro Credit Card,ICICI,VISA,PREMIUM,5000,5000,false,,3.5,3.75,150000,21,,1.5,1.5,2026-10-11,https://cardadvisor.in/cards/icici-emirates-sapphiro
+icici-expressions,ICICI Bank Expressions Credit Card,ICICI,VISA,MID,499,499,false,150000,3.5,3.75,,21,,0.75,0.75,2026-10-11,https://cardadvisor.in/cards/icici-expressions
+icici-hpcl-coral,ICICI Bank HPCL Coral Credit Card,ICICI,VISA,ENTRY,199,199,false,50000,3.5,3.75,20000,21,65,0.5,2.5,2026-10-11,https://cardadvisor.in/cards/icici-hpcl-coral
+icici-hpcl-super-saver,ICICI HPCL Super Saver Credit Card,ICICI,VISA,ENTRY,500,500,false,150000,3.5,3.75,20000,21,65,0.5,5,2026-10-11,https://cardadvisor.in/cards/icici-hpcl-super-saver
+icici-mmt,MakeMyTrip ICICI Bank Credit Card,ICICI,MASTERCARD,MID,999,999,false,300000,0.99,3.75,20000,21,,1,6,2026-10-15,https://cardadvisor.in/cards/icici-mmt
+icici-platinum,ICICI Bank Platinum Chip Credit Card,ICICI,VISA,ENTRY,0,0,true,,3.5,3.75,20000,21,65,0.5,0.5,2026-10-11,https://cardadvisor.in/cards/icici-platinum
+icici-rubyx,ICICI Bank Rubyx Credit Card,ICICI,VISA,MID,2000,3000,false,300000,3.5,3.75,75000,21,65,0.5,1,2026-10-11,https://cardadvisor.in/cards/icici-rubyx
+icici-sapphiro,ICICI Bank Sapphiro Credit Card,ICICI,MASTERCARD,PREMIUM,3500,6500,false,600000,3.5,3.75,75000,21,65,0.5,1,2026-10-11,https://cardadvisor.in/cards/icici-sapphiro
+icici-times-black,Times Black ICICI Bank Credit Card,ICICI,VISA,SUPER_PREMIUM,20000,20000,false,2500000,1.49,,200000,,,0.8,1,2026-10-11,https://cardadvisor.in/cards/icici-times-black
+idfc-ashva,IDFC FIRST Ashva Credit Card,IDFC,VISA,PREMIUM,2999,2999,false,,0,,,,,0.83,0.83,2026-10-11,https://cardadvisor.in/cards/idfc-ashva
+idfc-diamond-reserve,IDFC FIRST Diamond Reserve Credit Card,IDFC,VISA,PREMIUM,3000,3000,false,600000,0,,,,,0.5,0.5,2026-10-11,https://cardadvisor.in/cards/idfc-diamond-reserve
+idfc-digital-rupay,IDFC FIRST Digital RuPay Credit Card,IDFC,RUPAY,ENTRY,199,199,false,,0,,,,,0.13,0.38,2026-10-11,https://cardadvisor.in/cards/idfc-digital-rupay
+idfc-earn,IDFC FIRST EA₹N Credit Card,IDFC,RUPAY,ENTRY,499,0,false,100000,0,,0,18,80,0.5,0.5,2026-10-11,https://cardadvisor.in/cards/idfc-earn
+idfc-first-classic,IDFC FIRST Classic Credit Card,IDFC,VISA,MID,0,0,true,,0,0.71,25000,,,0.38,1.25,2026-10-11,https://cardadvisor.in/cards/idfc-first-classic
+idfc-first-private,IDFC FIRST Private Credit Card,IDFC,VISA,SUPER_PREMIUM,25000,50000,false,,0,0.75,,,,1.67,1.67,2026-09-25,https://cardadvisor.in/cards/idfc-first-private
+idfc-first-wealth,IDFC FIRST Wealth Credit Card,IDFC,VISA,PREMIUM,0,0,true,,0,0.71,300000,,,0.38,1.25,2026-10-11,https://cardadvisor.in/cards/idfc-first-wealth
+idfc-gaj,IDFC FIRST Gaj Credit Card,IDFC,VISA,SUPER_PREMIUM,12500,12500,false,1000000,0,,,,,0.83,0.83,2026-09-25,https://cardadvisor.in/cards/idfc-gaj
+idfc-hello-cashback,IDFC FIRST Hello Cashback Credit Card,IDFC,RUPAY,MID,1000,1000,false,200000,0,,0,18,80,1,3,2026-10-11,https://cardadvisor.in/cards/idfc-hello-cashback
+idfc-hpcl-power,IDFC FIRST HPCL Power+ Credit Card,IDFC,RUPAY,MID,499,499,false,150000,0,,25000,21,,0.5,5,2026-10-11,https://cardadvisor.in/cards/idfc-hpcl-power
+idfc-indigo,IndiGo IDFC FIRST Credit Card,IDFC,MASTERCARD,PREMIUM,4999,4999,false,,0,,,18,,1.26,2.52,2026-10-11,https://cardadvisor.in/cards/idfc-indigo
+idfc-lic-classic,LIC Classic Credit Card,IDFC,MASTERCARD,ENTRY,0,0,true,,0,,,,,0.6,1.2,2026-10-11,https://cardadvisor.in/cards/idfc-lic-classic
+idfc-lic-select,LIC Select Credit Card,IDFC,MASTERCARD,MID,0,0,true,,0,,,,,1,2,2026-10-11,https://cardadvisor.in/cards/idfc-lic-select
+idfc-mayura,IDFC FIRST Mayura Credit Card,IDFC,VISA,SUPER_PREMIUM,5999,5999,false,,0,,,,,0.83,0.83,2026-10-11,https://cardadvisor.in/cards/idfc-mayura
+idfc-millennia,IDFC FIRST Millennia Credit Card,IDFC,VISA,ENTRY,0,0,true,,0,0.71,25000,,,0.38,1.25,2026-10-11,https://cardadvisor.in/cards/idfc-millennia
+idfc-power,IDFC FIRST Power Credit Card,IDFC,RUPAY,MID,199,199,false,50000,0,,25000,21,,0.33,3.5,2026-10-11,https://cardadvisor.in/cards/idfc-power
+idfc-select,IDFC FIRST Select Credit Card,IDFC,VISA,PREMIUM,0,0,true,,0,,100000,,,0.38,1.25,2026-10-11,https://cardadvisor.in/cards/idfc-select
+idfc-swyp,IDFC FIRST SWYP Credit Card,IDFC,MASTERCARD,ENTRY,499,499,false,,0,0,,,,1,1,2026-10-11,https://cardadvisor.in/cards/idfc-swyp
+idfc-wow,IDFC FIRST WOW! Credit Card,IDFC,VISA,ENTRY,0,0,true,,0,,0,18,80,0.5,0.5,2026-10-11,https://cardadvisor.in/cards/idfc-wow
+idfc-wow-black,IDFC FIRST WOW! Black Credit Card,IDFC,MASTERCARD,MID,750,750,false,150000,0,,0,18,80,0.67,0.67,2026-10-11,https://cardadvisor.in/cards/idfc-wow-black
+indusind-avios,IndusInd Bank Avios Visa Infinite Credit Card,INDUSIND,VISA,PREMIUM,5000,10000,false,,3.5,3,,,,1.5,3,2026-10-11,https://cardadvisor.in/cards/indusind-avios
+indusind-celesta,IndusInd Bank Celesta Credit Card,INDUSIND,AMEX,SUPER_PREMIUM,5000,25000,false,1000000,3.5,2.99,,,,0.75,2.25,2026-10-11,https://cardadvisor.in/cards/indusind-celesta
+indusind-cred,CRED IndusInd Bank RuPay Credit Card,INDUSIND,RUPAY,MID,499,0,false,,3.5,3.95,,,,1,5,2026-09-28,https://cardadvisor.in/cards/indusind-cred
+indusind-crest,IndusInd Bank Crest Credit Card,INDUSIND,MASTERCARD,SUPER_PREMIUM,10000,75000,false,1000000,1.8,2.99,,,,0.75,1.88,2026-09-25,https://cardadvisor.in/cards/indusind-crest
+indusind-duo,IndusInd Bank Duo Card,INDUSIND,VISA,MID,0,0,true,,3.5,3.83,,,,0.34,0.34,2026-10-11,https://cardadvisor.in/cards/indusind-duo
+indusind-eazydiner,IndusInd Bank EazyDiner Signature Credit Card,INDUSIND,VISA,MID,2999,2999,false,,3.5,3.83,,,,0.4,25,2026-10-11,https://cardadvisor.in/cards/indusind-eazydiner
+indusind-eazydiner-platinum,EazyDiner IndusInd Bank Platinum Credit Card,INDUSIND,VISA,MID,0,0,true,,3.5,3.83,,,,0.4,20,2026-08-06,https://cardadvisor.in/cards/indusind-eazydiner-platinum
+indusind-epay-amex,IndusInd Bank ePay Amex Credit Card,INDUSIND,AMEX,ENTRY,0,0,true,,3.5,3.95,,,,0.35,0.35,2026-10-11,https://cardadvisor.in/cards/indusind-epay-amex
+indusind-indulge,IndusInd Bank Indulge Credit Card,INDUSIND,VISA,SUPER_PREMIUM,10000,75000,false,1000000,1.8,1.79,,,,0.5,0.5,2026-10-11,https://cardadvisor.in/cards/indusind-indulge
+indusind-jio-bp,IndusInd Bank Jio-bp Mobility+ Credit Card,INDUSIND,RUPAY,MID,0,499,false,,3.5,3.95,,,,0.5,3,2026-10-11,https://cardadvisor.in/cards/indusind-jio-bp
+indusind-legend,IndusInd Bank Legend Credit Card,INDUSIND,VISA,PREMIUM,0,5000,false,,1.8,3.95,,,,0.72,0.72,2026-10-11,https://cardadvisor.in/cards/indusind-legend
+indusind-nexxt,IndusInd Bank Nexxt Credit Card,INDUSIND,VISA,PREMIUM,0,10000,false,,3.5,3.83,,,,0.5,0.5,2026-10-11,https://cardadvisor.in/cards/indusind-nexxt
+indusind-pinnacle,IndusInd Bank Pinnacle Credit Card,INDUSIND,MASTERCARD,SUPER_PREMIUM,0,15000,false,,3.5,3.83,83333,,,0.75,1.88,2026-10-11,https://cardadvisor.in/cards/indusind-pinnacle
+indusind-pioneer-heritage,IndusInd Bank Pioneer Heritage Credit Card,INDUSIND,MASTERCARD,SUPER_PREMIUM,25000,100000,false,1000000,0,2.99,,,,1,2.5,2026-09-25,https://cardadvisor.in/cards/indusind-pioneer-heritage
+indusind-pioneer-legacy,IndusInd Bank Pioneer Legacy Credit Card,INDUSIND,VISA,SUPER_PREMIUM,0,50000,false,,1.8,3.83,,,,1.29,1.29,2026-09-25,https://cardadvisor.in/cards/indusind-pioneer-legacy
+indusind-pioneer-private,IndusInd Bank Pioneer Private Credit Card,INDUSIND,VISA,SUPER_PREMIUM,25000,0,false,1000000,0,2,,,,3,3,2026-09-25,https://cardadvisor.in/cards/indusind-pioneer-private
+indusind-platinum,IndusInd Bank Platinum Credit Card,INDUSIND,VISA,MID,0,0,true,,3.5,3.95,,,,0.4,0.4,2026-10-11,https://cardadvisor.in/cards/indusind-platinum
+indusind-platinum-aura-edge,IndusInd Bank Platinum Aura Edge Credit Card,INDUSIND,VISA,MID,0,0,true,,3.5,3.95,,,,0.2,1.6,2026-10-11,https://cardadvisor.in/cards/indusind-platinum-aura-edge
+indusind-platinum-rupay,IndusInd Bank Platinum RuPay Credit Card,INDUSIND,RUPAY,MID,0,10000,false,,3.5,3.95,,,,0.7,0.7,2026-10-11,https://cardadvisor.in/cards/indusind-platinum-rupay
+indusind-samman,IndusInd Bank Samman Credit Card,INDUSIND,RUPAY,ENTRY,199,0,false,75000,3.5,3.95,,,,1,1,2026-10-11,https://cardadvisor.in/cards/indusind-samman
+indusind-solitaire,IndusInd Bank Indus Solitaire Credit Card,INDUSIND,MASTERCARD,SUPER_PREMIUM,10000,30000,false,1000000,0,3.83,,,,0.5,0.5,2026-10-11,https://cardadvisor.in/cards/indusind-solitaire
+indusind-tiger,IndusInd Bank Tiger Credit Card,INDUSIND,VISA,MID,0,0,true,,1.5,3.5,,,,0.4,0.4,2026-09-28,https://cardadvisor.in/cards/indusind-tiger
+jupiter-edge,Jupiter Edge+ CSB Bank RuPay Credit Card,CSB,RUPAY,ENTRY,0,0,false,,3.5,3.75,,23,60,1,5,2026-10-05,https://cardadvisor.in/cards/jupiter-edge
+kiwi,Kiwi RuPay Credit Card,YES,RUPAY,ENTRY,0,0,true,,3.5,3.99,,22,55,1,1,2026-10-11,https://cardadvisor.in/cards/kiwi
+kotak-811,Kotak 811 #DreamDifferent Credit Card,KOTAK,VISA,ENTRY,0,250,false,,3.5,3.75,0,18,75,0.2,0.4,2026-10-11,https://cardadvisor.in/cards/kotak-811
+kotak-air,Kotak Air Credit Card,KOTAK,VISA,MID,999,999,false,250000,3.5,3.75,,18,,1,1,2026-10-15,https://cardadvisor.in/cards/kotak-air
+kotak-air-plus-prime,Kotak Air+ Prime Credit Card,KOTAK,VISA,MID,3000,3000,false,400000,2,3.5,,18,,2,2,2026-10-15,https://cardadvisor.in/cards/kotak-air-plus-prime
+kotak-cashback-plus-prime,Kotak Cashback+ Prime Credit Card,KOTAK,VISA,MID,750,750,false,200000,3.5,3.75,,18,,0.5,5,2026-10-11,https://cardadvisor.in/cards/kotak-cashback-plus-prime
+kotak-indianoil,IndianOil Kotak Credit Card,KOTAK,RUPAY,ENTRY,449,449,false,50000,3.5,3.75,,18,60,0.5,4,2026-09-25,https://cardadvisor.in/cards/kotak-indianoil
+kotak-indigo,IndiGo Kotak Credit Card,KOTAK,RUPAY,MID,1500,1500,false,,3.5,3.75,,,,0.42,1.26,2026-09-01,https://cardadvisor.in/cards/kotak-indigo
+kotak-indigo-premium,IndiGo XL Kotak Credit Card,KOTAK,VISA,PREMIUM,3000,3000,false,,3.5,3.75,,18,,0.84,2.1,2026-10-11,https://cardadvisor.in/cards/kotak-indigo-premium
+kotak-league-platinum,Kotak League Platinum Credit Card,KOTAK,VISA,MID,499,499,false,50000,3.5,3.75,41667,21,60,0.27,0.27,2026-10-11,https://cardadvisor.in/cards/kotak-league-platinum
+kotak-pvr-inox,PVR INOX Kotak Credit Card,KOTAK,RUPAY,ENTRY,499,0,false,,3.5,3.75,,21,60,0,0,2026-08-05,https://cardadvisor.in/cards/kotak-pvr-inox
+kotak-solitaire,Kotak Solitaire Credit Card,KOTAK,VISA,SUPER_PREMIUM,0,0,false,0,0,3.5,,,,3,3,2026-09-25,https://cardadvisor.in/cards/kotak-solitaire
+kotak-upi-rupay,Kotak UPI RuPay Credit Card,KOTAK,RUPAY,ENTRY,0,0,true,0,3.5,3.75,,18,,0.3,0.3,2026-08-05,https://cardadvisor.in/cards/kotak-upi-rupay
+kotak-white,Kotak White Credit Card,KOTAK,VISA,PREMIUM,3000,3000,false,500000,3.5,3.5,208333,28,60,0,0,2026-10-11,https://cardadvisor.in/cards/kotak-white
+kotak-white-reserve,Kotak White Reserve Credit Card,KOTAK,VISA,SUPER_PREMIUM,12500,12500,false,1000000,2,3.5,,,,0,0,2026-09-25,https://cardadvisor.in/cards/kotak-white-reserve
+kotak-zen-signature,Kotak Zen Signature Credit Card,KOTAK,VISA,PREMIUM,1500,1500,false,150000,3.5,3.75,40000,21,60,0.83,1.67,2026-10-11,https://cardadvisor.in/cards/kotak-zen-signature
+onecard,OneCard Credit Card,BOB,VISA,MID,0,0,true,,1,3.75,,18,,0.2,1,2026-10-11,https://cardadvisor.in/cards/onecard
+pop-club,YES Bank POP-CLUB Credit Card,YES,RUPAY,ENTRY,399,0,false,150000,3.5,3.99,25000,21,60,0.2,1,2026-09-28,https://cardadvisor.in/cards/pop-club
+rbl-apex,RBL Bank Apex Credit Card,RBL,MASTERCARD,MID,1000,1000,false,,3.5,3.99,,,,1,1,2026-10-11,https://cardadvisor.in/cards/rbl-apex
+rbl-bankbazaar-savemax,RBL Bank BankBazaar SaveMax Credit Card,RBL,MASTERCARD,ENTRY,0,0,true,,3.5,3.99,,,,0.25,1.25,2026-08-28,https://cardadvisor.in/cards/rbl-bankbazaar-savemax
+rbl-bankbazaar-savemax-pro,RBL Bank BankBazaar SaveMax Pro Credit Card,RBL,MASTERCARD,MID,1499,1499,false,,3.5,3.99,,,,0.5,2.5,2026-08-28,https://cardadvisor.in/cards/rbl-bankbazaar-savemax-pro
+rbl-binge,RBL Bank Binge Credit Card,RBL,MASTERCARD,ENTRY,999,999,false,100000,3.5,3.99,,,,0.25,3,2026-10-11,https://cardadvisor.in/cards/rbl-binge
+rbl-blockbuster,RBL Bank Blockbuster Credit Card,RBL,MASTERCARD,MID,3000,3000,false,,3.5,3.99,,,,0.25,5,2026-10-11,https://cardadvisor.in/cards/rbl-blockbuster
+rbl-cookies,RBL Bank Cookies Credit Card,RBL,MASTERCARD,ENTRY,1200,0,false,60000,3.5,3.99,,,,0.25,10,2026-10-11,https://cardadvisor.in/cards/rbl-cookies
+rbl-dmi-finance,RBL Bank DMI Finance Credit Card,RBL,MASTERCARD,ENTRY,499,499,false,,3.5,3.99,,,,0.25,0.5,2026-10-11,https://cardadvisor.in/cards/rbl-dmi-finance
+rbl-icon,RBL Bank Icon Credit Card,RBL,MASTERCARD,MID,5000,5000,false,,3.5,3.99,,,,0.5,5,2026-10-11,https://cardadvisor.in/cards/rbl-icon
+rbl-indianoil,RBL Bank IndianOil Credit Card,RBL,MASTERCARD,ENTRY,500,500,false,175000,3.5,3.99,,,,0.5,5,2026-10-11,https://cardadvisor.in/cards/rbl-indianoil
+rbl-indianoil-xtra,RBL Bank IndianOil XTRA Credit Card,RBL,MASTERCARD,MID,1500,1500,false,275000,3.5,3.99,,,,1,7.5,2026-10-11,https://cardadvisor.in/cards/rbl-indianoil-xtra
+rbl-irctc,RBL Bank IRCTC Credit Card,RBL,RUPAY,ENTRY,500,500,false,,3.5,3.99,,,,0.5,2.5,2026-10-11,https://cardadvisor.in/cards/rbl-irctc
+rbl-lumiere,RBL Bank Lumière Credit Card,RBL,VISA,SUPER_PREMIUM,50000,50000,false,,0,3.4,,,,2,2,2026-09-25,https://cardadvisor.in/cards/rbl-lumiere
+rbl-nova,RBL Bank Nova Credit Card,RBL,VISA,PREMIUM,12500,12500,false,1000000,2,3.4,,,,2,2,2026-09-26,https://cardadvisor.in/cards/rbl-nova
+rbl-paisabazaar-duet,RBL Bank Paisabazaar Duet Credit Card,RBL,MASTERCARD,ENTRY,0,0,true,,3.5,3.99,,,,1,1,2026-10-11,https://cardadvisor.in/cards/rbl-paisabazaar-duet
+rbl-paisabazaar-duet-plus,RBL Bank Paisabazaar Duet Plus Credit Card,RBL,MASTERCARD,MID,1499,1499,false,400000,3.5,3.99,,,,1,2.5,2026-10-11,https://cardadvisor.in/cards/rbl-paisabazaar-duet-plus
+rbl-patanjali-swarn,RBL Bank Patanjali Swarn Credit Card,RBL,RUPAY,MID,1499,1499,false,,3.5,3.99,,,,0.25,10,2026-10-11,https://cardadvisor.in/cards/rbl-patanjali-swarn
+rbl-patanjali-vishisht,RBL Bank Patanjali Vishisht Credit Card,RBL,RUPAY,ENTRY,499,499,false,150000,3.5,3.99,,,,0.25,10,2026-10-11,https://cardadvisor.in/cards/rbl-patanjali-vishisht
+rbl-platinum-maxima,RBL Bank Platinum Maxima Plus Credit Card,RBL,VISA,PREMIUM,2500,2500,false,,3.5,3.99,,,,0.5,2.5,2026-10-11,https://cardadvisor.in/cards/rbl-platinum-maxima
+rbl-play,RBL Bank Play Credit Card,RBL,MASTERCARD,ENTRY,500,500,false,150000,3.5,3.99,,,,0.25,0.25,2026-10-11,https://cardadvisor.in/cards/rbl-play
+rbl-salaryse-up,RBL Bank SalarySe UP Credit Card,RBL,RUPAY,ENTRY,499,499,false,200000,3.5,3.99,,18,,0.2,1,2026-09-28,https://cardadvisor.in/cards/rbl-salaryse-up
+rbl-shoprite,RBL Bank ShopRite Credit Card,RBL,VISA,ENTRY,500,500,false,150000,3.5,3.99,,,,0.25,5,2026-10-11,https://cardadvisor.in/cards/rbl-shoprite
+rbl-tvs-credit,RBL Bank TVS Credit Card,RBL,MASTERCARD,ENTRY,500,500,false,,3.5,3.99,,,,0.25,0.5,2026-10-11,https://cardadvisor.in/cards/rbl-tvs-credit
+rbl-tvs-credit-gold,RBL Bank TVS Gold Credit Card,RBL,MASTERCARD,MID,1500,1500,false,,3.5,3.99,,,,0.5,5,2026-10-11,https://cardadvisor.in/cards/rbl-tvs-credit-gold
+rbl-world-safari,RBL Bank World Safari Credit Card,RBL,MASTERCARD,PREMIUM,3000,3000,false,,0,3.99,,,,0.5,1.25,2026-10-11,https://cardadvisor.in/cards/rbl-world-safari
+rbl-world-safari-lite,RBL Bank World Safari Lite Credit Card,RBL,MASTERCARD,MID,1000,1000,false,,0,3.99,,,,0,0.25,2026-10-11,https://cardadvisor.in/cards/rbl-world-safari-lite
+roarbank,Roarbank RuPay Credit Card,UNITY,RUPAY,ENTRY,0,0,true,,3.5,3.3,,21,60,0,0,2026-09-28,https://cardadvisor.in/cards/roarbank
+sbi-apollo,Apollo SBI Card,SBI,MASTERCARD,ENTRY,499,499,false,100000,3.5,3.75,,,,0.5,3,2026-10-11,https://cardadvisor.in/cards/sbi-apollo
+sbi-apollo-select,Apollo SBI Card SELECT,SBI,MASTERCARD,MID,1499,1499,false,300000,3.5,3.75,,,,0.5,10,2026-10-11,https://cardadvisor.in/cards/sbi-apollo-select
+sbi-aurum,SBI Card AURUM,SBI,MASTERCARD,SUPER_PREMIUM,9999,9999,false,1200000,1.99,3.75,,,,1,1,2026-10-01,https://cardadvisor.in/cards/sbi-aurum
+sbi-bpcl,BPCL SBI Card,SBI,VISA,MID,499,499,false,100000,3.5,,,,,0.25,3.25,2026-10-11,https://cardadvisor.in/cards/sbi-bpcl
+sbi-bpcl-octane,BPCL SBI Card Octane,SBI,VISA,MID,1499,1499,false,200000,3.5,,,,,0.25,6.25,2026-10-11,https://cardadvisor.in/cards/sbi-bpcl-octane
+sbi-cashback,SBI Cashback Credit Card,SBI,VISA,MID,999,999,false,200000,3.5,3.75,,,,1,5,2026-10-11,https://cardadvisor.in/cards/sbi-cashback
+sbi-doctors,Doctor's SBI Card,SBI,VISA,MID,1499,1499,false,200000,3.5,3.75,,,,0.25,1.25,2026-10-11,https://cardadvisor.in/cards/sbi-doctors
+sbi-doctors-ima,Doctor's SBI Card (in Association with IMA),SBI,VISA,MID,1499,1499,false,200000,3.5,3.75,,,,0.25,1.25,2026-10-11,https://cardadvisor.in/cards/sbi-doctors-ima
+sbi-elite,SBI Card ELITE,SBI,MASTERCARD,PREMIUM,4999,4999,false,1000000,1.99,3.75,,,,0.5,2.5,2026-10-11,https://cardadvisor.in/cards/sbi-elite
+sbi-flipkart,Flipkart SBI Card,SBI,MASTERCARD,MID,500,500,false,350000,3.5,,,,,1,7.5,2026-10-11,https://cardadvisor.in/cards/sbi-flipkart
+sbi-indigo,IndiGo SBI Card,SBI,MASTERCARD,MID,1499,1499,false,,3.5,,,,,0.42,1.26,2026-10-11,https://cardadvisor.in/cards/sbi-indigo
+sbi-indigo-elite,IndiGo SBI Card ELITE,SBI,MASTERCARD,PREMIUM,4999,4999,false,,3.5,,,,,0.84,2.94,2026-10-11,https://cardadvisor.in/cards/sbi-indigo-elite
+sbi-irctc-platinum,IRCTC SBI Platinum Card,SBI,VISA,ENTRY,500,500,false,,3.5,,,,,0.8,8,2026-10-11,https://cardadvisor.in/cards/sbi-irctc-platinum
+sbi-irctc-premier,IRCTC SBI Card Premier,SBI,VISA,MID,1499,1499,false,200000,3.5,,,,,0.8,8,2026-10-11,https://cardadvisor.in/cards/sbi-irctc-premier
+sbi-krisflyer,KrisFlyer SBI Card,SBI,MASTERCARD,PREMIUM,2999,2999,false,,3.5,,,,,0.5,1.25,2026-10-11,https://cardadvisor.in/cards/sbi-krisflyer
+sbi-krisflyer-apex,KrisFlyer SBI Card Apex,SBI,MASTERCARD,SUPER_PREMIUM,9999,9999,false,,3.5,,,,,1.5,2,2026-10-11,https://cardadvisor.in/cards/sbi-krisflyer-apex
+sbi-landmark,Landmark Rewards SBI Card,SBI,VISA,ENTRY,499,499,false,,3.5,,,,,0.25,2.5,2026-10-11,https://cardadvisor.in/cards/sbi-landmark
+sbi-landmark-prime,Landmark Rewards SBI Card PRIME,SBI,VISA,PREMIUM,2999,2999,false,,3.5,,,,,0.5,6.25,2026-10-11,https://cardadvisor.in/cards/sbi-landmark-prime
+sbi-landmark-select,Landmark Rewards SBI Card SELECT,SBI,VISA,MID,1499,1499,false,,3.5,,,,,0.5,3.75,2026-10-11,https://cardadvisor.in/cards/sbi-landmark-select
+sbi-miles,SBI Card MILES,SBI,MASTERCARD,MID,1499,1499,false,600000,3,3.75,,,,0.25,0.5,2026-10-11,https://cardadvisor.in/cards/sbi-miles
+sbi-miles-elite,SBI Card Miles Elite,SBI,MASTERCARD,PREMIUM,4999,4999,false,1500000,1.99,3.75,,,,0.5,1.5,2026-10-11,https://cardadvisor.in/cards/sbi-miles-elite
+sbi-miles-prime,SBI Card MILES PRIME,SBI,MASTERCARD,PREMIUM,2999,2999,false,1000000,2.5,3.75,,,,0.5,1,2026-10-11,https://cardadvisor.in/cards/sbi-miles-prime
+sbi-paytm,Paytm SBI Card,SBI,VISA,ENTRY,499,499,false,,3.5,,,,,1,3,2026-10-11,https://cardadvisor.in/cards/sbi-paytm
+sbi-paytm-select,Paytm SBI Card SELECT,SBI,VISA,MID,1499,1499,false,200000,3.5,,,,,1,5,2026-10-11,https://cardadvisor.in/cards/sbi-paytm-select
+sbi-phonepe-purple,PhonePe SBI Card PURPLE,SBI,RUPAY,ENTRY,499,499,false,100000,3.5,,,,,1,3,2026-10-11,https://cardadvisor.in/cards/sbi-phonepe-purple
+sbi-phonepe-select-black,PhonePe SBI Card SELECT BLACK,SBI,RUPAY,MID,1499,1499,false,300000,3.5,3.75,,,,1,10,2026-10-11,https://cardadvisor.in/cards/sbi-phonepe-select-black
+sbi-prime,SBI Card PRIME,SBI,MASTERCARD,PREMIUM,2999,2999,false,300000,3.5,3.75,,,,0.5,2.5,2026-10-11,https://cardadvisor.in/cards/sbi-prime
+sbi-pulse,SBI Card PULSE,SBI,VISA,MID,1499,1499,false,200000,3.5,3.75,,,,0.5,2.5,2026-10-11,https://cardadvisor.in/cards/sbi-pulse
+sbi-reliance,Reliance SBI Card,SBI,MASTERCARD,ENTRY,499,499,false,100000,3.5,,,,,0.25,2.5,2026-10-11,https://cardadvisor.in/cards/sbi-reliance
+sbi-reliance-prime,Reliance SBI Card PRIME,SBI,MASTERCARD,PREMIUM,2999,2999,false,300000,3.5,,,,,0.5,5,2026-10-11,https://cardadvisor.in/cards/sbi-reliance-prime
+sbi-shaurya,Shaurya SBI Card,SBI,RUPAY,ENTRY,250,250,false,50000,3.5,2.75,,,,0.25,1.25,2026-10-11,https://cardadvisor.in/cards/sbi-shaurya
+sbi-shaurya-select,Shaurya Select SBI Card,SBI,RUPAY,MID,1499,0,false,150000,3.5,2.75,,,,0.5,2.5,2026-10-15,https://cardadvisor.in/cards/sbi-shaurya-select
+sbi-simply-click,SBI SimplyCLICK Credit Card,SBI,VISA,ENTRY,499,499,false,100000,3.5,3.75,,,,0.25,2.5,2026-10-11,https://cardadvisor.in/cards/sbi-simply-click
+sbi-simply-save,SBI SimplySAVE Credit Card,SBI,VISA,ENTRY,499,499,false,100000,3.5,3.75,,,,0.17,1.67,2026-10-11,https://cardadvisor.in/cards/sbi-simply-save
+sbi-tata-neu-infinity,Tata Neu Infinity SBI Card,SBI,RUPAY,MID,1499,1499,false,300000,1.99,,,,,1.5,5,2026-10-11,https://cardadvisor.in/cards/sbi-tata-neu-infinity
+sbi-tata-neu-plus,Tata Neu Plus SBI Card,SBI,RUPAY,ENTRY,499,499,false,100000,3.5,,,,,1,2,2026-10-11,https://cardadvisor.in/cards/sbi-tata-neu-plus
+sbi-titan,Titan SBI Card,SBI,VISA,PREMIUM,2999,2999,false,300000,3.5,,,,,1.5,1.5,2026-10-11,https://cardadvisor.in/cards/sbi-titan
+sbi-unnati,SBI Card Unnati,SBI,VISA,ENTRY,499,0,false,,3.5,,,,,0.25,0.25,2026-10-01,https://cardadvisor.in/cards/sbi-unnati
+sbm-zet,SBM ZET Credit Card,SBM,RUPAY,ENTRY,0,0,true,,2.49,3.5,,18,,2,2,2026-09-28,https://cardadvisor.in/cards/sbm-zet
+sc-beyond,Standard Chartered Beyond Credit Card,SC,VISA,SUPER_PREMIUM,25000,15000,false,,2,3.75,,,,3.33,3.33,2026-09-26,https://cardadvisor.in/cards/sc-beyond
+sc-digismart,Standard Chartered DigiSmart Credit Card,SC,VISA,MID,588,0,false,60000,3.5,3.75,50000,21,65,0,15,2026-08-07,https://cardadvisor.in/cards/sc-digismart
+sc-easemytrip,Standard Chartered EaseMyTrip Credit Card,SC,VISA,ENTRY,350,350,false,50000,3.5,3.75,,18,65,0.5,2.5,2026-10-11,https://cardadvisor.in/cards/sc-easemytrip
+sc-manhattan-platinum,Standard Chartered Manhattan Platinum Credit Card,SC,VISA,MID,999,999,false,120000,3.5,3.75,,18,65,0.5,5,2026-10-11,https://cardadvisor.in/cards/sc-manhattan-platinum
+sc-platinum-rewards,Standard Chartered Platinum Rewards Credit Card,SC,VISA,ENTRY,0,0,true,,3.5,1.99,20000,21,65,0.17,0.83,2026-10-11,https://cardadvisor.in/cards/sc-platinum-rewards
+sc-priority-visa-infinite,Standard Chartered Priority Visa Infinite Credit Card,SC,VISA,PREMIUM,0,0,false,,3.5,3.75,,,,0.5,1.25,2026-09-25,https://cardadvisor.in/cards/sc-priority-visa-infinite
+sc-rewards,Standard Chartered Rewards Credit Card,SC,MASTERCARD,MID,1000,0,false,150000,3.5,3.75,,18,65,0.67,0.67,2026-10-11,https://cardadvisor.in/cards/sc-rewards
+sc-smart,Standard Chartered Smart Credit Card,SC,VISA,ENTRY,499,0,false,120000,3.5,3.75,,21,65,1,2,2026-10-11,https://cardadvisor.in/cards/sc-smart
+sc-super-value-titanium,Standard Chartered Super Value Titanium Credit Card,SC,MASTERCARD,MID,750,750,false,90000,3.5,3.75,,21,65,0.17,5,2026-10-11,https://cardadvisor.in/cards/sc-super-value-titanium
+sc-ultimate,Standard Chartered Ultimate Credit Card,SC,MASTERCARD,PREMIUM,5000,5000,false,,2,3.75,200000,21,65,3.33,3.33,2026-10-11,https://cardadvisor.in/cards/sc-ultimate
+scapia-federal,Scapia Credit Card,FEDERAL,VISA,MID,0,0,true,,0,3.75,,,,2,4,2026-10-11,https://cardadvisor.in/cards/scapia-federal
+slice,slice UPI Credit Card,SLICE,RUPAY,ENTRY,0,0,true,,0,3.5,,18,,1,1,2026-09-28,https://cardadvisor.in/cards/slice
+uni-goldx,BOBCARD Uni GoldX Credit Card,BOB,VISA,ENTRY,0,0,true,,0,3.99,,21,60,1,1,2026-09-28,https://cardadvisor.in/cards/uni-goldx
+utkarsh-supercard,super.money superCard (Utkarsh SFB),UTKARSH,RUPAY,ENTRY,0,0,true,,3.5,3.5,,18,,1,1,2026-09-28,https://cardadvisor.in/cards/utkarsh-supercard
+yes-ace,YES Bank Ace Credit Card,YES,VISA,ENTRY,499,499,false,50000,3.5,3.99,25000,21,60,0.4,0.8,2026-10-11,https://cardadvisor.in/cards/yes-ace
+yes-elite-plus,YES Bank Elite+ Credit Card,YES,MASTERCARD,MID,999,999,false,200000,3,3.99,100000,21,60,0.6,1.2,2026-10-11,https://cardadvisor.in/cards/yes-elite-plus
+yes-essence,YES Bank Essence Credit Card,YES,VISA,MID,799,799,false,100000,3,3.99,30000,21,60,0.4,0.8,2026-10-11,https://cardadvisor.in/cards/yes-essence
+yes-first-exclusive,YES First Exclusive Credit Card (now YES Bank RESERV),YES,MASTERCARD,PREMIUM,2499,2499,false,300000,2,2.99,200000,21,60,1.5,3,2026-10-11,https://cardadvisor.in/cards/yes-first-exclusive
+yes-marquee,YES Bank Marquee Credit Card,YES,MASTERCARD,SUPER_PREMIUM,4999,9999,false,1000000,1,2.99,300000,21,60,2.25,4.5,2026-10-11,https://cardadvisor.in/cards/yes-marquee
+yes-private,YES Private Credit Card,YES,MASTERCARD,SUPER_PREMIUM,10000,50000,false,2500000,0.5,2.99,,,,2.5,5,2026-09-25,https://cardadvisor.in/cards/yes-private
+yes-private-prime,YES Private Prime Credit Card,YES,MASTERCARD,SUPER_PREMIUM,10000,20000,false,2000000,0.5,2.99,,,,2.5,5,2026-09-25,https://cardadvisor.in/cards/yes-private-prime
+yes-select,YES Bank Select Credit Card,YES,VISA,ENTRY,599,599,false,100000,3.5,3.99,50000,21,60,0.4,0.8,2026-10-11,https://cardadvisor.in/cards/yes-select
+yes-wellness-plus,YES Bank Wellness Plus Credit Card,YES,VISA,MID,1499,1499,false,,3.5,3.99,20000,21,60,0.6,3,2026-10-11,https://cardadvisor.in/cards/yes-wellness-plus
+zagg,YES Bank Zagg Credit Card,YES,RUPAY,ENTRY,0,0,true,,3.5,3.99,25000,21,60,0.75,0.75,2026-09-28,https://cardadvisor.in/cards/zagg

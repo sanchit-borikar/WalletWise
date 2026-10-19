@@ -1,0 +1,239 @@
+# CardAdvisor — India Credit Card Point Valuations Dataset, live snapshot as of 2026-10-01. For a citable, immutable version see https://cardadvisor.in/data/versions. License: CC BY 4.0.
+cardKey,cardName,issuer,tier,programName,rewardType,typicalPaisaPerPoint,cardUrl
+axis-primus,Axis Bank Primus Credit Card,Axis Bank,SUPER_PREMIUM,Axis EDGE Miles,AIRLINE_MILES,500,https://cardadvisor.in/cards/axis-primus
+axis-olympus,Axis Bank Olympus Credit Card,Axis Bank,SUPER_PREMIUM,Axis EDGE Miles,AIRLINE_MILES,400,https://cardadvisor.in/cards/axis-olympus
+axis-atlas,Axis Bank Atlas Credit Card,Axis Bank,PREMIUM,Axis EDGE Miles,AIRLINE_MILES,200,https://cardadvisor.in/cards/axis-atlas
+hsbc-premier,HSBC Premier World Mastercard,HSBC,SUPER_PREMIUM,HSBC Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/hsbc-premier
+hsbc-travelone,HSBC TravelOne Credit Card,HSBC,PREMIUM,HSBC Reward Points,AIRLINE_MILES,100,https://cardadvisor.in/cards/hsbc-travelone
+axis-burgundy-private,Axis Bank Burgundy Private Credit Card,Axis Bank,SUPER_PREMIUM,Axis EDGE Reward Points,REWARD_POINTS,80,https://cardadvisor.in/cards/axis-burgundy-private
+sbi-miles,SBI Card MILES,SBI Card,MID,SBI Card Travel Credits,AIRLINE_MILES,50,https://cardadvisor.in/cards/sbi-miles
+sbi-miles-prime,SBI Card MILES PRIME,SBI Card,PREMIUM,SBI Card Travel Credits,AIRLINE_MILES,50,https://cardadvisor.in/cards/sbi-miles-prime
+sbi-miles-elite,SBI Card Miles Elite,SBI Card,PREMIUM,SBI Card Travel Credits,AIRLINE_MILES,50,https://cardadvisor.in/cards/sbi-miles-elite
+au-zenith-plus,AU Zenith Plus Credit Card,AU Small Finance Bank,PREMIUM,AU Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/au-zenith-plus
+icici-adani-platinum,Adani One ICICI Bank Platinum Credit Card,ICICI Bank,MID,ICICI Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/icici-adani-platinum
+icici-adani-signature,Adani One ICICI Bank Signature Credit Card,ICICI Bank,PREMIUM,ICICI Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/icici-adani-signature
+sbi-apollo,Apollo SBI Card,SBI Card,ENTRY,SBI Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/sbi-apollo
+sbi-apollo-select,Apollo SBI Card SELECT,SBI Card,MID,SBI Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/sbi-apollo-select
+axis-horizon,Axis Bank Horizon Credit Card,Axis Bank,MID,Axis EDGE Miles,AIRLINE_MILES,100,https://cardadvisor.in/cards/axis-horizon
+uni-goldx,BOBCARD Uni GoldX Credit Card,Bank of Baroda,ENTRY,BOB Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/uni-goldx
+indusind-cred,CRED IndusInd Bank RuPay Credit Card,IndusInd Bank,MID,IndusInd Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/indusind-cred
+icici-emirates-emeralde,Emirates Skywards ICICI Bank Emeralde Credit Card,ICICI Bank,SUPER_PREMIUM,Emirates Skywards Miles,AIRLINE_MILES,100,https://cardadvisor.in/cards/icici-emirates-emeralde
+icici-emirates-rubyx,Emirates Skywards ICICI Bank Rubyx Credit Card,ICICI Bank,MID,Emirates Skywards Miles,AIRLINE_MILES,100,https://cardadvisor.in/cards/icici-emirates-rubyx
+icici-emirates-sapphiro,Emirates Skywards ICICI Bank Sapphiro Credit Card,ICICI Bank,PREMIUM,Emirates Skywards Miles,AIRLINE_MILES,100,https://cardadvisor.in/cards/icici-emirates-sapphiro
+axis-google-pay-flex,Google Pay Flex Axis Bank Credit Card,Axis Bank,ENTRY,Axis EDGE Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/axis-google-pay-flex
+hdfc-infinia,HDFC Bank Infinia Metal Credit Card,HDFC Bank,SUPER_PREMIUM,HDFC Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/hdfc-infinia
+hdfc-diners-black,HDFC Diners Club Black Metal Edition,HDFC Bank,SUPER_PREMIUM,HDFC Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/hdfc-diners-black
+hdfc-regalia-gold,HDFC Regalia Gold Credit Card,HDFC Bank,PREMIUM,HDFC Reward Points,REWARD_POINTS,50,https://cardadvisor.in/cards/hdfc-regalia-gold
+hsbc-rupay-platinum,HSBC RuPay Platinum Credit Card,HSBC,ENTRY,HSBC Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/hsbc-rupay-platinum
+hsbc-platinum,HSBC Visa Platinum Credit Card,HSBC,MID,HSBC Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/hsbc-platinum
+icici-emeralde-private,ICICI Bank Emeralde Private Metal Credit Card,ICICI Bank,SUPER_PREMIUM,ICICI Reward Points,REWARD_POINTS,40,https://cardadvisor.in/cards/icici-emeralde-private
+hdfc-irctc,IRCTC HDFC Bank Credit Card,HDFC Bank,MID,HDFC Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/hdfc-irctc
+sbi-irctc-premier,IRCTC SBI Card Premier,SBI Card,MID,SBI Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/sbi-irctc-premier
+sbi-irctc-platinum,IRCTC SBI Platinum Card,SBI Card,ENTRY,SBI Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/sbi-irctc-platinum
+axis-indianoil-premium,IndianOil Axis Bank Premium Credit Card,Axis Bank,MID,Axis EDGE Miles,REWARD_POINTS,100,https://cardadvisor.in/cards/axis-indianoil-premium
+indusind-avios,IndusInd Bank Avios Visa Infinite Credit Card,IndusInd Bank,PREMIUM,Avios (British Airways Executive Club / Qatar Privilege Club),AIRLINE_MILES,100,https://cardadvisor.in/cards/indusind-avios
+indusind-pioneer-heritage,IndusInd Bank Pioneer Heritage Credit Card,IndusInd Bank,SUPER_PREMIUM,IndusInd Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/indusind-pioneer-heritage
+indusind-pioneer-legacy,IndusInd Bank Pioneer Legacy Credit Card,IndusInd Bank,SUPER_PREMIUM,IndusInd Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/indusind-pioneer-legacy
+indusind-pioneer-private,IndusInd Bank Pioneer Private Credit Card,IndusInd Bank,SUPER_PREMIUM,IndusInd Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/indusind-pioneer-private
+indusind-tiger,IndusInd Bank Tiger Credit Card,IndusInd Bank,MID,IndusInd Reward Points,REWARD_POINTS,40,https://cardadvisor.in/cards/indusind-tiger
+kotak-air,Kotak Air Credit Card,Kotak Mahindra,MID,Kotak Air Miles,AIRLINE_MILES,100,https://cardadvisor.in/cards/kotak-air
+kotak-air-plus-prime,Kotak Air+ Prime Credit Card,Kotak Mahindra,MID,Kotak Air Miles,AIRLINE_MILES,100,https://cardadvisor.in/cards/kotak-air-plus-prime
+kotak-solitaire,Kotak Solitaire Credit Card,Kotak Mahindra,SUPER_PREMIUM,Kotak Air Miles,AIRLINE_MILES,100,https://cardadvisor.in/cards/kotak-solitaire
+kotak-white,Kotak White Credit Card,Kotak Mahindra,PREMIUM,Kotak Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/kotak-white
+kotak-white-reserve,Kotak White Reserve Credit Card,Kotak Mahindra,SUPER_PREMIUM,Kotak Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/kotak-white-reserve
+icici-mmt,MakeMyTrip ICICI Bank Credit Card,ICICI Bank,MID,ICICI Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/icici-mmt
+axis-miles-more,Miles & More Axis Bank World Credit Card,Axis Bank,PREMIUM,Lufthansa Miles & More Award Miles,AIRLINE_MILES,100,https://cardadvisor.in/cards/axis-miles-more
+axis-miles-more-select,Miles & More Axis Bank World Select Credit Card,Axis Bank,PREMIUM,Lufthansa Miles & More Award Miles,AIRLINE_MILES,100,https://cardadvisor.in/cards/axis-miles-more-select
+kotak-pvr-inox,PVR INOX Kotak Credit Card,Kotak Mahindra,ENTRY,Kotak Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/kotak-pvr-inox
+au-paytm,Paytm AU Credit Card,AU Small Finance Bank,ENTRY,AU Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/au-paytm
+hdfc-phonepe-ultimo,PhonePe HDFC Bank Ultimo Credit Card,HDFC Bank,MID,HDFC Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/hdfc-phonepe-ultimo
+hdfc-phonepe-uno,PhonePe HDFC Bank Uno Credit Card,HDFC Bank,ENTRY,HDFC Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/hdfc-phonepe-uno
+sbi-phonepe-select-black,PhonePe SBI Card SELECT BLACK,SBI Card,MID,SBI Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/sbi-phonepe-select-black
+rbl-irctc,RBL Bank IRCTC Credit Card,RBL Bank,ENTRY,RBL Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/rbl-irctc
+rbl-lumiere,RBL Bank Lumière Credit Card,RBL Bank,SUPER_PREMIUM,RBL Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/rbl-lumiere
+rbl-nova,RBL Bank Nova Credit Card,RBL Bank,PREMIUM,RBL Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/rbl-nova
+hdfc-shoppers-stop-black,Shoppers Stop Black HDFC Bank Credit Card,HDFC Bank,PREMIUM,HDFC Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/hdfc-shoppers-stop-black
+hdfc-shoppers-stop,Shoppers Stop HDFC Bank Credit Card,HDFC Bank,ENTRY,HDFC Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/hdfc-shoppers-stop
+sc-beyond,Standard Chartered Beyond Credit Card,Standard Chartered,SUPER_PREMIUM,Standard Chartered Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/sc-beyond
+sc-ultimate,Standard Chartered Ultimate Credit Card,Standard Chartered,PREMIUM,Standard Chartered Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/sc-ultimate
+hdfc-tata-neu-infinity,Tata Neu Infinity HDFC Bank Credit Card,HDFC Bank,MID,Tata NeuCoins,REWARD_POINTS,100,https://cardadvisor.in/cards/hdfc-tata-neu-infinity
+hdfc-tata-neu-plus,Tata Neu Plus HDFC Bank Credit Card,HDFC Bank,MID,Tata NeuCoins,REWARD_POINTS,100,https://cardadvisor.in/cards/hdfc-tata-neu-plus
+icici-times-black,Times Black ICICI Bank Credit Card,ICICI Bank,SUPER_PREMIUM,ICICI Reward Points,REWARD_POINTS,40,https://cardadvisor.in/cards/icici-times-black
+bharatpe,Unity Bank BharatPe Credit Card,UNITY,ENTRY,Reward Points,REWARD_POINTS,100,https://cardadvisor.in/cards/bharatpe
+hdfc-indianoil,IndianOil HDFC Bank Credit Card,HDFC Bank,ENTRY,HDFC Reward Points,REWARD_POINTS,96,https://cardadvisor.in/cards/hdfc-indianoil
+axis-lic,LIC Axis Bank Signature Credit Card,Axis Bank,ENTRY,Axis EDGE Reward Points,REWARD_POINTS,95,https://cardadvisor.in/cards/axis-lic
+amex-centurion,American Express Centurion Card,American Express,SUPER_PREMIUM,Amex Membership Rewards,REWARD_POINTS,60,https://cardadvisor.in/cards/amex-centurion
+amex-gold,American Express Gold Card,American Express,PREMIUM,Amex Membership Rewards,REWARD_POINTS,50,https://cardadvisor.in/cards/amex-gold
+amex-mrcc,American Express Membership Rewards Credit Card,American Express,MID,Amex Membership Rewards,REWARD_POINTS,50,https://cardadvisor.in/cards/amex-mrcc
+amex-platinum-charge,American Express Platinum Card,American Express,SUPER_PREMIUM,Amex Membership Rewards,REWARD_POINTS,60,https://cardadvisor.in/cards/amex-platinum-charge
+amex-platinum-reserve,American Express Platinum Reserve Credit Card,American Express,PREMIUM,Amex Membership Rewards,REWARD_POINTS,50,https://cardadvisor.in/cards/amex-platinum-reserve
+amex-platinum-travel,American Express Platinum Travel Credit Card,American Express,PREMIUM,Amex Membership Rewards,REWARD_POINTS,50,https://cardadvisor.in/cards/amex-platinum-travel
+amex-smartearn,American Express SmartEarn Credit Card,American Express,ENTRY,Amex Membership Rewards,REWARD_POINTS,50,https://cardadvisor.in/cards/amex-smartearn
+indusind-celesta,IndusInd Bank Celesta Credit Card,IndusInd Bank,SUPER_PREMIUM,IndusInd Reward Points,REWARD_POINTS,75,https://cardadvisor.in/cards/indusind-celesta
+indusind-crest,IndusInd Bank Crest Credit Card,IndusInd Bank,SUPER_PREMIUM,IndusInd Reward Points,REWARD_POINTS,75,https://cardadvisor.in/cards/indusind-crest
+indusind-nexxt,IndusInd Bank Nexxt Credit Card,IndusInd Bank,PREMIUM,IndusInd Reward Points,REWARD_POINTS,75,https://cardadvisor.in/cards/indusind-nexxt
+indusind-pinnacle,IndusInd Bank Pinnacle Credit Card,IndusInd Bank,SUPER_PREMIUM,IndusInd Reward Points,REWARD_POINTS,75,https://cardadvisor.in/cards/indusind-pinnacle
+hsbc-taj,HSBC Taj Credit Card,HSBC,SUPER_PREMIUM,HSBC Reward Points,REWARD_POINTS,67,https://cardadvisor.in/cards/hsbc-taj
+hdfc-marriott-bonvoy,Marriott Bonvoy HDFC Bank Credit Card,HDFC Bank,PREMIUM,Marriott Bonvoy Points,HOTEL_POINTS,60,https://cardadvisor.in/cards/hdfc-marriott-bonvoy
+axis-shoppers-stop,Axis Bank Shoppers Stop Credit Card,Axis Bank,MID,Axis EDGE Reward Points,REWARD_POINTS,50,https://cardadvisor.in/cards/axis-shoppers-stop
+bob-etihad-guest,BOBCARD Etihad Guest Credit Card,Bank of Baroda,PREMIUM,BOB Reward Points,AIRLINE_MILES,50,https://cardadvisor.in/cards/bob-etihad-guest
+bob-etihad-guest-premium,BOBCARD Etihad Guest Premium Credit Card,Bank of Baroda,SUPER_PREMIUM,BOB Reward Points,AIRLINE_MILES,50,https://cardadvisor.in/cards/bob-etihad-guest-premium
+cheq-au,CheQ AU Credit Card,AU Small Finance Bank,MID,CheQ Points,REWARD_POINTS,50,https://cardadvisor.in/cards/cheq-au
+axis-flipkart-super-elite,Flipkart Axis Bank Super Elite Credit Card,Axis Bank,MID,Axis EDGE Reward Points,REWARD_POINTS,50,https://cardadvisor.in/cards/axis-flipkart-super-elite
+hdfc-diners-privilege,HDFC Bank Diners Club Privilege Credit Card,HDFC Bank,PREMIUM,HDFC Reward Points,REWARD_POINTS,50,https://cardadvisor.in/cards/hdfc-diners-privilege
+hdfc-freedom,HDFC Bank Freedom Credit Card,HDFC Bank,ENTRY,HDFC Reward Points,REWARD_POINTS,15,https://cardadvisor.in/cards/hdfc-freedom
+hdfc-upi-rupay,HDFC Bank UPI RuPay Credit Card,HDFC Bank,ENTRY,HDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/hdfc-upi-rupay
+hdfc-moneyback-plus,HDFC MoneyBack+ Credit Card,HDFC Bank,ENTRY,HDFC Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/hdfc-moneyback-plus
+indusind-duo,IndusInd Bank Duo Card,IndusInd Bank,MID,IndusInd Reward Points,REWARD_POINTS,50,https://cardadvisor.in/cards/indusind-duo
+indusind-indulge,IndusInd Bank Indulge Credit Card,IndusInd Bank,SUPER_PREMIUM,IndusInd Reward Points,REWARD_POINTS,50,https://cardadvisor.in/cards/indusind-indulge
+indusind-solitaire,IndusInd Bank Indus Solitaire Credit Card,IndusInd Bank,SUPER_PREMIUM,IndusInd Reward Points,REWARD_POINTS,50,https://cardadvisor.in/cards/indusind-solitaire
+indusind-legend,IndusInd Bank Legend Credit Card,IndusInd Bank,PREMIUM,IndusInd Reward Points,REWARD_POINTS,50,https://cardadvisor.in/cards/indusind-legend
+sbi-krisflyer,KrisFlyer SBI Card,SBI Card,PREMIUM,SBI Reward Points,AIRLINE_MILES,50,https://cardadvisor.in/cards/sbi-krisflyer
+sbi-krisflyer-apex,KrisFlyer SBI Card Apex,SBI Card,SUPER_PREMIUM,SBI Reward Points,AIRLINE_MILES,50,https://cardadvisor.in/cards/sbi-krisflyer-apex
+rbl-indianoil,RBL Bank IndianOil Credit Card,RBL Bank,ENTRY,RBL Reward Points,REWARD_POINTS,50,https://cardadvisor.in/cards/rbl-indianoil
+rbl-indianoil-xtra,RBL Bank IndianOil XTRA Credit Card,RBL Bank,MID,RBL Reward Points,REWARD_POINTS,50,https://cardadvisor.in/cards/rbl-indianoil-xtra
+axis-spicejet-voyage-black,SpiceJet Axis Bank Voyage Black Credit Card,Axis Bank,PREMIUM,SpiceJet SpiceClub,REWARD_POINTS,50,https://cardadvisor.in/cards/axis-spicejet-voyage-black
+axis-spicejet-voyage,SpiceJet Axis Bank Voyage Credit Card,Axis Bank,MID,SpiceJet SpiceClub,REWARD_POINTS,50,https://cardadvisor.in/cards/axis-spicejet-voyage
+axis-indigo,IndiGo Axis Bank Credit Card,Axis Bank,ENTRY,IndiGo BluChip,REWARD_POINTS,42,https://cardadvisor.in/cards/axis-indigo
+axis-indigo-premium,IndiGo Axis Bank Premium Credit Card,Axis Bank,PREMIUM,IndiGo BluChip,REWARD_POINTS,42,https://cardadvisor.in/cards/axis-indigo-premium
+idfc-indigo,IndiGo IDFC FIRST Credit Card,IDFC FIRST Bank,PREMIUM,IndiGo BluChip,AIRLINE_MILES,42,https://cardadvisor.in/cards/idfc-indigo
+kotak-indigo,IndiGo Kotak Credit Card,Kotak Mahindra,MID,IndiGo BluChip,REWARD_POINTS,42,https://cardadvisor.in/cards/kotak-indigo
+sbi-indigo,IndiGo SBI Card,SBI Card,MID,IndiGo BluChip,AIRLINE_MILES,42,https://cardadvisor.in/cards/sbi-indigo
+sbi-indigo-elite,IndiGo SBI Card ELITE,SBI Card,PREMIUM,IndiGo BluChip,AIRLINE_MILES,42,https://cardadvisor.in/cards/sbi-indigo-elite
+kotak-indigo-premium,IndiGo XL Kotak Credit Card,Kotak Mahindra,PREMIUM,IndiGo BluChip,REWARD_POINTS,42,https://cardadvisor.in/cards/kotak-indigo-premium
+axis-magnus,Axis Bank Magnus Credit Card,Axis Bank,PREMIUM,Axis EDGE Reward Points,REWARD_POINTS,40,https://cardadvisor.in/cards/axis-magnus
+axis-reserve,Axis Bank Reserve Credit Card,Axis Bank,SUPER_PREMIUM,Axis EDGE Reward Points,REWARD_POINTS,40,https://cardadvisor.in/cards/axis-reserve
+icici-coral,ICICI Bank Coral Credit Card,ICICI Bank,MID,ICICI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/icici-coral
+icici-emeralde,ICICI Bank Emeralde Credit Card (Metal),ICICI Bank,SUPER_PREMIUM,ICICI Reward Points,REWARD_POINTS,40,https://cardadvisor.in/cards/icici-emeralde
+icici-expressions,ICICI Bank Expressions Credit Card,ICICI Bank,MID,ICICI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/icici-expressions
+icici-hpcl-coral,ICICI Bank HPCL Coral Credit Card,ICICI Bank,ENTRY,ICICI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/icici-hpcl-coral
+icici-platinum,ICICI Bank Platinum Chip Credit Card,ICICI Bank,ENTRY,ICICI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/icici-platinum
+icici-rubyx,ICICI Bank Rubyx Credit Card,ICICI Bank,MID,ICICI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/icici-rubyx
+icici-sapphiro,ICICI Bank Sapphiro Credit Card,ICICI Bank,PREMIUM,ICICI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/icici-sapphiro
+icici-hpcl-super-saver,ICICI HPCL Super Saver Credit Card,ICICI Bank,ENTRY,ICICI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/icici-hpcl-super-saver
+indusind-platinum-aura-edge,IndusInd Bank Platinum Aura Edge Credit Card,IndusInd Bank,MID,IndusInd Reward Points,REWARD_POINTS,40,https://cardadvisor.in/cards/indusind-platinum-aura-edge
+indusind-platinum,IndusInd Bank Platinum Credit Card,IndusInd Bank,MID,IndusInd Reward Points,REWARD_POINTS,40,https://cardadvisor.in/cards/indusind-platinum
+cred-sovereign,CRED Sovereign Credit Card,IndusInd Bank,SUPER_PREMIUM,IndusInd Reward Points,REWARD_POINTS,35,https://cardadvisor.in/cards/cred-sovereign
+cub-salaryse,CUB SalarySe Level Up Credit Card,CUB,ENTRY,Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/cub-salaryse
+indusind-eazydiner-platinum,EazyDiner IndusInd Bank Platinum Credit Card,IndusInd Bank,MID,IndusInd Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/indusind-eazydiner-platinum
+indusind-eazydiner,IndusInd Bank EazyDiner Signature Credit Card,IndusInd Bank,MID,IndusInd Reward Points,REWARD_POINTS,10,https://cardadvisor.in/cards/indusind-eazydiner
+indusind-jio-bp,IndusInd Bank Jio-bp Mobility+ Credit Card,IndusInd Bank,MID,IndusInd Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/indusind-jio-bp
+indusind-platinum-rupay,IndusInd Bank Platinum RuPay Credit Card,IndusInd Bank,MID,IndusInd Reward Points,REWARD_POINTS,35,https://cardadvisor.in/cards/indusind-platinum-rupay
+indusind-epay-amex,IndusInd Bank ePay Amex Credit Card,IndusInd Bank,ENTRY,IndusInd Reward Points,REWARD_POINTS,35,https://cardadvisor.in/cards/indusind-epay-amex
+au-altura-plus,AU Altura Plus Credit Card,AU Small Finance Bank,ENTRY,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-altura-plus
+au-ananta,AU Ananta Credit Card,AU Small Finance Bank,MID,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-ananta
+au-vetta,AU Bank Vetta Credit Card,AU Small Finance Bank,MID,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-vetta
+au-xcite,AU Bank Xcite Credit Card,AU Small Finance Bank,ENTRY,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-xcite
+au-ca,AU CA Credit Card,AU Small Finance Bank,MID,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-ca
+au-cs,AU CS Credit Card,AU Small Finance Bank,MID,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-cs
+au-lit,AU LIT Credit Card,AU Small Finance Bank,MID,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-lit
+au-laksya,AU Laksya Credit Card,AU Small Finance Bank,MID,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-laksya
+au-nomo,AU NOMO Credit Card,AU Small Finance Bank,ENTRY,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-nomo
+au-prathama,AU Prathama Credit Card,AU Small Finance Bank,ENTRY,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-prathama
+au-tejas,AU Tejas Credit Card,AU Small Finance Bank,ENTRY,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-tejas
+au-traverse,AU Traverse Credit Card,AU Small Finance Bank,PREMIUM,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-traverse
+au-xcite-ultra,AU Xcite Ultra Credit Card,AU Small Finance Bank,MID,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-xcite-ultra
+au-zenith,AU Zenith Credit Card,AU Small Finance Bank,PREMIUM,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-zenith
+bob-easy,BOBCARD Easy Credit Card,Bank of Baroda,ENTRY,BOB Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/bob-easy
+bob-prime,BOBCARD Prime Credit Card,Bank of Baroda,ENTRY,BOB Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/bob-prime
+bob-select,BOBCARD Select Credit Card,Bank of Baroda,MID,BOB Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/bob-select
+sbi-bpcl,BPCL SBI Card,SBI Card,MID,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-bpcl
+sbi-bpcl-octane,BPCL SBI Card Octane,SBI Card,MID,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-bpcl-octane
+bob-eterna,Bank of Baroda Eterna Credit Card,Bank of Baroda,PREMIUM,BOB Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/bob-eterna
+bob-premier,Bank of Baroda Premier Credit Card,Bank of Baroda,MID,BOB Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/bob-premier
+bob-tiara,Bank of Baroda Tiara Credit Card,Bank of Baroda,PREMIUM,BOB Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/bob-tiara
+bob-cma-one,CMA One BOBCARD Credit Card,Bank of Baroda,MID,BOB Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/bob-cma-one
+sbi-doctors,Doctor's SBI Card,SBI Card,MID,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-doctors
+sbi-doctors-ima,Doctor's SBI Card (in Association with IMA),SBI Card,MID,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-doctors-ima
+federal-celesta,Federal Bank Celesta Credit Card,Federal Bank,PREMIUM,Federal Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/federal-celesta
+federal-imperio,Federal Bank Imperio Credit Card,Federal Bank,MID,Federal Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/federal-imperio
+federal-signet,Federal Bank Signet Credit Card,Federal Bank,ENTRY,Federal Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/federal-signet
+bob-hpcl-energie,HPCL ENERGIE BOBCARD Credit Card,Bank of Baroda,MID,BOB Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/bob-hpcl-energie
+bob-icai-exclusive,ICAI Exclusive BOBCARD Credit Card,Bank of Baroda,MID,BOB Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/bob-icai-exclusive
+bob-icsi-diamond,ICSI Diamond BOBCARD Credit Card,Bank of Baroda,MID,BOB Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/bob-icsi-diamond
+idfc-ashva,IDFC FIRST Ashva Credit Card,IDFC FIRST Bank,PREMIUM,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-ashva
+idfc-first-classic,IDFC FIRST Classic Credit Card,IDFC FIRST Bank,MID,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-first-classic
+idfc-diamond-reserve,IDFC FIRST Diamond Reserve Credit Card,IDFC FIRST Bank,PREMIUM,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-diamond-reserve
+idfc-digital-rupay,IDFC FIRST Digital RuPay Credit Card,IDFC FIRST Bank,ENTRY,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-digital-rupay
+idfc-gaj,IDFC FIRST Gaj Credit Card,IDFC FIRST Bank,SUPER_PREMIUM,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-gaj
+idfc-hpcl-power,IDFC FIRST HPCL Power+ Credit Card,IDFC FIRST Bank,MID,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-hpcl-power
+idfc-mayura,IDFC FIRST Mayura Credit Card,IDFC FIRST Bank,SUPER_PREMIUM,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-mayura
+idfc-millennia,IDFC FIRST Millennia Credit Card,IDFC FIRST Bank,ENTRY,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-millennia
+idfc-power,IDFC FIRST Power Credit Card,IDFC FIRST Bank,MID,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-power
+idfc-first-private,IDFC FIRST Private Credit Card,IDFC FIRST Bank,SUPER_PREMIUM,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-first-private
+idfc-swyp,IDFC FIRST SWYP Credit Card,IDFC FIRST Bank,ENTRY,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-swyp
+idfc-select,IDFC FIRST Select Credit Card,IDFC FIRST Bank,PREMIUM,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-select
+idfc-wow-black,IDFC FIRST WOW! Black Credit Card,IDFC FIRST Bank,MID,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-wow-black
+idfc-wow,IDFC FIRST WOW! Credit Card,IDFC FIRST Bank,ENTRY,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-wow
+idfc-first-wealth,IDFC FIRST Wealth Credit Card,IDFC FIRST Bank,PREMIUM,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-first-wealth
+bob-irctc,IRCTC BOBCARD RuPay Credit Card,Bank of Baroda,MID,BOB Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/bob-irctc
+kotak-indianoil,IndianOil Kotak Credit Card,Kotak Mahindra,ENTRY,Kotak Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/kotak-indianoil
+kotak-811,Kotak 811 #DreamDifferent Credit Card,Kotak Mahindra,ENTRY,Kotak Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/kotak-811
+kotak-league-platinum,Kotak League Platinum Credit Card,Kotak Mahindra,MID,Kotak Reward Points,REWARD_POINTS,10,https://cardadvisor.in/cards/kotak-league-platinum
+kotak-upi-rupay,Kotak UPI RuPay Credit Card,Kotak Mahindra,ENTRY,Kotak Reward Points,REWARD_POINTS,10,https://cardadvisor.in/cards/kotak-upi-rupay
+kotak-zen-signature,Kotak Zen Signature Credit Card,Kotak Mahindra,PREMIUM,Kotak Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/kotak-zen-signature
+idfc-lic-classic,LIC Classic Credit Card,IDFC FIRST Bank,ENTRY,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-lic-classic
+idfc-lic-select,LIC Select Credit Card,IDFC FIRST Bank,MID,IDFC Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/idfc-lic-select
+sbi-landmark,Landmark Rewards SBI Card,SBI Card,ENTRY,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-landmark
+sbi-landmark-prime,Landmark Rewards SBI Card PRIME,SBI Card,PREMIUM,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-landmark-prime
+sbi-landmark-select,Landmark Rewards SBI Card SELECT,SBI Card,MID,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-landmark-select
+onecard,OneCard Credit Card,Bank of Baroda,MID,BOB Reward Points,REWARD_POINTS,10,https://cardadvisor.in/cards/onecard
+rbl-bankbazaar-savemax,RBL Bank BankBazaar SaveMax Credit Card,RBL Bank,ENTRY,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-bankbazaar-savemax
+rbl-bankbazaar-savemax-pro,RBL Bank BankBazaar SaveMax Pro Credit Card,RBL Bank,MID,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-bankbazaar-savemax-pro
+rbl-binge,RBL Bank Binge Credit Card,RBL Bank,ENTRY,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-binge
+rbl-blockbuster,RBL Bank Blockbuster Credit Card,RBL Bank,MID,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-blockbuster
+rbl-cookies,RBL Bank Cookies Credit Card,RBL Bank,ENTRY,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-cookies
+rbl-dmi-finance,RBL Bank DMI Finance Credit Card,RBL Bank,ENTRY,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-dmi-finance
+rbl-icon,RBL Bank Icon Credit Card,RBL Bank,MID,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-icon
+rbl-patanjali-swarn,RBL Bank Patanjali Swarn Credit Card,RBL Bank,MID,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-patanjali-swarn
+rbl-patanjali-vishisht,RBL Bank Patanjali Vishisht Credit Card,RBL Bank,ENTRY,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-patanjali-vishisht
+rbl-platinum-maxima,RBL Bank Platinum Maxima Plus Credit Card,RBL Bank,PREMIUM,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-platinum-maxima
+rbl-play,RBL Bank Play Credit Card,RBL Bank,ENTRY,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-play
+rbl-salaryse-up,RBL Bank SalarySe UP Credit Card,RBL Bank,ENTRY,RBL Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/rbl-salaryse-up
+rbl-shoprite,RBL Bank ShopRite Credit Card,RBL Bank,ENTRY,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-shoprite
+rbl-tvs-credit,RBL Bank TVS Credit Card,RBL Bank,ENTRY,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-tvs-credit
+rbl-tvs-credit-gold,RBL Bank TVS Gold Credit Card,RBL Bank,MID,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-tvs-credit-gold
+rbl-world-safari,RBL Bank World Safari Credit Card,RBL Bank,PREMIUM,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-world-safari
+rbl-world-safari-lite,RBL Bank World Safari Lite Credit Card,RBL Bank,MID,RBL Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/rbl-world-safari-lite
+sbi-reliance,Reliance SBI Card,SBI Card,ENTRY,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-reliance
+sbi-reliance-prime,Reliance SBI Card PRIME,SBI Card,PREMIUM,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-reliance-prime
+sbi-aurum,SBI Card AURUM,SBI Card,SUPER_PREMIUM,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-aurum
+sbi-elite,SBI Card ELITE,SBI Card,PREMIUM,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-elite
+sbi-prime,SBI Card PRIME,SBI Card,PREMIUM,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-prime
+sbi-pulse,SBI Card PULSE,SBI Card,MID,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-pulse
+sbi-unnati,SBI Card Unnati,SBI Card,ENTRY,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-unnati
+sbi-simply-click,SBI SimplyCLICK Credit Card,SBI Card,ENTRY,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-simply-click
+sbi-simply-save,SBI SimplySAVE Credit Card,SBI Card,ENTRY,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-simply-save
+scapia-federal,Scapia Credit Card,Federal Bank,MID,Federal Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/scapia-federal
+sbi-shaurya,Shaurya SBI Card,SBI Card,ENTRY,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-shaurya
+sbi-shaurya-select,Shaurya Select SBI Card,SBI Card,MID,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-shaurya-select
+bob-snapdeal,Snapdeal BOBCARD Credit Card,Bank of Baroda,ENTRY,BOB Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/bob-snapdeal
+sc-easemytrip,Standard Chartered EaseMyTrip Credit Card,Standard Chartered,ENTRY,Standard Chartered Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sc-easemytrip
+sc-manhattan-platinum,Standard Chartered Manhattan Platinum Credit Card,Standard Chartered,MID,Standard Chartered Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sc-manhattan-platinum
+sc-platinum-rewards,Standard Chartered Platinum Rewards Credit Card,Standard Chartered,ENTRY,Standard Chartered Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sc-platinum-rewards
+sc-priority-visa-infinite,Standard Chartered Priority Visa Infinite Credit Card,Standard Chartered,PREMIUM,Standard Chartered Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sc-priority-visa-infinite
+sc-rewards,Standard Chartered Rewards Credit Card,Standard Chartered,MID,Standard Chartered Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sc-rewards
+sc-super-value-titanium,Standard Chartered Super Value Titanium Credit Card,Standard Chartered,MID,Standard Chartered Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sc-super-value-titanium
+sbi-titan,Titan SBI Card,SBI Card,PREMIUM,SBI Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/sbi-titan
+yes-ace,YES Bank Ace Credit Card,YES Bank,ENTRY,YES Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/yes-ace
+yes-elite-plus,YES Bank Elite+ Credit Card,YES Bank,MID,YES Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/yes-elite-plus
+yes-essence,YES Bank Essence Credit Card,YES Bank,MID,YES Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/yes-essence
+yes-marquee,YES Bank Marquee Credit Card,YES Bank,SUPER_PREMIUM,YES Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/yes-marquee
+pop-club,YES Bank POP-CLUB Credit Card,YES Bank,ENTRY,YES Reward Points,REWARD_POINTS,10,https://cardadvisor.in/cards/pop-club
+yes-select,YES Bank Select Credit Card,YES Bank,ENTRY,YES Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/yes-select
+yes-wellness-plus,YES Bank Wellness Plus Credit Card,YES Bank,MID,YES Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/yes-wellness-plus
+zagg,YES Bank Zagg Credit Card,YES Bank,ENTRY,YES Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/zagg
+yes-first-exclusive,YES First Exclusive Credit Card (now YES Bank RESERV),YES Bank,PREMIUM,YES Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/yes-first-exclusive
+yes-private,YES Private Credit Card,YES Bank,SUPER_PREMIUM,YES Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/yes-private
+yes-private-prime,YES Private Prime Credit Card,YES Bank,SUPER_PREMIUM,YES Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/yes-private-prime
+au-ixigo,ixigo AU Credit Card,AU Small Finance Bank,MID,AU Reward Points,REWARD_POINTS,25,https://cardadvisor.in/cards/au-ixigo
+axis-freecharge,Axis Bank Freecharge Credit Card,Axis Bank,ENTRY,Axis EDGE Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/axis-freecharge
+axis-myzone,Axis Bank MyZone Credit Card,Axis Bank,ENTRY,Axis EDGE Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/axis-myzone
+axis-neo,Axis Bank Neo Credit Card,Axis Bank,ENTRY,Axis EDGE Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/axis-neo
+axis-privilege,Axis Bank Privilege Credit Card,Axis Bank,MID,Axis EDGE Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/axis-privilege
+axis-rewards,Axis Bank Rewards Credit Card,Axis Bank,MID,Axis EDGE Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/axis-rewards
+axis-select,Axis Bank Select Credit Card,Axis Bank,PREMIUM,Axis EDGE Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/axis-select
+axis-indianoil,IndianOil Axis Bank Credit Card,Axis Bank,ENTRY,Axis EDGE Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/axis-indianoil
+jupiter-edge,Jupiter Edge+ CSB Bank RuPay Credit Card,CSB,ENTRY,Jupiter Jewels,REWARD_POINTS,20,https://cardadvisor.in/cards/jupiter-edge
+axis-samsung-infinite,Samsung Axis Bank Infinite Credit Card,Axis Bank,PREMIUM,Axis EDGE Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/axis-samsung-infinite
+axis-samsung-signature,Samsung Axis Bank Signature Credit Card,Axis Bank,MID,Axis EDGE Reward Points,REWARD_POINTS,20,https://cardadvisor.in/cards/axis-samsung-signature
