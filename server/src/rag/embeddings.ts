@@ -72,16 +72,19 @@ function geminiEmbedder(): EmbedFn {
         // Shortened vectors are not always unit length; search relies on that.
         return data.embeddings.map((e) => normalize(e.values));
       }
-      // Free-tier rate limits (429) and server errors: wait and retry.
+      const body = await res.text();
+      // The free tier's daily cap: waiting minutes will not help.
+      if (res.status === 429 && /PerDay/.test(body)) {
+        throw new Error(`Gemini's free daily embedding quota for ${config.embeddingsModel} is used up; it resets after midnight Pacific time.`);
+      }
+      // Per-minute rate limits (429) and server errors: wait and retry.
       if ((res.status === 429 || res.status >= 500) && attempt < GEMINI_RETRIES) {
-        const body = await res.text();
         const hinted = Number(/"retryDelay":\s*"(\d+(?:\.\d+)?)s"/.exec(body)?.[1]);
         const waitMs = Number.isFinite(hinted) && hinted > 0 ? hinted * 1000 : 2000 * 2 ** attempt;
         await new Promise((r) => setTimeout(r, Math.min(waitMs, 65000)));
         continue;
       }
-      const detail = (await res.text()).slice(0, 300);
-      throw new Error(`Gemini embeddings failed (${res.status}): ${detail}`);
+      throw new Error(`Gemini embeddings failed (${res.status}): ${body.slice(0, 300)}`);
     }
   }
 

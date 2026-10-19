@@ -20,6 +20,7 @@ process.env.KNOWLEDGE_INDEX_FILE = indexFile;
 const { config } = await import('../config.ts');
 const { embed } = await import('../rag/embeddings.ts');
 const { writeLocalIndex } = await import('../rag/localIndex.ts');
+const { packChunks } = await import('../rag/chunk.ts');
 const { queryChunks } = await import('../rag/store.ts');
 const { handleRequest } = await import('../http.ts');
 
@@ -28,8 +29,8 @@ after(() => rmSync(dir, { recursive: true, force: true }));
 const meta = (cardId: string) => ({ cardId, cardName: cardId, bank: 'Bank', section: 'Fees', last_updated: '2026-01-01', source: 'test' });
 
 describe('Gemini embeddings', () => {
-  it('sends task prefixes, retries a rate limit and returns unit vectors', async () => {
-    const bodies: { requests: { model: string; outputDimensionality: number; content: { parts: { text: string }[] } }[] }[] = [];
+  it('sends the task type, retries a rate limit and returns unit vectors', async () => {
+    const bodies: { requests: { model: string; outputDimensionality: number; taskType?: string; content: { parts: { text: string }[] } }[] }[] = [];
     const realFetch = globalThis.fetch;
     let calls = 0;
     globalThis.fetch = (async (_url: string, init: RequestInit) => {
@@ -48,11 +49,42 @@ describe('Gemini embeddings', () => {
       assert.equal(calls, 3);
       assert.equal(bodies[0].requests[0].model, `models/${config.embeddingsModel}`);
       assert.equal(bodies[0].requests[0].outputDimensionality, 768);
-      assert.equal(bodies[0].requests[0].content.parts[0].text, 'task: search result | query: annual fee?');
-      assert.equal(bodies[1].requests[1].content.parts[0].text, 'title: none | text: doc two');
+      assert.equal(bodies[0].requests[0].taskType, 'RETRIEVAL_QUERY');
+      assert.equal(bodies[0].requests[0].content.parts[0].text, 'annual fee?');
+      assert.equal(bodies[1].requests[1].taskType, 'RETRIEVAL_DOCUMENT');
     } finally {
       globalThis.fetch = realFetch;
     }
+  });
+
+  it('stops at once when the free daily quota is used up', async () => {
+    const realFetch = globalThis.fetch;
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      return new Response('{"error":{"details":[{"quotaId":"EmbedContentRequestsPerDayPerUserPerProjectPerModel-FreeTier"}]}}', { status: 429 });
+    }) as typeof fetch;
+    try {
+      await assert.rejects(() => embed(['x'], 'query'), /daily embedding quota/);
+      assert.equal(calls, 1);
+    } finally {
+      globalThis.fetch = realFetch;
+    }
+  });
+});
+
+describe('packing chunks for Gemini', () => {
+  it('joins neighbouring chunks of one document up to the size limit', () => {
+    const chunk = (id: string, cardId: string, section: string, text: string) => ({ id, text, section, meta: { ...meta(cardId), source: 's' } });
+    const packed = packChunks(
+      [chunk('a1', 'a', 'Fees', 'x'.repeat(40)), chunk('a2', 'a', 'Rewards', 'y'.repeat(40)), chunk('a3', 'a', 'Lounge', 'z'.repeat(40)), chunk('b1', 'b', 'Fees', 'w')],
+      90,
+    );
+    assert.deepEqual(packed.map((c) => c.id), ['a1', 'a3', 'b1']);
+    assert.equal(packed[0].section, 'Fees, Rewards');
+    assert.equal(packed[0].text, `${'x'.repeat(40)}
+
+${'y'.repeat(40)}`);
   });
 });
 

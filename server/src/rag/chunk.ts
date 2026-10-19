@@ -67,3 +67,23 @@ export function chunkMarkdown(body: string, meta: DocMeta): Chunk[] {
   }
   return chunks;
 }
+
+/**
+ * Joins neighbouring chunks of the same document into pieces of up to `maxChars`.
+ * Used for the Gemini index: its free tier allows 1,000 embedding requests a day and
+ * every chunk is one request, so ~1,900 small chunks become well under 1,000 pieces.
+ */
+export function packChunks(chunks: Chunk[], maxChars: number): Chunk[] {
+  const packed: Chunk[] = [];
+  for (const chunk of chunks) {
+    const last = packed[packed.length - 1];
+    const sameDoc = last && last.meta.cardId === chunk.meta.cardId && last.meta.source === chunk.meta.source;
+    if (sameDoc && last.text.length + chunk.text.length + 2 <= maxChars) {
+      last.text += `\n\n${chunk.text}`;
+      if (!last.section.split(', ').includes(chunk.section)) last.section += `, ${chunk.section}`;
+    } else {
+      packed.push({ ...chunk });
+    }
+  }
+  return packed;
+}

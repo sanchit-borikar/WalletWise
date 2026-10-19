@@ -11,8 +11,8 @@ This puts the Aura server on **Vercel's free Hobby plan** (no credit card) and b
 ```
 APK ──POST /aura/chat──▶ Vercel function "aura" (Node 22, streams NDJSON, max 120 s)
                            ├──▶ Groq (LLM)
-                           ├──▶ Gemini API (embeds the question for card search)
-                           └──▶ knowledge-index.json (bundled, about 1,900 card chunks)
+                           ├──▶ Gemini API (gemini-embedding-001, embeds the question)
+                           └──▶ knowledge-index.json (bundled, about 580 card text pieces)
 ```
 
 - `vercel.json` (project root) tells Vercel to install only `server/` and run
@@ -52,7 +52,11 @@ computer and committed. Rebuild it after `npm run build:data` or after editing `
    $env:EMBEDDINGS_PROVIDER="gemini"; $env:VECTOR_STORE="file"; npm run aura:ingest
    ```
    (macOS/Linux: `EMBEDDINGS_PROVIDER=gemini VECTOR_STORE=file npm run aura:ingest`.)
-   On the free tier this takes a few minutes. Rate-limit pauses are retried automatically.
+   It takes about a minute. The Gemini free tier allows **1,000 embedding requests a day
+   per model**, and each piece of text is one request. So for Gemini, ingest packs neighbouring
+   chunks of a card into about 580 pieces, which leaves room for the day's questions (each
+   question to Aura uses one request). If it says the daily quota is used up, try again the
+   next day (it resets at midnight Pacific time).
 3. Commit `server/index/knowledge-index.gemini.json` and push.
 
 ## 2. Deploy the server on Vercel
@@ -159,4 +163,5 @@ environment variables.
 | `/health` shows `groqKeySet: false` or `embeddingsKeySet: false` | Add the variable in **Settings → Environment Variables**, then **Deployments → ⋯ → Redeploy** |
 | Aura says it cannot look up card details | Check the Gemini key and the function logs. "built with … but EMBEDDINGS_MODEL is …" means the index came from another model: rebuild it (step 1) |
 | App says "Can't reach Aura" | `EXPO_PUBLIC_AURA_API_URL` was missing at build time. Check `eas env:list preview` and rebuild |
-| General questions too often get "no verified info" | Lower `RAG_MIN_SCORE` (Gemini default 0.45) in Vercel's environment variables |
+| General questions too often get "no verified info" | Lower `RAG_MIN_SCORE` (Gemini default 0.58) in Vercel's environment variables |
+| Card search stops working late in the day | The 1,000 requests a day free quota is used up. It resets at midnight Pacific time |

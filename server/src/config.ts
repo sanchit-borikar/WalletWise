@@ -11,7 +11,8 @@ const num = (value: string | undefined, fallback: number) => {
 
 const embeddingsProvider = (process.env.EMBEDDINGS_PROVIDER ?? 'local').toLowerCase();
 const gemini = embeddingsProvider === 'gemini';
-const GEMINI_MIN_SCORE = 0.45;
+// Measured with gemini-embedding-001: off-topic questions score about 0.50, card questions 0.6 and up.
+const GEMINI_MIN_SCORE = 0.58;
 
 export const config = {
   port: num(process.env.AURA_PORT, 8787),
@@ -33,7 +34,7 @@ export const config = {
    * the default) or "gemini" (Gemini API, used on Vercel where the local model is too big).
    */
   embeddingsProvider,
-  embeddingsModel: process.env.EMBEDDINGS_MODEL ?? (gemini ? 'gemini-embedding-2' : 'Xenova/all-MiniLM-L6-v2'),
+  embeddingsModel: process.env.EMBEDDINGS_MODEL ?? (gemini ? 'gemini-embedding-001' : 'Xenova/all-MiniLM-L6-v2'),
   /** Vector length requested from Gemini (768 is one of Google's recommended sizes). */
   embeddingsDimensions: num(process.env.EMBEDDINGS_DIMENSIONS, 768),
   geminiApiKey: process.env.GEMINI_API_KEY ?? '',
