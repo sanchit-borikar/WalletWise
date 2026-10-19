@@ -1,0 +1,12 @@
+{
+  "note": "Hand-checked first-card facts, keyed by card id. Every entry was read on the issuer's own page on verifiedAt. null means the page does not say. Not yet wired into scripts/build-data.mjs.",
+  "cards": {
+    "idfc-wow": { "secured": true, "minFdRs": 20000, "noIncomeProof": true, "upi": null, "source": "https://www.idfcfirst.bank.in/credit-card/wow", "verifiedAt": "2026-10-20" },
+    "idfc-wow-black": { "secured": true, "minFdRs": 20000, "noIncomeProof": true, "upi": null, "source": "https://www.idfcfirst.bank.in/credit-card/wow-black-credit-card", "verifiedAt": "2026-10-20" },
+    "idfc-earn": { "secured": true, "minFdRs": 5000, "noIncomeProof": true, "upi": { "earnsRewards": true, "ratePct": 1, "notes": "1% cashback on UPI via the IDFC FIRST app, 0.5% via other UPI apps; cashback capped at Rs 500 a statement cycle" }, "source": "https://www.idfcfirst.bank.in/credit-card/secured-rupay-credit-card", "verifiedAt": "2026-10-20" },
+    "idfc-hello-cashback": { "secured": true, "minFdRs": 10000, "noIncomeProof": true, "upi": { "earnsRewards": true, "ratePct": 1, "notes": "1% cashback only on UPI paid through the IDFC FIRST app; UPI through GPay, PhonePe, Paytm and other apps earns nothing" }, "source": "https://www.idfcfirst.bank.in/credit-card/hello-cashback-credit-card", "verifiedAt": "2026-10-20" },
+    "kotak-811": { "secured": true, "minFdRs": 10000, "noIncomeProof": true, "upi": null, "source": "https://www.kotak811.bank.in/credit-cards/811-dream-different-credit-card-against-fd", "verifiedAt": "2026-10-20" },
+    "au-nomo": { "secured": true, "minFdRs": 20000, "noIncomeProof": true, "upi": null, "source": "https://www.au.bank.in/personal-banking/credit-cards/nomo-credit-card", "verifiedAt": "2026-10-20" },
+    "sbi-unnati": { "secured": true, "minFdRs": 25000, "noIncomeProof": null, "upi": null, "source": "https://www.sbicard.com/en/personal/credit-cards/sbi-card-unnati.html", "verifiedAt": "2026-10-20" }
+  }
+}
