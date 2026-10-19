@@ -32,22 +32,25 @@ GROQ_MODEL=openai/gpt-oss-120b
 
 ## Run
 
-Three terminals, all in `server/`:
+From the project folder (not `server/`), one command starts everything:
 
 ```bash
-npm run chroma     # 1. local vector database on port 8000 (keep running)
-npm run ingest     # 2. build the knowledge index (first run downloads the ~25 MB model; about 3-4 minutes)
-npm start          # 3. Aura server on port 8787 (keep running)
+npm start
 ```
 
-Then start the app as usual (`npx expo start -c` in the project folder). In development the app
-calls the computer running Expo on port 8787. Your phone and computer must be on the same Wi-Fi,
-and Windows Firewall must allow Node on port 8787 (Windows asks the first time).
-If the server runs elsewhere, set `EXPO_PUBLIC_AURA_API_URL` in `.env`.
+It starts Chroma (if installed and not already running), builds the knowledge index on the
+first run, starts the Aura server, then starts Expo with its QR code. The Aura server restarts
+by itself when server or engine code changes, and an older Aura server left running is
+replaced. `npm start -- -c` clears the Metro cache. Ctrl+C stops everything.
+
+Your phone and computer must be on the same Wi-Fi, and Windows Firewall must allow Node
+(Windows asks the first time). If the server runs elsewhere, set `EXPO_PUBLIC_AURA_API_URL` in `.env`.
 
 Check: `http://localhost:8787/health` shows `groqKeySet: true` and your model.
 
-Re-run `npm run ingest` after `npm run build:data` in the app or after editing `knowledge/`.
+Run pieces separately if needed: `npm run aura:chroma`, `npm run aura:server`,
+`npm run aura:ingest` (rebuild the index after `npm run build:data` or editing `knowledge/`),
+`npm run start:expo` (the app only).
 
 ## Tests
 

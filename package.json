@@ -43,7 +43,7 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "expo start",
+    "start": "node scripts/dev.mjs",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -55,7 +55,8 @@
     "fetch:images": "node scripts/fetch-card-images.mjs",
     "aura:chroma": "npm --prefix server run chroma",
     "aura:ingest": "npm --prefix server run ingest",
-    "aura:server": "npm --prefix server start"
+    "aura:server": "npm --prefix server start",
+    "start:expo": "expo start"
   },
   "private": true
 }
