@@ -4,103 +4,84 @@ import { Tabs } from 'expo-router';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { 
-  useAnimatedStyle, 
-  withSpring, 
-  withTiming, 
+import Animated, {
+  useAnimatedStyle,
+  withSpring,
   useSharedValue,
   interpolate,
-  Extrapolation
+  Extrapolation,
 } from 'react-native-reanimated';
-import { colors, typography } from '../../theme';
+import { theme } from '../../theme';
+import { Icon } from '../../components/Icon';
+import type { IconName } from '../../components/Icon';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
+const TAB_ICONS: Record<string, IconName> = {
+  index: 'home',
+  map: 'pin',
+  aura: 'sparkle',
+  learn: 'book',
+  wallet: 'card',
+};
+
 function TabItem({ route, isFocused, options, onPress }: any) {
-  const label = options.title !== undefined ? options.title : route.name;
-  
-  // Animation values
+  const label: string = options.title !== undefined ? options.title : route.name;
   const activeProgress = useSharedValue(isFocused ? 1 : 0);
 
   useEffect(() => {
-    activeProgress.value = withSpring(isFocused ? 1 : 0, { 
-      damping: 18, 
-      stiffness: 150 
-    });
-  }, [isFocused]);
+    activeProgress.set(withSpring(isFocused ? 1 : 0, { damping: 18, stiffness: 150 }));
+  }, [isFocused, activeProgress]);
 
-  const iconStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: interpolate(activeProgress.value, [0, 1], [1, 1.12], Extrapolation.CLAMP) }],
-    };
-  });
+  const iconStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: interpolate(activeProgress.value, [0, 1], [1, 1.08], Extrapolation.CLAMP) }],
+  }));
+  const indicatorStyle = useAnimatedStyle(() => ({
+    opacity: activeProgress.value,
+    transform: [{ scaleX: interpolate(activeProgress.value, [0, 1], [0.5, 1], Extrapolation.CLAMP) }],
+  }));
 
-  const indicatorStyle = useAnimatedStyle(() => {
-    return {
-      opacity: activeProgress.value,
-      transform: [{ scaleX: interpolate(activeProgress.value, [0, 1], [0.5, 1], Extrapolation.CLAMP) }],
-    };
-  });
-
-  const labelStyle = useAnimatedStyle(() => {
-    return {
-      opacity: activeProgress.value,
-      transform: [{ translateY: interpolate(activeProgress.value, [0, 1], [4, 0], Extrapolation.CLAMP) }],
-    };
-  });
-
-  // Dummy icons for now
-  const iconChar = route.name === 'index' ? '⌂' : 
-                   route.name === 'map' ? '⚲' : 
-                   route.name === 'learn' ? 'Ꙭ' : '💳';
+  const color = isFocused ? theme.colors.gold : theme.colors.textMuted;
 
   return (
-    <Pressable onPress={onPress} style={styles.tabItem}>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="tab"
+      accessibilityLabel={label}
+      accessibilityState={{ selected: isFocused }}
+      style={({ pressed }) => [styles.tabItem, pressed && styles.pressed]}
+    >
+      <Animated.View style={[styles.indicator, indicatorStyle]} />
       <Animated.View style={iconStyle}>
-        <Text style={[styles.tabIcon, isFocused && styles.activeText]}>
-          {iconChar}
-        </Text>
+        <Icon name={TAB_ICONS[route.name] ?? 'home'} color={color} size={theme.sizes.iconLarge} />
       </Animated.View>
-      
-      {/* Active Indicator Line */}
-      <Animated.View style={[styles.activeIndicator, indicatorStyle]} />
-      
-      {/* Label */}
-      <Animated.View style={[styles.labelContainer, labelStyle]}>
-        <Text style={[styles.tabLabel, isFocused && styles.activeText]}>
-          {label}
-        </Text>
-      </Animated.View>
+      <Text style={[theme.text.caption, styles.tabLabel, { color }]} numberOfLines={1}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
 
 function CenterAuraButton({ onPress, isFocused }: any) {
   const pressScale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: pressScale.value }],
-    shadowRadius: isFocused ? 16 : 8,
-    shadowOpacity: isFocused ? 0.6 : 0.3,
-  }));
+  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: pressScale.value }] }));
 
   return (
     <View style={styles.centerTabWrapper}>
       <AnimatedPressable
-        onPressIn={() => (pressScale.value = withSpring(0.92))}
-        onPressOut={() => (pressScale.value = withSpring(1))}
+        onPressIn={() => pressScale.set(withSpring(0.92))}
+        onPressOut={() => pressScale.set(withSpring(1))}
         onPress={onPress}
-        style={[styles.centerButtonWrapper, animatedStyle]}
+        accessibilityRole="tab"
+        accessibilityLabel="Aura assistant"
+        accessibilityState={{ selected: isFocused }}
+        style={[styles.centerButtonWrapper, isFocused && styles.centerButtonFocused, animatedStyle]}
       >
-        <LinearGradient
-          colors={['#171717', '#0A0A0A']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.centerButton}
-        >
-          <Text style={styles.centerIcon}>✦</Text>
+        <LinearGradient colors={[theme.colors.surfaceRaised, theme.colors.background]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.centerButton}>
+          <Icon name="sparkle" color={theme.colors.gold} size={theme.sizes.iconLarge} />
         </LinearGradient>
       </AnimatedPressable>
+      <Text style={[theme.text.caption, styles.tabLabel, { color: isFocused ? theme.colors.gold : theme.colors.textMuted }]}>Aura</Text>
     </View>
   );
 }
@@ -110,40 +91,22 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
 
   return (
     <View style={styles.tabBarContainer}>
-      <BlurView intensity={50} tint="dark" style={[styles.tabBar, { paddingBottom: insets.bottom > 0 ? insets.bottom - 10 : 16 }]}>
+      <BlurView intensity={50} tint="dark" style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, theme.spacing.sm) }]}>
         <View style={styles.topBorder} />
-        
+
         {state.routes.map((route: any, index: number) => {
           const { options } = descriptors[route.key];
           const isFocused = state.index === index;
 
           const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
-
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
-            }
+            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+            if (!isFocused && !event.defaultPrevented) navigation.navigate(route.name);
           };
 
-          const isCenter = route.name === 'aura';
-
-          if (isCenter) {
+          if (route.name === 'aura') {
             return <CenterAuraButton key={route.key} onPress={onPress} isFocused={isFocused} />;
           }
-
-          return (
-            <TabItem 
-              key={route.key} 
-              route={route} 
-              isFocused={isFocused} 
-              options={options} 
-              onPress={onPress} 
-            />
-          );
+          return <TabItem key={route.key} route={route} isFocused={isFocused} options={options} onPress={onPress} />;
         })}
       </BlurView>
     </View>
@@ -172,82 +135,60 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     flexDirection: 'row',
-    height: 74,
-    backgroundColor: 'rgba(7, 7, 7, 0.85)',
+    alignItems: 'flex-start',
+    minHeight: theme.sizes.tabBarHeight,
+    paddingTop: theme.spacing.xs,
+    backgroundColor: theme.colors.tabBar,
   },
   topBorder: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: 1,
-    backgroundColor: 'rgba(245, 208, 111, 0.10)',
+    height: theme.sizes.hairline,
+    backgroundColor: theme.colors.goldBorder,
   },
   tabItem: {
     flex: 1,
+    minHeight: theme.sizes.touch + theme.spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 12,
+    gap: theme.spacing.xs,
+    borderRadius: theme.radius.md,
   },
-  tabIcon: {
-    fontSize: 20,
-    color: '#6F6F6F',
-    marginBottom: 2,
-  },
-  activeText: {
-    color: '#F5D06F',
-  },
-  activeIndicator: {
-    width: 12,
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: '#F5D06F',
-    marginVertical: 4,
-    shadowColor: '#F5D06F',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
-  },
-  labelContainer: {
+  pressed: { backgroundColor: theme.colors.pressed },
+  indicator: {
     position: 'absolute',
-    bottom: -16, // Hidden initially, will animate up
+    top: 0,
+    width: theme.spacing.md,
+    height: theme.sizes.accentLine,
+    borderRadius: theme.sizes.accentLine / 2,
+    backgroundColor: theme.colors.gold,
   },
-  tabLabel: {
-    fontFamily: typography.fontFamily,
-    fontSize: 10,
-    color: '#6F6F6F',
-    fontWeight: '600',
-  },
-  
-  // Center Button
+  tabLabel: { letterSpacing: 0 },
   centerTabWrapper: {
-    flex: 1.2,
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    gap: theme.spacing.xs,
   },
   centerButtonWrapper: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    marginTop: -16,
-    padding: 2, // for the gold border effect
-    backgroundColor: 'rgba(245, 208, 111, 0.3)', // subtle gold ring
-    shadowColor: '#F5D06F',
-    shadowOffset: { width: 0, height: 4 },
+    width: theme.sizes.auraButton,
+    height: theme.sizes.auraButton,
+    borderRadius: theme.sizes.auraButton / 2,
+    marginTop: -theme.spacing.md,
+    padding: theme.sizes.accentLine,
+    backgroundColor: theme.colors.goldBorder,
+    shadowColor: theme.colors.gold,
+    shadowOffset: { width: 0, height: theme.spacing.xs },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: theme.spacing.sm,
     elevation: 5,
   },
+  centerButtonFocused: { shadowOpacity: 0.6 },
   centerButton: {
     flex: 1,
-    borderRadius: 26,
+    borderRadius: theme.sizes.auraButton / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  centerIcon: {
-    fontSize: 24,
-    color: '#F5D06F',
   },
 });
