@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Pressable, ScrollView, Dimensions } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View, Pressable, ScrollView, Dimensions } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -7,151 +7,68 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { typography } from '../theme';
 import { useCardStore, CardData } from '../store/useCardStore';
 import { CreditCardImage } from '../components/CreditCardImage';
+import { catalog, DATA_ATTRIBUTION } from '../data/catalog';
+import { CATEGORY_LABELS, cardChanges, planRedemption, redemptionRoutes, todayIso } from '../engine';
+import type { Category } from '../engine';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const TABS = ['Earn', 'Transfers', 'Redeem', 'Benefits', 'Offers'] as const;
+const TABS = ['Earn', 'Transfers', 'Redeem', 'Benefits', 'Updates'] as const;
 type TabKey = (typeof TABS)[number];
 
 // ─────────────────────────────────────────────
-// Card-specific content generators
+// Card content, built from the catalog (src/data) and the engine
 // ─────────────────────────────────────────────
 
+const CATEGORY_ICONS: Partial<Record<Category, string>> = {
+  TRAVEL: '✈︎', DINING: '🍽', GROCERY: '🛒', FUEL: '⛽', ONLINE_SHOPPING: '🛍', UTILITY_BILLS: '💡',
+  INSURANCE: '🛡', INTERNATIONAL: '🌍', OTT_SUBSCRIPTIONS: '📺', RENT: '🏠', EDUCATION: '🎓',
+};
+
 function getEarnContent(card: CardData) {
-  switch (card.id) {
-    case '1': // Infinia
-      return {
-        rateLabel: 'BASE RETURN',
-        rateValue: '3.3%',
-        rateDetail: '5 Reward Points per ₹150 spent',
-        categories: ['Travel', 'Dining', 'Shopping'],
-        highlights: [
-          { icon: '✈︎', title: 'Travel', value: '10x on SmartBuy Flights' },
-          { icon: '🍽', title: 'Dining', value: '2x on Swiggy & Zomato' },
-        ],
-      };
-    case '2': // BPCL Octane
-      return {
-        rateLabel: 'FUEL RETURN',
-        rateValue: '7.25%',
-        rateDetail: '25.9x accelerated at BPCL pumps',
-        categories: ['Fuel', 'Dining', 'Groceries'],
-        highlights: [
-          { icon: '⛽', title: 'BPCL Fuel', value: '25.9x points at BPCL' },
-          { icon: '🍽', title: 'Dining', value: '5x on dining platforms' },
-        ],
-      };
-    case '3': // Amex Platinum Travel
-      return {
-        rateLabel: 'MILESTONE RETURN',
-        rateValue: '5x',
-        rateDetail: '5 MR Points per ₹100 on all spends',
-        categories: ['Milestone Spending', 'Travel'],
-        highlights: [
-          { icon: '🎯', title: 'Milestones', value: '15k MR at ₹1.9L spend' },
-          { icon: '🏨', title: 'Taj Vouchers', value: '₹10k voucher at ₹4L' },
-        ],
-      };
-    case '4': // Regalia Gold
-      return {
-        rateLabel: 'BASE RETURN',
-        rateValue: '3.3%',
-        rateDetail: '5 Reward Points per ₹150 spent',
-        categories: ['Travel', 'Dining', 'International'],
-        highlights: [
-          { icon: '✈︎', title: 'SmartBuy', value: 'Up to 33% value back' },
-          { icon: '🌍', title: 'International', value: '2% Forex markup' },
-        ],
-      };
-    case '5': // Marriott Bonvoy
-      return {
-        rateLabel: 'HOTEL RETURN',
-        rateValue: '2x',
-        rateDetail: '2 Bonvoy Points per ₹150 spent',
-        categories: ['Hotels', 'Travel'],
-        highlights: [
-          { icon: '🏨', title: 'Marriott', value: '8x at Marriott properties' },
-          { icon: '🛏', title: 'Free Night', value: '1 Free Night Award/year' },
-        ],
-      };
-    default:
-      return {
-        rateLabel: 'BASE RETURN',
-        rateValue: card.rewardHeadline,
-        rateDetail: '',
-        categories: card.rewardCategories,
-        highlights: [],
-      };
-  }
+  const data = catalog.byId.get(card.catalogId);
+  const base = data?.rewards.find((r) => r.category === 'DEFAULT' && !r.merchants);
+  const accelerated = (data?.rewards ?? [])
+    .filter((r) => r !== base)
+    .sort((a, b) => b.ratePct - a.ratePct);
+  return {
+    rateLabel: 'BASE RETURN',
+    rateValue: base ? `${base.ratePct}%` : card.rewardHeadline,
+    rateDetail: base ? 'Value back on everyday spends at the typical redemption value' : '',
+    categories: card.rewardCategories.length > 0 ? card.rewardCategories : ['Everyday spends'],
+    highlights: accelerated.slice(0, 4).map((r) => ({
+      icon: CATEGORY_ICONS[r.category] ?? '★',
+      title: CATEGORY_LABELS[r.category],
+      value:
+        `${r.ratePct}% back${r.merchantsText ? ` on ${r.merchantsText}` : ''}` +
+        (r.capRs != null ? ` (up to ₹${r.capRs.toLocaleString('en-IN')} a month)` : ''),
+    })),
+  };
 }
 
 function getTransferContent(card: CardData) {
-  switch (card.id) {
-    case '1':
-      return {
-        forex: card.forexMarkup,
-        partners: ['Singapore Airlines KrisFlyer', 'British Airways Avios', 'Marriott Bonvoy', 'Accor ALL'],
-        ratio: '1:1 transfer to 12+ airline & hotel partners',
-      };
-    case '2':
-      return {
-        forex: card.forexMarkup,
-        partners: ['BPCL Fuel Credit'],
-        ratio: 'Points redeemable directly at BPCL pumps',
-      };
-    case '3':
-      return {
-        forex: card.forexMarkup,
-        partners: ['Hilton Honors', 'Marriott Bonvoy'],
-        ratio: '1:1 MR to select hotel partners',
-      };
-    case '4':
-      return {
-        forex: card.forexMarkup,
-        partners: ['Singapore Airlines KrisFlyer', 'Marriott Bonvoy', 'InterMiles'],
-        ratio: '1:1 transfer to airline & hotel partners',
-      };
-    case '5':
-      return {
-        forex: card.forexMarkup,
-        partners: ['Marriott Bonvoy (direct earning)'],
-        ratio: 'Points credited directly to Bonvoy account',
-      };
-    default:
-      return { forex: card.forexMarkup, partners: [], ratio: '' };
-  }
+  const data = catalog.byId.get(card.catalogId);
+  const routes = data ? redemptionRoutes(catalog, data).filter((r) => r.kind === 'TRANSFER') : [];
+  return {
+    forex: card.forexMarkup,
+    partners: routes.slice(0, 8).map(
+      (r) => `${r.label.replace('Transfer to ', '')}: about ₹${r.rupeesPerPoint.toFixed(2)} per point${r.confidence === 'LOW' ? ' (estimate)' : ''}`,
+    ),
+    ratio:
+      routes.length > 0
+        ? `${routes.length} transfer partners. Values are WalletWise estimates; confirm ratios with the bank before transferring.`
+        : 'No airline or hotel transfer partners. Use the default redemption route.',
+  };
 }
 
-function getOffersContent(card: CardData) {
-  switch (card.id) {
-    case '1':
-      return [
-        { title: 'SmartBuy 10x', desc: 'Earn 10x points on flights & hotels via SmartBuy', tag: 'Travel' },
-        { title: 'Swiggy 2x', desc: '2x reward points on Swiggy orders', tag: 'Dining' },
-      ];
-    case '2':
-      return [
-        { title: 'BPCL Fuel Cashback', desc: 'Extra 2% cashback at BPCL during weekends', tag: 'Fuel' },
-        { title: 'Surcharge Waiver', desc: '1% fuel surcharge waiver on all pumps', tag: 'Fuel' },
-      ];
-    case '3':
-      return [
-        { title: 'Taj Gift Card', desc: '₹10,000 Taj voucher on spending ₹4L', tag: 'Hotel' },
-        { title: 'Milestone Bonus', desc: '15,000 MR Points on spending ₹1.9L', tag: 'Bonus' },
-      ];
-    case '4':
-      return [
-        { title: 'SmartBuy 33%', desc: 'Up to 33% return on SmartBuy purchases', tag: 'Travel' },
-        { title: 'Forbes Subscription', desc: 'Complimentary Forbes India annual subscription', tag: 'Lifestyle' },
-      ];
-    case '5':
-      return [
-        { title: 'Free Night Award', desc: '1 complimentary night at Category 1-5 hotels', tag: 'Hotel' },
-        { title: 'Silver Elite', desc: 'Complimentary Marriott Bonvoy Silver Elite status', tag: 'Status' },
-      ];
-    default:
-      return [];
-  }
+/** Latest and upcoming changes to this card (devaluations and improvements). */
+function getUpdatesContent(card: CardData) {
+  const { upcoming, recent } = cardChanges(catalog, card.catalogId);
+  return [...upcoming, ...recent].slice(0, 8).map((c) => ({
+    title: c.title,
+    desc: `${c.date > todayIso() ? 'From' : 'Since'} ${c.date}${c.after ? `. Now: ${c.after}` : ''}`,
+    tag: c.direction === 'devaluation' ? 'Cut' : c.direction === 'revaluation' ? 'Better' : 'Change',
+  }));
 }
 
 // ─────────────────────────────────────────────
@@ -237,8 +154,24 @@ function TransfersTab({ card }: { card: CardData }) {
 }
 
 function RedeemTab({ card }: { card: CardData }) {
+  const experience = useCardStore((st) => st.profile.experience);
+  const data = catalog.byId.get(card.catalogId);
+  const plan = data && card.points > 0 ? planRedemption(catalog, data, card.points, { experience }) : null;
   return (
     <Animated.View entering={FadeInDown.duration(350).springify()}>
+      {plan && (
+        <View style={[s.infoCard, { marginBottom: 16 }]}>
+          <Text style={s.infoCardLabel}>BEST WAY TO USE {card.points.toLocaleString('en-IN')} POINTS</Text>
+          <Text style={[s.infoCardBigValue, { fontSize: 22 }]}>{plan.recommended.label}</Text>
+          <Text style={[s.infoCardDesc, { marginTop: 6 }]}>About ₹{plan.valueRs.toLocaleString('en-IN')}. {plan.reason}</Text>
+          {plan.alternatives.map((r) => (
+            <View key={r.label} style={s.feeRow}>
+              <Text style={s.feeLabel}>{r.label}</Text>
+              <Text style={s.feeValue}>₹{r.rupeesPerPoint.toFixed(2)}/pt</Text>
+            </View>
+          ))}
+        </View>
+      )}
       {/* Reward Value */}
       <View style={[s.infoCard, s.goldCard]}>
         <View style={s.goldCardGlow}>
@@ -313,14 +246,14 @@ function BenefitsTab({ card }: { card: CardData }) {
   );
 }
 
-function OffersTab({ card }: { card: CardData }) {
-  const offers = getOffersContent(card);
+function UpdatesTab({ card }: { card: CardData }) {
+  const offers = getUpdatesContent(card);
   return (
     <Animated.View entering={FadeInDown.duration(350).springify()}>
       {offers.length === 0 ? (
         <View style={s.infoCard}>
           <Text style={s.infoCardDesc}>
-            No active offers detected for your {card.cardName} at this location.
+            No recent changes recorded for your {card.cardName}.
           </Text>
         </View>
       ) : (
@@ -348,12 +281,44 @@ function OffersTab({ card }: { card: CardData }) {
 
 export default function CardDetailScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams();
+  const { id, tab } = useLocalSearchParams<{ id?: string; tab?: TabKey }>();
   const insets = useSafeAreaInsets();
-  const [activeTab, setActiveTab] = useState<TabKey>('Earn');
+  const [activeTab, setActiveTab] = useState<TabKey>(tab && TABS.includes(tab) ? tab : 'Earn');
+  const [editing, setEditing] = useState(false);
+  const [pointsText, setPointsText] = useState('');
+  const [lastFourText, setLastFourText] = useState('');
 
   const cards = useCardStore((state) => state.cards);
+  const updateHolding = useCardStore((state) => state.updateHolding);
+  const removeHolding = useCardStore((state) => state.removeHolding);
   const card = cards.find(c => c.id === id) || cards[0];
+
+  if (!card) {
+    return (
+      <View style={[s.container, { paddingTop: insets.top + 40, paddingHorizontal: 24 }]}>
+        <Text style={s.cardName}>No cards yet</Text>
+        <Pressable onPress={() => router.replace('/add-card')} style={{ marginTop: 16 }}>
+          <Text style={s.backLabel}>Add a card →</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  const startEdit = () => {
+    setPointsText(String(card.points));
+    setLastFourText(card.lastFour);
+    setEditing(true);
+  };
+  const saveEdit = () => {
+    updateHolding(card.id, { points: Number(pointsText.replace(/[^0-9]/g, '')) || 0, lastFour: lastFourText.replace(/[^0-9]/g, '').slice(-4) });
+    setEditing(false);
+  };
+  const confirmRemove = () => {
+    Alert.alert('Remove card?', `${card.bankName} ${card.cardName} will be removed from your wallet.`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Remove', style: 'destructive', onPress: () => { removeHolding(card.id); router.back(); } },
+    ]);
+  };
 
   return (
     <View style={s.container}>
@@ -363,6 +328,14 @@ export default function CardDetailScreen() {
           <Text style={s.backButtonText}>←</Text>
           <Text style={s.backLabel}>My Cards</Text>
         </Pressable>
+        <View style={{ flexDirection: 'row', gap: 16 }}>
+          <Pressable onPress={editing ? saveEdit : startEdit}>
+            <Text style={s.backLabel}>{editing ? 'Save' : 'Edit'}</Text>
+          </Pressable>
+          <Pressable onPress={confirmRemove}>
+            <Text style={[s.backLabel, { color: '#C9412E' }]}>Remove</Text>
+          </Pressable>
+        </View>
       </View>
 
       <ScrollView
@@ -384,7 +357,15 @@ export default function CardDetailScreen() {
         <Animated.View entering={FadeInDown.delay(250).duration(400)} style={s.statsPanelWrapper}>
           <View style={s.statsPanel}>
             <Text style={s.statsLabel}>AVAILABLE {card.currencyName.toUpperCase()}</Text>
-            <Text style={s.pointsNumerals}>{card.points.toLocaleString()}</Text>
+            {editing ? (
+              <View style={{ gap: 10, marginVertical: 8 }}>
+                <TextInput value={pointsText} onChangeText={setPointsText} keyboardType="number-pad" style={s.editInput} placeholder="Points balance" placeholderTextColor="#555" keyboardAppearance="dark" />
+                <TextInput value={lastFourText} onChangeText={setLastFourText} keyboardType="number-pad" maxLength={4} style={s.editInput} placeholder="Last 4 digits" placeholderTextColor="#555" keyboardAppearance="dark" />
+                <Text style={s.statsValue}>Copy the balance from your latest statement or bank app.</Text>
+              </View>
+            ) : (
+              <Text style={s.pointsNumerals}>{card.points.toLocaleString()}</Text>
+            )}
             <View style={s.statsValueRow}>
               <Text style={s.statsValue}>
                 Estimated Value  ₹{card.lowValue.toLocaleString()} – ₹{card.highValue.toLocaleString()}
@@ -431,7 +412,8 @@ export default function CardDetailScreen() {
             {activeTab === 'Transfers' && <TransfersTab card={card} />}
             {activeTab === 'Redeem' && <RedeemTab card={card} />}
             {activeTab === 'Benefits' && <BenefitsTab card={card} />}
-            {activeTab === 'Offers' && <OffersTab card={card} />}
+            {activeTab === 'Updates' && <UpdatesTab card={card} />}
+            <Text style={s.attribution}>{DATA_ATTRIBUTION}</Text>
           </View>
         </Animated.View>
       </ScrollView>
@@ -444,6 +426,24 @@ export default function CardDetailScreen() {
 // ─────────────────────────────────────────────
 
 const s = StyleSheet.create({
+  editInput: {
+    fontFamily: typography.fontFamily,
+    color: '#F5F5F5',
+    fontSize: 18,
+    backgroundColor: '#181818',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  attribution: {
+    fontFamily: typography.fontFamily,
+    color: '#6F6F6F',
+    fontSize: 11,
+    marginTop: 24,
+    lineHeight: 16,
+  },
   container: {
     flex: 1,
     backgroundColor: '#070707',
@@ -452,6 +452,9 @@ const s = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 12,
     zIndex: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   backButton: {
     flexDirection: 'row',

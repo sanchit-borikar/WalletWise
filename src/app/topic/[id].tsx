@@ -1,156 +1,51 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Image } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as WebBrowser from 'expo-web-browser';
 import { colors, typography } from '../../theme';
+import { catalog, DATA_ATTRIBUTION } from '../../data/catalog';
+import { CATEGORY_LABELS, toEngineCategory, topCardsForCategory } from '../../engine';
 
-// --- MOCK DATABASE FOR TOPIC CARDS ---
-const TOP_CARDS_DB: Record<string, any[]> = {
-  travel: [
-    {
-      id: 'hdfc-infinia',
-      name: 'HDFC Infinia Metal',
-      image: require('../../../travel/1. Infinia.jpg'),
-      tier: 'Super Premium',
-      annualFee: '₹12,500',
-      joiningFee: '₹12,500',
-      ltf: 'No',
-      forex: '2.0%',
-      feeWaiver: '₹10,00,000',
-      reward: '3.33–33.33%',
-      url: 'https://www.hdfc.bank.in/credit-cards/infinia-credit-card'
-    },
-    {
-      id: 'hdfc-diners-black',
-      name: 'HDFC Diners Club Black Metal',
-      image: require('../../../travel/2. HDFC-Diners-Club-Black-Credit-Card.png'),
-      tier: 'Super Premium',
-      annualFee: '₹10,000',
-      joiningFee: '₹10,000',
-      ltf: 'No',
-      forex: '2.0%',
-      feeWaiver: '₹8,00,000',
-      reward: '3.33–33.33%',
-      url: 'https://www.hdfc.bank.in/credit-cards/diners-club-black-metal-edition-credit-card'
-    },
-    {
-      id: 'axis-atlas',
-      name: 'Axis Atlas',
-      image: require('../../../travel/3. Axis Atlas.jpg'),
-      tier: 'Premium',
-      annualFee: '₹5,000',
-      joiningFee: '₹5,000',
-      ltf: 'No',
-      forex: '3.5%',
-      feeWaiver: '₹7,50,000',
-      reward: '2–4%',
-      url: 'https://www.axis.bank.in/cards/credit-card/axis-bank-atlas-credit-card'
-    },
-    {
-      id: 'axis-magnus',
-      name: 'Axis Magnus',
-      image: require('../../../travel/4. Axis-Magnus-Credit-Card-image.webp'),
-      tier: 'Super Premium',
-      annualFee: '₹12,500',
-      joiningFee: '₹12,500',
-      ltf: 'No',
-      forex: '2.0%',
-      feeWaiver: '₹25,00,000',
-      reward: '2.5–12.5%',
-      url: 'https://www.axis.bank.in/cards/credit-card/axis-bank-magnus-credit-card'
-    },
-    {
-      id: 'hsbc-travelone',
-      name: 'HSBC TravelOne',
-      image: require('../../../travel/5. HSBC-TravelOne-CC.webp'),
-      tier: 'Premium',
-      annualFee: '₹4,999',
-      joiningFee: '₹4,999',
-      ltf: 'No',
-      forex: '3.5%',
-      feeWaiver: '₹8,00,000',
-      reward: '1.5–6%',
-      url: 'https://www.hsbc.bank.in/credit-cards/products/travelone/'
-    },
-    {
-      id: 'amex-plat-travel',
-      name: 'Amex Platinum Travel',
-      image: require('../../../travel/6. American-Express®-Platinum-Travel-Credit-Card.webp'),
-      tier: 'Premium',
-      annualFee: '₹5,000',
-      joiningFee: '₹5,000',
-      ltf: 'No',
-      forex: '3.5%',
-      feeWaiver: '—',
-      reward: '1.33–4%',
-      url: 'https://www.americanexpress.com/in/credit-cards/card-types/travel-rewards-cards/'
-    },
-    {
-      id: 'icici-emeralde',
-      name: 'ICICI Emeralde Private Metal',
-      image: require('../../../travel/7. ICICI-Bank-Emeralde-Private-Metal-Credit-Card.webp'),
-      tier: 'Super Premium',
-      annualFee: '₹12,499',
-      joiningFee: '₹12,499',
-      ltf: 'No',
-      forex: '2.0%',
-      feeWaiver: '₹10,00,000',
-      reward: '2.5–12.5%',
-      url: 'https://www.icicibank.com/personal-banking/cards/credit-card'
-    },
-    {
-      id: 'hdfc-regalia-gold',
-      name: 'HDFC Regalia Gold',
-      image: require('../../../travel/8. Regalia.jpg'),
-      tier: 'Premium',
-      annualFee: '₹2,500',
-      joiningFee: '₹2,500',
-      ltf: 'No',
-      forex: '2.5%',
-      feeWaiver: '₹4,00,000',
-      reward: '1.33–5%',
-      url: 'https://www.hdfc.bank.in/credit-cards/regalia-gold-credit-card'
-    },
-    {
-      id: 'marriott-bonvoy',
-      name: 'Marriott Bonvoy HDFC',
-      image: require('../../../travel/9. Marriot Bonvoy.webp'),
-      tier: 'Premium',
-      annualFee: '₹3,000',
-      joiningFee: '₹3,000',
-      ltf: 'No',
-      forex: '3.5%',
-      feeWaiver: '—',
-      reward: '2–6%',
-      url: 'https://www.hdfc.bank.in/credit-cards/marriott-bonvoy-credit-card'
-    },
-    {
-      id: 'sbi-elite',
-      name: 'SBI Card ELITE',
-      image: require('../../../travel/10. elite-sbi-card.png'),
-      tier: 'Premium',
-      annualFee: '₹4,999',
-      joiningFee: '₹4,999',
-      ltf: 'No',
-      forex: '3.5%',
-      feeWaiver: '₹6,00,000',
-      reward: '2–10%',
-      url: 'https://www.sbicard.com/en/personal/credit-cards/sbi-card-elite.html'
-    }
-  ],
+// Card artwork we have locally, keyed by catalog card id.
+const CARD_IMAGES: Record<string, number> = {
+  'hdfc-infinia': require('../../../travel/1. Infinia.jpg'),
+  'hdfc-diners-black': require('../../../travel/2. HDFC-Diners-Club-Black-Credit-Card.png'),
+  'axis-atlas': require('../../../travel/3. Axis Atlas.jpg'),
+  'axis-magnus': require('../../../travel/4. Axis-Magnus-Credit-Card-image.webp'),
+  'hsbc-travelone': require('../../../travel/5. HSBC-TravelOne-CC.webp'),
+  'amex-platinum-travel': require('../../../travel/6. American-Express®-Platinum-Travel-Credit-Card.webp'),
+  'icici-emeralde-private': require('../../../travel/7. ICICI-Bank-Emeralde-Private-Metal-Credit-Card.webp'),
+  'hdfc-regalia-gold': require('../../../travel/8. Regalia.jpg'),
+  'hdfc-marriott-bonvoy': require('../../../travel/9. Marriot Bonvoy.webp'),
+  'sbi-elite': require('../../../travel/10. elite-sbi-card.png'),
 };
+
+const inr = (n: number | null) => (n == null ? '—' : `₹${Math.round(n).toLocaleString('en-IN')}`);
+const TIER_LABELS: Record<string, string> = { ENTRY: 'Entry', MID: 'Mid', PREMIUM: 'Premium', SUPER_PREMIUM: 'Super Premium' };
+
+/** Typical monthly spend used to rank cards for a topic. */
+const TOPIC_SPEND = { category: 10000, other: 15000 };
 
 export default function TopicDetailScreen() {
   const { id } = useLocalSearchParams();
   const insets = useSafeAreaInsets();
-  
-  // Clean up ID and get data
+
   const categoryId = typeof id === 'string' ? id.toLowerCase() : '';
-  const cards = TOP_CARDS_DB[categoryId] || [];
-  
+  const category = toEngineCategory(categoryId, true);
   const displayTitle = categoryId.charAt(0).toUpperCase() + categoryId.slice(1);
+
+  // Ranked by yearly value after fees for ₹10,000 a month in this category and ₹15,000 elsewhere.
+  const ranked = useMemo(
+    () =>
+      topCardsForCategory(catalog, category, {
+        monthlyCategorySpend: TOPIC_SPEND.category,
+        monthlyOtherSpend: TOPIC_SPEND.other,
+        experience: 'SOME',
+      }),
+    [category],
+  );
 
   return (
     <View style={styles.container}>
@@ -169,82 +64,120 @@ export default function TopicDetailScreen() {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.heroSection}>
-          <Text style={styles.heroTitle}>Top 10 {displayTitle} Cards in India</Text>
+          <Text style={styles.heroTitle}>Top {ranked.length} {displayTitle} Cards in India</Text>
           <Text style={styles.heroSub}>
-            Discover the best cards optimized for {categoryId}. Compare features, conversion rates, and hidden fees.
+            Ranked by yearly value after fees if you spend {inr(TOPIC_SPEND.category)} a month on{' '}
+            {CATEGORY_LABELS[category].toLowerCase()} and {inr(TOPIC_SPEND.other)} on everything else. Values are estimates.
           </Text>
         </View>
 
-        {cards.length === 0 ? (
+        {ranked.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No premium guide available yet for "{displayTitle}". Check back soon!</Text>
+            <Text style={styles.emptyText}>No cards found for &quot;{displayTitle}&quot;.</Text>
           </View>
         ) : (
           <View style={styles.cardList}>
-            {cards.map((card, idx) => (
-              <View key={card.id} style={styles.cardContainer}>
-                <View style={styles.cardHeader}>
-                  <View style={styles.rankBadge}>
-                    <Text style={styles.rankText}>#{idx + 1}</Text>
+            {ranked.map(({ card, value }, idx) => {
+              const categoryRow = [...card.rewards]
+                .filter((r) => r.category === category || r.category === 'DEFAULT')
+                .sort((x, y) => y.ratePct - x.ratePct)[0];
+              const image = CARD_IMAGES[card.id];
+              return (
+                <View key={card.id} style={styles.cardContainer}>
+                  <View style={styles.cardHeader}>
+                    <View style={styles.rankBadge}>
+                      <Text style={styles.rankText}>#{idx + 1}</Text>
+                    </View>
+                    <Text style={styles.cardName}>{card.name}</Text>
                   </View>
-                  <Text style={styles.cardName}>{card.name}</Text>
-                </View>
 
-                <Pressable 
-                  style={styles.cardArtWrapper}
-                  onPress={async () => {
-                    if (card.url) {
-                      await WebBrowser.openBrowserAsync(card.url);
-                    }
-                  }}
-                >
-                  <Image source={card.image} style={styles.cardArt} resizeMode="contain" />
-                  <View style={styles.redirectBadge}>
-                    <Text style={styles.redirectBadgeText}>Apply Now ↗</Text>
-                  </View>
-                </Pressable>
+                  <Pressable style={styles.cardArtWrapper} onPress={() => WebBrowser.openBrowserAsync(card.url)}>
+                    {image ? (
+                      <Image source={image} style={styles.cardArt} resizeMode="contain" />
+                    ) : (
+                      <LinearGradient colors={['#1C1C1C', '#0A0A0A']} style={[styles.cardArt, styles.cardPlaceholder]}>
+                        <Text style={styles.placeholderBank}>{card.issuer}</Text>
+                        <Text style={styles.placeholderName} numberOfLines={2}>{card.name}</Text>
+                      </LinearGradient>
+                    )}
+                    <View style={styles.redirectBadge}>
+                      <Text style={styles.redirectBadgeText}>Details ↗</Text>
+                    </View>
+                  </Pressable>
 
-                {/* Tabular Data Grid */}
-                <View style={styles.table}>
-                  <View style={styles.tableRow}>
-                    <Text style={styles.tableLabel}>Tier</Text>
-                    <Text style={[styles.tableValue, { color: card.tier === 'Super Premium' ? colors.accent.goldStart : '#FFF' }]}>{card.tier}</Text>
-                  </View>
-                  <View style={styles.tableRow}>
-                    <Text style={styles.tableLabel}>Annual Fee</Text>
-                    <Text style={styles.tableValue}>{card.annualFee}</Text>
-                  </View>
-                  <View style={styles.tableRow}>
-                    <Text style={styles.tableLabel}>Joining Fee</Text>
-                    <Text style={styles.tableValue}>{card.joiningFee}</Text>
-                  </View>
-                  <View style={styles.tableRow}>
-                    <Text style={styles.tableLabel}>LTF</Text>
-                    <Text style={styles.tableValue}>{card.ltf}</Text>
-                  </View>
-                  <View style={styles.tableRow}>
-                    <Text style={styles.tableLabel}>Forex %</Text>
-                    <Text style={[styles.tableValue, { color: colors.accent.goldStart }]}>{card.forex}</Text>
-                  </View>
-                  <View style={styles.tableRow}>
-                    <Text style={styles.tableLabel}>Reward %</Text>
-                    <Text style={[styles.tableValue, { color: '#54C78A' }]}>{card.reward}</Text>
-                  </View>
-                  <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
-                    <Text style={styles.tableLabel}>Fee Waiver Limit</Text>
-                    <Text style={styles.tableValue}>{card.feeWaiver}</Text>
+                  <View style={styles.table}>
+                    <View style={styles.tableRow}>
+                      <Text style={styles.tableLabel}>Est. yearly value</Text>
+                      <Text style={[styles.tableValue, { color: colors.accent.goldStart }]}>{inr(value.net)}</Text>
+                    </View>
+                    <View style={styles.tableRow}>
+                      <Text style={styles.tableLabel}>Tier</Text>
+                      <Text style={[styles.tableValue, { color: card.tier === 'SUPER_PREMIUM' ? colors.accent.goldStart : '#FFF' }]}>
+                        {TIER_LABELS[card.tier]}
+                      </Text>
+                    </View>
+                    <View style={styles.tableRow}>
+                      <Text style={styles.tableLabel}>Annual Fee</Text>
+                      <Text style={styles.tableValue}>{card.lifetimeFree ? 'Lifetime free' : inr(card.annualFee)}</Text>
+                    </View>
+                    <View style={styles.tableRow}>
+                      <Text style={styles.tableLabel}>Joining Fee</Text>
+                      <Text style={styles.tableValue}>{inr(card.joiningFee)}</Text>
+                    </View>
+                    <View style={styles.tableRow}>
+                      <Text style={styles.tableLabel}>Forex %</Text>
+                      <Text style={[styles.tableValue, { color: colors.accent.goldStart }]}>
+                        {card.forexPct != null ? `${card.forexPct}%` : '—'}
+                      </Text>
+                    </View>
+                    <View style={styles.tableRow}>
+                      <Text style={styles.tableLabel}>{CATEGORY_LABELS[category]} reward</Text>
+                      <Text style={[styles.tableValue, { color: '#54C78A' }]}>{categoryRow ? `${categoryRow.ratePct}%` : '—'}</Text>
+                    </View>
+                    <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
+                      <Text style={styles.tableLabel}>Fee Waiver Limit</Text>
+                      <Text style={styles.tableValue}>{inr(card.feeWaiverSpend)}</Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-            ))}
+              );
+            })}
           </View>
         )}
+        <Text style={styles.attribution}>{DATA_ATTRIBUTION}</Text>
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  cardPlaceholder: {
+    justifyContent: 'flex-end',
+    padding: 16,
+    borderRadius: 12,
+  },
+  placeholderBank: {
+    fontFamily: typography.fontFamily,
+    color: colors.accent.goldStart,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  placeholderName: {
+    fontFamily: typography.fontFamily,
+    color: '#F5F5F5',
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 4,
+  },
+  attribution: {
+    fontFamily: typography.fontFamily,
+    color: '#6F6F6F',
+    fontSize: 11,
+    lineHeight: 16,
+    marginTop: 24,
+    paddingHorizontal: 24,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background,

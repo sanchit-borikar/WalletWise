@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, Text, View, Pressable, ScrollView, 
-  useWindowDimensions, TextInput, Image
+  useWindowDimensions, TextInput
 } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
-  useSharedValue, useAnimatedStyle, withSpring, withTiming,
-  withRepeat, withSequence, Easing, interpolate,
+  useSharedValue, useAnimatedStyle, withSpring, interpolate,
   Extrapolation, useAnimatedScrollHandler
 } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { colors, typography } from '../../theme';
 import { useCardStore } from '../../store/useCardStore';
 import { CardArt } from '../../components/CardArt';
+import { VideoRail } from '../../components/VideoRail';
+import { catalog } from '../../data/catalog';
+import { scorePurchase } from '../../engine';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -35,87 +36,6 @@ const AnimatedCard = ({ children, style, onPress }: any) => {
     >
       {children}
     </AnimatedPressable>
-  );
-};
-
-// ==========================================
-// 2. ROBUST VIDEO THUMBNAIL
-// ==========================================
-const FeaturedVideo = () => {
-  const videoId = 'M4SMio3nUKs';
-  const [thumbState, setThumbState] = useState<'loading' | 'maxres' | 'hq' | 'fallback'>('loading');
-  const glow = useSharedValue(0.2);
-
-  useEffect(() => {
-    glow.value = withRepeat(
-      withSequence(
-        withTiming(0.6, { duration: 2500, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0.2, { duration: 2500, easing: Easing.inOut(Easing.ease) })
-      ), -1, true
-    );
-  }, []);
-  
-  const playStyle = useAnimatedStyle(() => ({
-    shadowOpacity: glow.value,
-    transform: [{ scale: interpolate(glow.value, [0.2, 0.6], [1, 1.03]) }]
-  }));
-
-  const handleImageError = () => {
-    if (thumbState === 'loading' || thumbState === 'maxres') setThumbState('hq');
-    else if (thumbState === 'hq') setThumbState('fallback');
-  };
-
-  const getSource = () => {
-    if (thumbState === 'maxres' || thumbState === 'loading') return { uri: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` };
-    if (thumbState === 'hq') return { uri: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` };
-    return require('../../../assets/images/icon.png'); // Fallback local image
-  };
-
-  return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>FEATURED FOR YOU</Text>
-      <AnimatedCard 
-        style={styles.videoCard}
-        onPress={async () => {
-          try {
-            await WebBrowser.openBrowserAsync(`https://www.youtube.com/watch?v=${videoId}`);
-          } catch (e) {
-            console.error('Browser failed to open', e);
-          }
-        }}
-      >
-        <View style={styles.videoThumbnail}>
-          {thumbState === 'fallback' ? (
-            <LinearGradient colors={['#171717', '#0A0A0A']} style={StyleSheet.absoluteFill} />
-          ) : (
-            <Image 
-              source={getSource()}
-              style={StyleSheet.absoluteFill}
-              onLoad={() => { if (thumbState === 'loading') setThumbState('maxres'); }}
-              onError={handleImageError}
-              resizeMode="cover"
-            />
-          )}
-          
-          <LinearGradient
-            colors={['transparent', 'rgba(7,7,7,0.9)']}
-            style={styles.videoOverlay}
-          />
-          <Animated.View style={[styles.playButtonWrapper, playStyle]}>
-            <View style={styles.playButton}>
-              <Text style={styles.playIcon}>▶</Text>
-            </View>
-          </Animated.View>
-          <View style={styles.videoBadge}>
-            <Text style={styles.videoBadgeText}>12:24</Text>
-          </View>
-        </View>
-        <View style={styles.videoMeta}>
-          <Text style={styles.videoTitle}>How Credit Card Rewards Work</Text>
-          <Text style={styles.videoSub}>WalletWise Official • Beginner</Text>
-        </View>
-      </AnimatedCard>
-    </View>
   );
 };
 
@@ -197,17 +117,14 @@ const PointsCalculator = () => {
   const [spend, setSpend] = useState('');
   const [selectedCardId, setSelectedCardId] = useState(cards?.[0]?.id || null);
 
-  // Simple simulated reward rates for demonstration
-  const getRewardRate = (cardName: string) => {
-    if (cardName.includes('Infinia')) return 0.033; // 3.3%
-    if (cardName.includes('Octane')) return 0.025; // 2.5%
-    if (cardName.includes('Travel')) return 0.02; // 2.0%
-    return 0.015; // 1.5% default
-  };
-
   const selectedCard = cards?.find(c => c.id === selectedCardId);
-  const rate = selectedCard ? getRewardRate(selectedCard.cardName) : 0.033;
-  const points = spend ? Math.floor(Number(spend) * rate) : 0; 
+  const engineCard = selectedCard ? catalog.byId.get(selectedCard.catalogId) : undefined;
+  // Everyday (base-rate) spend on the selected card, valued by the WalletWise engine with monthly caps.
+  const result = engineCard && Number(spend) > 0
+    ? scorePurchase(catalog, engineCard, { amount: Number(spend), category: 'DEFAULT' })
+    : null;
+  const rate = result ? result.effectiveRatePct / 100 : 0;
+  const value = result ? Math.round(result.safeValue) : 0;
   
   return (
     <View style={[styles.toolCard, { width: '100%', marginBottom: 16 }]}>
@@ -261,10 +178,10 @@ const PointsCalculator = () => {
         <View>
           <Text style={styles.calcResultText}>Estimated Yield:</Text>
           <Text style={{ color: colors.text.secondary, fontSize: 11, marginTop: 2 }}>
-            Using {selectedCard?.cardName || 'Default'} ({(rate * 100).toFixed(1)}%)
+            Everyday spend on {selectedCard?.cardName || 'your card'} ({(rate * 100).toFixed(2)}% value back)
           </Text>
         </View>
-        <Text style={styles.calcResultValue}>{points} pts</Text>
+        <Text style={styles.calcResultValue}>₹{value.toLocaleString('en-IN')}</Text>
       </View>
     </View>
   );
@@ -278,7 +195,7 @@ const QUIZ_BANK = [
     question: "You are spending ₹5,000 on fuel. Which card?",
     options: ["HDFC Infinia", "SBI BPCL Octane"],
     correctIdx: 1,
-    rationale: "Octane yields 7.25% on BPCL fuel, whereas Infinia yields 0% on fuel purchases."
+    rationale: "Octane gives about 6.25% value back on BPCL fuel (capped monthly), while Infinia lists no fuel reward rate."
   },
   {
     question: "Which card offers unlimited international lounge access?",
@@ -287,10 +204,10 @@ const QUIZ_BANK = [
     rationale: "Infinia provides unlimited Priority Pass lounge visits globally for both primary and add-on members."
   },
   {
-    question: "Which card gives a massive milestone bonus at ₹4 Lakhs spend?",
-    options: ["Amex Platinum Travel", "SBI BPCL Octane"],
+    question: "A ₹10,000 card balance is left unpaid at about 3.75% a month. What does one month cost?",
+    options: ["About ₹375 plus GST", "Nothing if you pay the minimum"],
     correctIdx: 0,
-    rationale: "Amex Platinum Travel awards 10,000 bonus Membership Rewards and a Taj voucher on hitting ₹4 Lakhs."
+    rationale: "Interest runs on the unpaid balance, and paying only the minimum also removes the interest-free period on new spends until the bill is cleared. Always pay the total amount due."
   },
   {
     question: "Which card's points give the highest value for Marriott Bonvoy transfers?",
@@ -445,12 +362,12 @@ const Academy = () => {
       <Text style={styles.sectionTitle}>CREDIT CARD ACADEMY</Text>
       <View style={styles.academyBox}>
         {[
-          { title: "FOUNDATIONS", sub: "Understanding your card", status: "done" },
-          { title: "REWARDS", sub: "Earn more from spending", status: "active" },
-          { title: "OPTIMIZATION", sub: "Choose the right card", status: "locked" },
-          { title: "ADVANCED", sub: "Master redemption", status: "locked" }
+          { title: "FOUNDATIONS", sub: "Bill, due date and interest-free period", status: "active", q: "Explain the interest free period" },
+          { title: "REWARDS", sub: "Points versus cashback", status: "active", q: "How do reward points work?" },
+          { title: "OPTIMIZATION", sub: "Choose the right card", status: "active", q: "Is a new card worth it for me?" },
+          { title: "ADVANCED", sub: "Transfer points to airlines", status: "active", q: "How do transfer partners and miles work?" }
         ].map((node, i) => (
-          <View key={i} style={styles.academyNode}>
+          <Pressable key={i} style={styles.academyNode} onPress={() => router.push({ pathname: '/aura', params: { q: node.q } })}>
             <View style={styles.nodeLine}>
               <View style={[
                 styles.nodeDot, 
@@ -465,7 +382,7 @@ const Academy = () => {
               <Text style={[styles.nodeTitle, node.status === 'locked' && styles.textMuted]}>0{i+1} {node.title}</Text>
               <Text style={styles.nodeSub}>{node.sub}</Text>
             </View>
-          </View>
+          </Pressable>
         ))}
       </View>
     </View>
@@ -510,30 +427,47 @@ export default function LearnScreen() {
           <View style={styles.searchBar}>
             <Text style={styles.searchIcon}>⚲</Text>
             <TextInput 
-              placeholder="Search lessons, videos, tools..."
+              placeholder="Ask anything, e.g. what is a billing cycle?"
+              returnKeyType="search"
+              onSubmitEditing={(e) => {
+                const q = e.nativeEvent.text.trim();
+                if (q) router.push({ pathname: '/aura', params: { q } });
+              }}
               placeholderTextColor="#6F6F6F"
               style={styles.searchInput}
             />
           </View>
         </Animated.View>
 
-        {/* Continue Learning */}
+        {/* Start here: the one rule every new cardholder needs */}
         <View style={[styles.section, { paddingHorizontal: 24 }]}>
-          <Text style={styles.sectionTitle}>YOUR NEXT LESSON</Text>
-          <AnimatedCard style={styles.continueCard}>
-            <Text style={styles.continueTitle}>How to Maximize Reward Points</Text>
-            <Text style={styles.continueSub}>Understand how reward points work.</Text>
-            <View style={styles.progressRow}>
-              <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: '68%' }]} />
-              </View>
-              <Text style={styles.progressText}>68%</Text>
-            </View>
-            <Text style={styles.continueLink}>Continue →</Text>
+          <Text style={styles.sectionTitle}>START HERE</Text>
+          <AnimatedCard style={styles.continueCard} onPress={() => router.push({ pathname: '/aura', params: { q: 'How does a credit card work?' } })}>
+            <Text style={styles.continueTitle}>Rule one: pay the full bill, every month</Text>
+            <Text style={styles.continueSub}>
+              Rewards are only worth it when you never pay interest. Ask Aura how a credit card works, then take the quiz below.
+            </Text>
+            <Text style={styles.continueLink}>Ask Aura →</Text>
+          </AnimatedCard>
+          <AnimatedCard style={[styles.continueCard, { marginTop: 12 }]} onPress={() => router.push('/find-card')}>
+            <Text style={styles.continueTitle}>Which card is right for me?</Text>
+            <Text style={styles.continueSub}>Answer a few questions about your spending and get an honest pick from 280 Indian cards.</Text>
+            <Text style={styles.continueLink}>Find My Card →</Text>
           </AnimatedCard>
         </View>
 
-        <FeaturedVideo />
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { paddingHorizontal: 24 }]}>BEGINNER VIDEOS</Text>
+          <VideoRail level="Beginner" horizontalPadding={24} />
+        </View>
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { paddingHorizontal: 24 }]}>EARN MORE REWARDS</Text>
+          <VideoRail level="Rewards" horizontalPadding={24} />
+        </View>
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { paddingHorizontal: 24 }]}>TRAVEL WITH POINTS</Text>
+          <VideoRail level="Travel" horizontalPadding={24} />
+        </View>
         <ExploreTopics />
         <LearnWithCards />
         <InteractiveTools />

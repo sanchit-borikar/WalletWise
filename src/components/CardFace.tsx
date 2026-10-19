@@ -1,0 +1,93 @@
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+
+import { typography } from '../theme';
+
+type Props = {
+  issuer: string;
+  name: string;
+  network?: string;
+  tier?: string;
+  /** Compact layout for thumbnails. */
+  small?: boolean;
+};
+
+// Issuer brand-inspired gradients so cards are easy to tell apart.
+const ISSUER_COLORS: Record<string, [string, string]> = {
+  HDFC: ['#0B2A5B', '#071733'],
+  SBI: ['#1A4C8C', '#0B2346'],
+  AXIS: ['#7A1638', '#3D0A1C'],
+  ICICI: ['#8A2B10', '#45150A'],
+  AMEX: ['#2A6F97', '#123247'],
+  KOTAK: ['#B0161E', '#58070C'],
+  HSBC: ['#3A3A3A', '#151515'],
+  IDFC: ['#8C1D2A', '#420C14'],
+  INDUSIND: ['#6B2D1A', '#33150B'],
+  YES: ['#0D3E7A', '#061E3B'],
+  RBL: ['#1E2F6B', '#0D1533'],
+  AU: ['#5B2A86', '#2A1240'],
+  BOB: ['#C2501A', '#5E260C'],
+  SC: ['#0E6B4F', '#063527'],
+  FEDERAL: ['#1D3E8C', '#0D1D42'],
+};
+const DEFAULT_COLORS: [string, string] = ['#1C1C1C', '#0A0A0A'];
+
+const TIER_ACCENT: Record<string, string> = {
+  SUPER_PREMIUM: '#F5D06F',
+  PREMIUM: '#E3C27A',
+  MID: '#C9C9C9',
+  ENTRY: '#9AA7B5',
+};
+
+/** Strips the bank name and "Credit Card" so the face shows the product name. */
+export function shortCardName(name: string, issuer: string) {
+  return name
+    .replace(/credit card/gi, '')
+    .replace(new RegExp(`^(${issuer}|bank)\\s*(bank)?\\s*`, 'i'), '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function CardFace({ issuer, name, network, tier, small }: Props) {
+  const colors = ISSUER_COLORS[issuer] ?? DEFAULT_COLORS;
+  const accent = TIER_ACCENT[tier ?? ''] ?? '#C9C9C9';
+  return (
+    <LinearGradient colors={colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.face, small && styles.faceSmall]}>
+      <View style={styles.topRow}>
+        <Text style={[styles.issuer, small && styles.issuerSmall, { color: accent }]} numberOfLines={1}>
+          {issuer}
+        </Text>
+        {!small && <View style={[styles.chip, { borderColor: accent }]} />}
+      </View>
+      <View>
+        <Text style={[styles.name, small && styles.nameSmall]} numberOfLines={2}>
+          {shortCardName(name, issuer) || name}
+        </Text>
+        {!!network && (
+          <Text style={[styles.network, small && styles.networkSmall]}>{network === 'AMEX' ? 'AMERICAN EXPRESS' : network}</Text>
+        )}
+      </View>
+    </LinearGradient>
+  );
+}
+
+const styles = StyleSheet.create({
+  face: {
+    flex: 1,
+    borderRadius: 16,
+    padding: 18,
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  faceSmall: { borderRadius: 8, padding: 6 },
+  topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  issuer: { fontFamily: typography.fontFamily, fontSize: 14, fontWeight: '800', letterSpacing: 1.5 },
+  issuerSmall: { fontSize: 8, letterSpacing: 0.5 },
+  chip: { width: 34, height: 26, borderRadius: 5, borderWidth: 1.5, backgroundColor: 'rgba(245,208,111,0.18)' },
+  name: { fontFamily: typography.fontFamily, color: '#F5F5F5', fontSize: 20, fontWeight: '600', letterSpacing: -0.3 },
+  nameSmall: { fontSize: 9, letterSpacing: 0 },
+  network: { fontFamily: typography.fontFamily, color: 'rgba(245,245,245,0.6)', fontSize: 11, fontWeight: '700', letterSpacing: 2, marginTop: 6 },
+  networkSmall: { fontSize: 6, letterSpacing: 1, marginTop: 2 },
+});

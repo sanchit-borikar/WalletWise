@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import * as Location from 'expo-location';
 import { useCardStore } from '../store/useCardStore';
+import type { CardData } from '../store/useCardStore';
 import { classifyCategory, MerchantCategory, normalizeMerchant } from '../utils/merchantClassifier';
 import { getRankedRecommendations, RecommendationResult } from '../utils/recommendationEngine';
 import { haversineDistance } from '../utils/geospatial';
@@ -11,6 +12,7 @@ export type LocationCoord = { lat: number; lon: number };
 export type EnrichedPlace = {
   id: string;
   name: string;
+  address: string;
   normalizedName: string;
   category: MerchantCategory;
   center: [number, number];
@@ -18,6 +20,34 @@ export type EnrichedPlace = {
   recommendation: RecommendationResult | null;
   raw: any;
 };
+
+/** Turns a Mapbox feature into a place with a category, distance and the best wallet card. */
+export function enrichFeature(
+  feature: any,
+  fallbackCategory: MerchantCategory,
+  from: LocationCoord | null,
+  cards: CardData[],
+): EnrichedPlace {
+  const rawName = feature.text;
+  const normName = normalizeMerchant(rawName);
+  const classified = classifyCategory(rawName, feature.properties?.category);
+  // Use the chosen chip's category when the classifier cannot tell.
+  const category = classified === 'Unknown' ? (fallbackCategory === ('All' as MerchantCategory) ? 'Unknown' : fallbackCategory) : classified;
+  const [lon, lat] = feature.center;
+  const distanceKm = from ? haversineDistance(from.lat, from.lon, lat, lon) : 0;
+  const recommendations = getRankedRecommendations(normName, category, cards);
+  return {
+    id: feature.id,
+    name: rawName,
+    address: feature.place_name ?? '',
+    normalizedName: normName,
+    category,
+    center: [lon, lat],
+    distanceKm,
+    recommendation: recommendations[0] ?? null,
+    raw: feature,
+  };
+}
 
 export function useBestCardLogic() {
   const { cards } = useCardStore();
@@ -117,6 +147,7 @@ export function useBestCardLogic() {
     if (!activeLocation) return;
     
     const queryMap: Record<string, string> = {
+      'Fuel': 'petrol pump',
       'Dining': 'restaurant',
       'Grocery': 'supermarket',
       'Electronics': 'electronics store',
@@ -139,32 +170,9 @@ export function useBestCardLogic() {
         const data = await response.json();
         
         if (latestNearbyQuery.current === currentQuery && data.features) {
-          const enriched: EnrichedPlace[] = data.features.map((feature: any) => {
-            const rawName = feature.text;
-            const normName = normalizeMerchant(rawName);
-            const mbCategory = feature.properties?.category;
-            
-            const classifiedCat = classifyCategory(rawName, mbCategory);
-            // Default to UI category if classifier returns Unknown
-            const finalCat = classifiedCat === 'Unknown' ? activeCategory as MerchantCategory : classifiedCat;
-            
-            const [lon, lat] = feature.center;
-            const dist = haversineDistance(activeLocation.lat, activeLocation.lon, lat, lon);
-            
-            const recommendations = getRankedRecommendations(normName, finalCat, cards);
-            const bestRec = recommendations.length > 0 ? recommendations[0] : null;
-
-            return {
-              id: feature.id,
-              name: rawName,
-              normalizedName: normName,
-              category: finalCat,
-              center: [lon, lat] as [number, number],
-              distanceKm: dist,
-              recommendation: bestRec,
-              raw: feature
-            };
-          });
+          const enriched: EnrichedPlace[] = data.features.map((feature: any) =>
+            enrichFeature(feature, activeCategory as MerchantCategory, activeLocation, cards),
+          );
           
           // Sort by distance
           enriched.sort((a, b) => a.distanceKm - b.distanceKm);

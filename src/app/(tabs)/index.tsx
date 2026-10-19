@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, Pressable, TextInput, Dimensions } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, {
@@ -21,6 +21,11 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, typography } from '../../theme';
 import { useCardStore } from '../../store/useCardStore';
+import { catalog } from '../../data/catalog';
+import { recommendCards, walletAlerts, cardChanges } from '../../engine';
+import { VideoRail } from '../../components/VideoRail';
+import { getRankedRecommendations } from '../../utils/recommendationEngine';
+import type { MerchantCategory } from '../../utils/merchantClassifier';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -29,16 +34,12 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 // ─────────────────────────────────────────────
 // MOCK DATA
 // ─────────────────────────────────────────────
-const MOCK_ACTIVITY = [
-  { id: '1', type: 'Transfer', merchant: 'To Bank Account', time: 'Today, 2:30 PM', amount: -150 },
-  { id: '2', type: 'Payment', merchant: 'Swiggy', time: 'Today, 1:10 PM', amount: -450 },
-];
+const AURA_PILLS = ['Which card for ₹1,500 at Swiggy?', 'How should I use my points?', 'Is a new card worth it?', 'What is the minimum due?'];
 
-const MOCK_REWARDS = [
-  { id: '1', name: 'HDFC Infinia', points: '24,000 pts', value: '≈ ₹12,000' },
-  { id: '2', name: 'BPCL Octane', points: '4,200 pts', value: '≈ ₹1,050' },
-  { id: '3', name: 'Amex Platinum', points: '15,000 pts', value: '≈ ₹4,500' },
-];
+const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
+
+// Sample purchase shown in the Rewards Optimizer until the user enters their own.
+const OPTIMIZER_SAMPLE: { category: MerchantCategory; amount: number } = { category: 'Dining', amount: 5000 };
 
 // ─────────────────────────────────────────────
 // HELPERS
@@ -89,6 +90,9 @@ function AnimatedReveal({ children, delay, translateY = 20, style }: any) {
 
 function DynamicHeader({ scrollY, delayOffset }: { scrollY: SharedValue<number>, delayOffset: number }) {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const holdings = useCardStore((s) => s.holdings);
+  const hasAlerts = useMemo(() => walletAlerts(catalog, holdings.map((h) => h.catalogId), undefined, 45).length > 0, [holdings]);
   
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -107,7 +111,7 @@ function DynamicHeader({ scrollY, delayOffset }: { scrollY: SharedValue<number>,
     <Animated.View style={[styles.header, { paddingTop: insets.top + 12 }, headerStyle]}>
       <View>
         <AnimatedReveal delay={delayOffset} translateY={-12}>
-          <Text style={styles.headerGreeting}>{getGreeting()}, Veer</Text>
+          <Text style={styles.headerGreeting}>{getGreeting()}</Text>
         </AnimatedReveal>
         <AnimatedReveal delay={delayOffset + 60} translateY={-8}>
           <Text style={styles.headerSubtitle}>Welcome to WalletWise</Text>
@@ -115,13 +119,13 @@ function DynamicHeader({ scrollY, delayOffset }: { scrollY: SharedValue<number>,
       </View>
       <View style={styles.headerActions}>
         <AnimatedReveal delay={delayOffset + 120} scale={0.75} translateY={0}>
-          <PressableScale style={styles.iconButton}>
+          <PressableScale style={styles.iconButton} onPress={() => router.push({ pathname: '/aura', params: { q: 'Any changes to my cards?' } })}>
             <Text style={styles.iconText}>🔔</Text>
-            <View style={styles.notificationBadge} />
+            {hasAlerts && <View style={styles.notificationBadge} />}
           </PressableScale>
         </AnimatedReveal>
         <AnimatedReveal delay={delayOffset + 160} scale={0.75} translateY={0}>
-          <PressableScale style={[styles.iconButton, { marginLeft: 12 }]}>
+          <PressableScale style={[styles.iconButton, { marginLeft: 12 }]} onPress={() => router.push('/find-card')}>
             <Text style={[styles.iconText, { color: '#F5F5F5' }]}>⚙</Text>
           </PressableScale>
         </AnimatedReveal>
@@ -131,14 +135,20 @@ function DynamicHeader({ scrollY, delayOffset }: { scrollY: SharedValue<number>,
 }
 
 function FinancialSnapshot({ scrollY, delayOffset }: { scrollY: SharedValue<number>, delayOffset: number }) {
+  const cards = useCardStore((s) => s.cards);
+  const router = useRouter();
+  const isDemo = useCardStore((s) => s.isDemo);
+  const totalPoints = cards.reduce((acc, c) => acc + c.points, 0);
+  const totalMin = cards.reduce((acc, c) => acc + c.lowValue, 0);
+  const totalMax = cards.reduce((acc, c) => acc + c.highValue, 0);
   const animatedNumber = useSharedValue(0);
   
   useEffect(() => {
     animatedNumber.value = withDelay(
       delayOffset + 300,
-      withTiming(24500, { duration: 1200, easing: Easing.out(Easing.cubic) })
+      withTiming(totalMin, { duration: 1200, easing: Easing.out(Easing.cubic) })
     );
-  }, []);
+  }, [totalMin]);
 
   const animatedProps = useAnimatedProps(() => {
     const formatted = `₹${Math.round(animatedNumber.value).toLocaleString()}`;
@@ -151,22 +161,22 @@ function FinancialSnapshot({ scrollY, delayOffset }: { scrollY: SharedValue<numb
 
   return (
     <AnimatedReveal delay={delayOffset} style={style}>
-      <PressableScale style={styles.snapshotCard} scaleTo={0.98}>
+      <PressableScale style={styles.snapshotCard} scaleTo={0.98} onPress={() => router.push('/wallet')}>
         <LinearGradient
           colors={['rgba(245,208,111,0.03)', 'rgba(17,17,17,1)']}
           start={{x: 0, y: 0}} end={{x: 1, y: 1}}
           style={StyleSheet.absoluteFill}
         />
-        <Text style={styles.snapshotLabel}>TOTAL BALANCE</Text>
+        <Text style={styles.snapshotLabel}>YOUR POINTS ARE WORTH{isDemo ? ' (SAMPLE CARDS)' : ''}</Text>
         <AnimatedTextInput
           editable={false}
           animatedProps={animatedProps}
           style={styles.snapshotBalance}
         />
-        <Text style={styles.snapshotChange}>+₹2,450 this month</Text>
+        <Text style={styles.snapshotChange}>{totalMax > totalMin ? `Up to ${inr(totalMax)} with the best redemptions` : 'At the default redemption value'}</Text>
         
         <View style={styles.snapshotDivider} />
-        <Text style={styles.snapshotFooter}>3 cards • 24,500 reward points</Text>
+        <Text style={styles.snapshotFooter}>{cards.length} cards • {totalPoints.toLocaleString('en-IN')} reward points</Text>
       </PressableScale>
     </AnimatedReveal>
   );
@@ -201,10 +211,10 @@ function AuraHero({ scrollY, delayOffset }: { scrollY: SharedValue<number>, dela
           
           <View style={styles.airaContent}>
             <Text style={styles.airaTitle}>AURA</Text>
-            <Text style={styles.airaSub}>Your Personal Finance AI</Text>
+            <Text style={styles.airaSub}>Your credit card assistant</Text>
             
             <Text style={styles.airaDesc}>
-              Optimize your money{'\n'}intelligently.
+              Which card, which points,{'\n'}which trip. Just ask.
             </Text>
             
             <AnimatedReveal delay={delayOffset + 400} translateY={8}>
@@ -224,9 +234,9 @@ function AuraHero({ scrollY, delayOffset }: { scrollY: SharedValue<number>, dela
 
         {/* Suggestion Pills */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.airaPills}>
-          {['Analyze spending', 'Optimize rewards', 'Find best card'].map((text, i) => (
+          {AURA_PILLS.map((text, i) => (
             <AnimatedReveal key={i} delay={delayOffset + 200 + (i * 60)} translateY={10}>
-              <PressableScale scaleTo={0.94} style={styles.airaPill}>
+              <PressableScale scaleTo={0.94} style={styles.airaPill} onPress={() => router.push({ pathname: '/aura', params: { q: text } })}>
                 <Text style={styles.airaPillIcon}>✦</Text>
                 <Text style={styles.airaPillText}>{text}</Text>
               </PressableScale>
@@ -238,32 +248,51 @@ function AuraHero({ scrollY, delayOffset }: { scrollY: SharedValue<number>, dela
   );
 }
 
+const OPTIMIZER_CATEGORIES: MerchantCategory[] = ['Dining', 'Grocery', 'Fuel', 'Shopping', 'Travel', 'Entertainment'];
+const OPTIMIZER_AMOUNTS = [500, 2000, 5000, 10000];
+
 function RewardsOptimizer({ delayOffset }: { delayOffset: number }) {
   const router = useRouter();
+  const cards = useCardStore((s) => s.cards);
+  const [category, setCategory] = useState<MerchantCategory>(OPTIMIZER_SAMPLE.category);
+  const [amount, setAmount] = useState(OPTIMIZER_SAMPLE.amount);
+  // "Shopping" here means online shopping, the biggest card spend category in India.
+  const best = useMemo(
+    () => getRankedRecommendations('', category, cards, { amount, online: category === 'Shopping' })[0],
+    [cards, category, amount],
+  );
+  const unit = best && best.rewardUnit !== 'CASHBACK' ? ` · ${best.pointsEarned.toLocaleString('en-IN')} ${best.rewardUnit === 'MILES' ? 'miles' : 'pts'}` : '';
   return (
     <AnimatedReveal delay={delayOffset}>
       <View style={styles.optimizerContainer}>
-        <SectionTitle title="REWARDS OPTIMIZER" />
+        <SectionTitle title="WHICH CARD SHOULD I USE?" />
         <View style={styles.optimizerCard}>
-          <View style={styles.optRow}>
-            <Text style={styles.optLabel}>Category</Text>
-            <View style={styles.optValueBox}><Text style={styles.optValue}>Dining</Text></View>
-          </View>
-          <View style={styles.optRow}>
-            <Text style={styles.optLabel}>Amount</Text>
-            <View style={styles.optValueBox}><Text style={styles.optValue}>₹5,000</Text></View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+            {OPTIMIZER_CATEGORIES.map((c) => (
+              <PressableScale key={c} scaleTo={0.95} onPress={() => setCategory(c)} style={[styles.optValueBox, category === c && styles.optChipActive]}>
+                <Text style={[styles.optValue, category === c && styles.optChipTextActive]}>{c === 'Shopping' ? 'Online shopping' : c}</Text>
+              </PressableScale>
+            ))}
+          </ScrollView>
+          <View style={[styles.optRow, { marginTop: 12 }]}>
+            {OPTIMIZER_AMOUNTS.map((a) => (
+              <PressableScale key={a} scaleTo={0.95} onPress={() => setAmount(a)} style={[styles.optValueBox, amount === a && styles.optChipActive]}>
+                <Text style={[styles.optValue, amount === a && styles.optChipTextActive]}>{inr(a)}</Text>
+              </PressableScale>
+            ))}
           </View>
           <View style={styles.optDivider} />
           <View style={styles.optRow}>
-            <Text style={styles.optLabel}>Best Card</Text>
-            <Text style={styles.optResult}>HDFC Infinia</Text>
+            <Text style={styles.optLabel}>Best card</Text>
+            <Text style={styles.optResult}>{best ? `${best.card.bankName} ${best.card.cardName}` : 'Add a card'}</Text>
           </View>
           <View style={styles.optRow}>
-            <Text style={styles.optLabel}>Rewards</Text>
-            <Text style={styles.optReward}>+₹165</Text>
+            <Text style={styles.optLabel}>You earn</Text>
+            <Text style={styles.optReward}>{best ? `+${inr(best.estimatedValue)}${unit}` : '—'}</Text>
           </View>
-          <PressableScale style={styles.optCta} onPress={() => router.push('/wallet')}>
-            <Text style={styles.optCtaText}>Optimize →</Text>
+          {best?.warnings[0] && <Text style={styles.optNote}>{best.warnings[0]}</Text>}
+          <PressableScale style={styles.optCta} onPress={() => router.push('/map')}>
+            <Text style={styles.optCtaText}>Compare at a place near me →</Text>
           </PressableScale>
         </View>
       </View>
@@ -272,17 +301,20 @@ function RewardsOptimizer({ delayOffset }: { delayOffset: number }) {
 }
 
 function QuickActionsGrid({ delayOffset }: { delayOffset: number }) {
+  const router = useRouter();
   const actions = [
-    { title: 'Add Money', icon: '＋' }, { title: 'Transfer', icon: '⇄' },
-    { title: 'Pay', icon: '▣' }, { title: 'History', icon: '≡' }
-  ];
+    { title: 'Find My Card', icon: '✦', route: '/find-card' },
+    { title: 'Trip Planner', icon: '✈', route: '/trip-planner' },
+    { title: 'Best Card Nearby', icon: '⚲', route: '/map' },
+    { title: 'Add a Card', icon: '＋', route: '/add-card' },
+  ] as const;
   return (
     <AnimatedReveal delay={delayOffset}>
       <SectionTitle title="QUICK ACTIONS" />
       <View style={styles.quickGrid}>
         {actions.map((act, i) => (
           <AnimatedReveal key={i} delay={delayOffset + (i * 60)} translateY={15} style={styles.quickGridItem}>
-            <PressableScale style={styles.quickCard} scaleTo={0.95}>
+            <PressableScale style={styles.quickCard} scaleTo={0.95} onPress={() => router.push(act.route)}>
               <View style={styles.quickIconBox}><Text style={styles.quickIcon}>{act.icon}</Text></View>
               <Text style={styles.quickTitle}>{act.title}</Text>
             </PressableScale>
@@ -295,22 +327,30 @@ function QuickActionsGrid({ delayOffset }: { delayOffset: number }) {
 
 function BestCardOpportunity({ delayOffset }: { delayOffset: number }) {
   const router = useRouter();
+  const holdings = useCardStore((s) => s.holdings);
+  const profile = useCardStore((s) => s.profile);
+  // Best card to add for the user's spending, after fees, on top of the cards they hold.
+  const pick = useMemo(
+    () => recommendCards(catalog, profile, { ownedIds: holdings.map((h) => h.catalogId), maxNew: 1, candidateLimit: 15 }).picks[0],
+    [holdings, profile],
+  );
+  if (!pick) return null;
   return (
     <AnimatedReveal delay={delayOffset}>
       <SectionTitle title="YOUR BEST CARD OPPORTUNITY" />
       <PressableScale style={styles.bestCard} scaleTo={0.98}>
         <View style={styles.bestCardHeader}>
           <Text style={styles.bestCardLabel}>Smart card match</Text>
-          <Text style={styles.bestCardTitle}>HDFC Infinia</Text>
+          <Text style={styles.bestCardTitle}>{pick.card.name}</Text>
         </View>
         <View style={styles.bestCardDivider} />
         <View style={styles.bestCardRow}>
           <View>
-            <Text style={styles.bestCardSub}>Potential rewards:</Text>
-            <Text style={styles.bestCardVal}>+₹12,000 / year</Text>
+            <Text style={styles.bestCardSub}>Extra value after fees (typical spending):</Text>
+            <Text style={styles.bestCardVal}>+{inr(pick.gainPerYear)} / year</Text>
           </View>
-          <PressableScale style={styles.bestCardCta} onPress={() => router.push('/wallet')}>
-            <Text style={styles.bestCardCtaText}>Explore Card →</Text>
+          <PressableScale style={styles.bestCardCta} onPress={() => router.push('/find-card')}>
+            <Text style={styles.bestCardCtaText}>Personalise →</Text>
           </PressableScale>
         </View>
       </PressableScale>
@@ -318,24 +358,58 @@ function BestCardOpportunity({ delayOffset }: { delayOffset: number }) {
   );
 }
 
-function RecentActivity({ delayOffset }: { delayOffset: number }) {
+/** Upcoming and recent changes to the user's cards (devaluations, fees, lounges). */
+function CardUpdates({ delayOffset }: { delayOffset: number }) {
+  const router = useRouter();
+  const cards = useCardStore((s) => s.cards);
+  const updates = useMemo(() => {
+    const items: { key: string; cardId: string; card: string; title: string; when: string; tag: string; color: string }[] = [];
+    for (const c of cards) {
+      const { upcoming, recent } = cardChanges(catalog, c.catalogId);
+      for (const e of [...upcoming, ...recent.slice(0, 2)]) {
+        items.push({
+          key: `${c.id}-${e.date}-${e.title}`,
+          cardId: c.id,
+          card: `${c.bankName} ${c.cardName}`,
+          title: e.title,
+          when: e.date,
+          tag: e.direction === 'devaluation' ? 'CUT' : e.direction === 'revaluation' ? 'BETTER' : 'CHANGE',
+          color: e.direction === 'devaluation' ? '#C9412E' : e.direction === 'revaluation' ? '#54C78A' : '#8A8A8A',
+        });
+      }
+    }
+    // Upcoming first (nearest date), then the most recent past changes.
+    const today = new Date().toISOString().slice(0, 10);
+    return items
+      .sort((a, b) => {
+        const aUp = a.when > today;
+        const bUp = b.when > today;
+        if (aUp !== bUp) return aUp ? -1 : 1;
+        return aUp ? (a.when < b.when ? -1 : 1) : a.when < b.when ? 1 : -1;
+      })
+      .slice(0, 5);
+  }, [cards]);
+
   return (
     <AnimatedReveal delay={delayOffset}>
-      <SectionTitle title="RECENT ACTIVITY" />
+      <SectionTitle title="UPDATES ON YOUR CARDS" />
       <View style={styles.activityContainer}>
-        {MOCK_ACTIVITY.map((act, i) => (
-          <AnimatedReveal key={act.id} delay={delayOffset + 100 + (i * 70)} translateY={0}>
-            <PressableScale style={styles.activityRow}>
-              <View style={styles.actLeft}>
-                <Text style={styles.actTitle}>{act.type}</Text>
-                <Text style={styles.actSub}>{act.time}</Text>
+        {updates.length === 0 && (
+          <View style={styles.activityRow}>
+            <Text style={styles.actSub}>No recent or upcoming changes to your cards.</Text>
+          </View>
+        )}
+        {updates.map((u, i) => (
+          <View key={u.key}>
+            <PressableScale style={styles.activityRow} onPress={() => router.push({ pathname: '/card-detail', params: { id: u.cardId, tab: 'Updates' } })}>
+              <View style={[styles.actLeft, { flex: 1 }]}>
+                <Text style={[styles.updateTag, { color: u.color }]}>{u.tag} · {u.when}</Text>
+                <Text style={styles.actTitle} numberOfLines={2}>{u.title}</Text>
+                <Text style={styles.actSub}>{u.card}</Text>
               </View>
-              <Text style={styles.actAmount}>
-                {act.amount < 0 ? '-' : '+'}₹{Math.abs(act.amount)}
-              </Text>
             </PressableScale>
-            {i !== MOCK_ACTIVITY.length - 1 && <View style={styles.actDivider} />}
-          </AnimatedReveal>
+            {i !== updates.length - 1 && <View style={styles.actDivider} />}
+          </View>
         ))}
       </View>
     </AnimatedReveal>
@@ -343,11 +417,18 @@ function RecentActivity({ delayOffset }: { delayOffset: number }) {
 }
 
 function RewardsCarousel({ delayOffset }: { delayOffset: number }) {
+  const cards = useCardStore((s) => s.cards);
+  const rewards = cards.map((c) => ({
+    id: c.id,
+    name: `${c.bankName} ${c.cardName}`,
+    points: `${c.points.toLocaleString('en-IN')} pts`,
+    value: c.highValue > c.lowValue ? `≈ ${inr(c.lowValue)} – ${inr(c.highValue)}` : `≈ ${inr(c.lowValue)}`,
+  }));
   return (
     <AnimatedReveal delay={delayOffset}>
       <SectionTitle title="YOUR REWARDS" style={{ paddingHorizontal: 20 }} />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rewardsCarousel}>
-        {MOCK_REWARDS.map((reward, i) => (
+        {rewards.map((reward, i) => (
           <AnimatedReveal key={reward.id} delay={delayOffset + 100 + (i * 100)} translateY={0}>
             <PressableScale style={styles.rewardCard} scaleTo={0.97}>
               <LinearGradient
@@ -404,7 +485,15 @@ export default function PremiumHomeScreen() {
         <BestCardOpportunity delayOffset={600} />
         
         <View style={styles.sectionGap} />
-        <RecentActivity delayOffset={720} />
+        <CardUpdates delayOffset={720} />
+
+        <View style={styles.sectionGap} />
+        <AnimatedReveal delay={780}>
+          <SectionTitle title="LEARN FROM EXPERTS" />
+          <View style={{ marginHorizontal: -20 }}>
+            <VideoRail />
+          </View>
+        </AnimatedReveal>
         
         <View style={styles.sectionGap} />
         {/* Carousel pulls padding internally to allow edge scrolling */}
@@ -421,6 +510,10 @@ export default function PremiumHomeScreen() {
 // STYLES
 // ─────────────────────────────────────────────
 const styles = StyleSheet.create({
+  optChipActive: { borderColor: '#F5D06F', backgroundColor: 'rgba(245,208,111,0.12)' },
+  optChipTextActive: { color: '#F5D06F', fontWeight: '600' },
+  optNote: { fontFamily: typography.fontFamily, color: '#C9A15A', fontSize: 12, marginTop: 4, lineHeight: 17 },
+  updateTag: { fontFamily: typography.fontFamily, fontSize: 10, fontWeight: '800', letterSpacing: 1 },
   container: {
     flex: 1,
     backgroundColor: '#070707',

@@ -1,76 +1,43 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, Pressable, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  withSpring,
-  withDelay,
   withRepeat,
   withSequence,
   Easing
 } from 'react-native-reanimated';
-import { colors, typography } from '../../theme';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { typography } from '../../theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useCardStore } from '../../store/useCardStore';
+import { answerAura, AURA_SUGGESTIONS } from '../../utils/auraBrain';
+import type { AuraAction } from '../../utils/auraBrain';
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-const GROQ_API_KEY = process.env.EXPO_PUBLIC_GROQ_API_KEY;
-
-const SYSTEM_PROMPT = `You are Aura, WalletWise's dedicated AI financial intelligence assistant.
-IMPORTANT: You are NOT a general-purpose chatbot. You ONLY entertain, answer, and assist with questions directly related to credit cards, rewards, points, cashback, miles, travel rewards, benefits, fees, reward optimization, comparisons, spending optimization, and finance topics directly connected to credit cards.
-STRICT DOMAIN RESTRICTION: If the user asks something unrelated to finance or credit cards (e.g. "What is the capital of France?", "Write a poem", "Help me with Python", "Tell me a joke"), you MUST respond briefly and naturally: "I'm Aura, WalletWise's financial intelligence assistant. I'm designed specifically to help with credit cards, rewards, spending and related finance topics." Do NOT answer the unrelated question.
-CORE PURPOSE: Help the user maximize reward points, cashback, and overall card value. Use tools to fetch real data. NEVER hallucinate reward rates, fees, points, or eligibility. If the tool data is missing, say "I don't have verified information for that."
-CHAT PERSONALITY: Intelligent, sophisticated, premium, calm, trustworthy, financially knowledgeable, concise. Do NOT sound robotic. Do NOT over-explain simple questions. Do NOT repeatedly mention you are an AI.
-FINANCIAL CALCULATIONS: Use the provided tools to calculate rewards. Then explain the result in natural language, showing the transaction amount, expected reward, estimated value, and important conditions.
-FORMATTING: Do NOT use Markdown formatting. Do not use asterisks (**), bolding, or markdown tables. Use clean, plain text with simple newlines for spacing.`;
+// Aura runs on the device with the WalletWise engine (src/utils/auraBrain.ts).
+// No API key is needed and no data leaves the phone.
 
 type Message = {
-  role: 'user' | 'assistant' | 'system' | 'tool';
-  content: string | null;
-  tool_calls?: any[];
-  tool_call_id?: string;
-  name?: string;
+  role: 'user' | 'assistant';
+  content: string;
+  actions?: AuraAction[];
 };
 
-// Available Tools JSON Schema
-const tools = [
-  {
-    type: "function",
-    function: {
-      name: "get_user_cards",
-      description: "Get the detailed list of credit cards the user currently owns, including their reward rates, fees, and benefits.",
-      parameters: { type: "object", properties: {}, required: [] }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "calculate_best_card_for_spend",
-      description: "Calculates the best card to use for a specific purchase amount and category using the WalletWise rules engine.",
-      parameters: {
-        type: "object",
-        properties: {
-          amount: { type: "number", description: "The purchase amount in INR" },
-          category: { type: "string", description: "The spending category (e.g., Dining, Travel, Groceries, Gas, Shopping)" }
-        },
-        required: ["amount", "category"]
-      }
-    }
-  }
-];
+// Short pause so the reply feels like a response rather than a page change.
+const THINKING_MS = 350;
 
 export default function AuraScreen() {
   const insets = useSafeAreaInsets();
-  const { cards } = useCardStore();
+  const router = useRouter();
+  const { q } = useLocalSearchParams<{ q?: string }>();
+  const { cards, profile, profileSaved, isDemo } = useCardStore();
   const scrollViewRef = useRef<ScrollView>(null);
-  
-  // Chat State
+  const handledQuery = useRef<string | undefined>(undefined);
+
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'system', content: SYSTEM_PROMPT },
-    { role: 'assistant', content: "Good evening. I've analyzed your recent spending patterns across your cards. How can I help you optimize your rewards today?" }
+    { role: 'assistant', content: "Hi, I'm Aura. Ask me which of your cards to use for a purchase, how to use your points, whether a new card is worth it, or anything about how credit cards work." }
   ]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -90,143 +57,38 @@ export default function AuraScreen() {
 
   const aiGlowStyle = useAnimatedStyle(() => ({ opacity: aiGlowOpacity.value }));
 
-  // --- TOOL EXECUTION LOGIC ---
-  const executeToolCall = async (toolCall: any): Promise<Message> => {
-    const { name, arguments: argsString } = toolCall.function;
-    const args = JSON.parse(argsString || "{}");
-    
-    let result = "";
-    if (name === "get_user_cards") {
-      result = JSON.stringify(cards.map(c => ({
-        bank: c.bankName,
-        card: c.cardName,
-        headline: c.rewardHeadline,
-        benefits: c.benefits
-      })));
-    } else if (name === "calculate_best_card_for_spend") {
-      // WalletWise Mock Rules Engine
-      const { amount, category } = args;
-      const ranked = cards.map(c => {
-        let mult = 1;
-        if (c.cardName.includes('Infinia') && category === 'Dining') mult = 5;
-        if (c.cardName.includes('Octane') && category === 'Gas') mult = 10;
-        if (c.cardName.includes('Platinum') && category === 'Travel') mult = 3;
-        if (c.cardName.includes('Diners') && category === 'Groceries') mult = 3;
-        const pts = (amount / 100) * mult;
-        return { card: c.cardName, multiplier: mult, points: pts, estimatedValueINR: pts * 0.5 };
-      }).sort((a, b) => b.points - a.points);
-      
-      result = JSON.stringify({
-        bestCard: ranked[0].card,
-        expectedRewards: ranked[0].points,
-        estimatedValue: ranked[0].estimatedValueINR,
-        reason: `Highest verified multiplier (${ranked[0].multiplier}x) for ${category}`,
-        alternatives: ranked.slice(1,3)
-      });
-    } else {
-      result = JSON.stringify({ error: "Unknown tool" });
-    }
-
-    return {
-      role: 'tool',
-      content: result,
-      tool_call_id: toolCall.id,
-      name: name
-    };
-  };
-
-  // --- API CALL LOGIC ---
-  const sendToGroq = async (currentMessages: Message[]) => {
-    try {
-      const payloadMessages = currentMessages.map(m => {
-        const safeMessage: any = { role: m.role };
-        // React Native fetch on iOS can crash if it hits null contents in complex nested JSON arrays
-        safeMessage.content = (m.content === null || m.content === undefined) ? "" : m.content;
-        if (m.name) safeMessage.name = m.name;
-        if (m.tool_call_id) safeMessage.tool_call_id = m.tool_call_id;
-        if (m.tool_calls) safeMessage.tool_calls = m.tool_calls;
-        return safeMessage;
-      });
-
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${GROQ_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'openai/gpt-oss-120b',
-          messages: payloadMessages,
-          tools: tools,
-          tool_choice: "auto",
-          temperature: 0.2,
-          max_tokens: 1024,
-        })
-      });
-
-      const data = await response.json();
-      
-      if (!data.choices || data.choices.length === 0) {
-         throw new Error("Invalid response from Groq");
-      }
-
-      const responseMessage = data.choices[0].message;
-
-      // Handle Tool Calls (Recursion loop)
-      if (responseMessage.tool_calls) {
-        const cleanResponse = {
-          role: responseMessage.role,
-          content: responseMessage.content || "",
-          tool_calls: responseMessage.tool_calls,
-        };
-        const newMessages = [...currentMessages, cleanResponse as Message];
-        setMessages(newMessages); // Show thinking state if desired
-        
-        const toolResultMessages = await Promise.all(
-          responseMessage.tool_calls.map((tc: any) => executeToolCall(tc))
-        );
-        
-        const messagesWithToolResults = [...newMessages, ...toolResultMessages];
-        setMessages(messagesWithToolResults);
-        
-        // Recurse to let LLM formulate final answer based on tool data
-        await sendToGroq(messagesWithToolResults);
-      } else {
-        // Final standard text response
-        setMessages(prev => [...prev, responseMessage]);
-        setIsLoading(false);
-      }
-    } catch (err) {
-      console.error(err);
-      setMessages(prev => [...prev, { role: 'assistant', content: "I encountered a secure connection error while analyzing your wallet. Please try again." }]);
-      setIsLoading(false);
-    }
-  };
-
-  const handleSend = async () => {
-    if (!inputText.trim()) return;
-    
-    const userMsg: Message = { role: 'user', content: inputText.trim() };
-    const updatedMessages = [...messages, userMsg];
-    setMessages(updatedMessages);
+  const ask = useCallback((text: string) => {
+    const question = text.trim();
+    if (!question) return;
+    setMessages((prev) => [...prev, { role: 'user', content: question }]);
     setInputText('');
     setIsLoading(true);
+    setTimeout(() => {
+      const reply = answerAura(question, { cards, profile, profileSaved, isDemo });
+      setMessages((prev) => [...prev, { role: 'assistant', content: reply.text, actions: reply.actions }]);
+      setIsLoading(false);
+      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+    }, THINKING_MS);
+  }, [cards, profile, profileSaved, isDemo]);
 
-    // Scroll to bottom
-    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+  // Questions sent from other screens (Home suggestion pills).
+  useEffect(() => {
+    if (q && handledQuery.current !== q) {
+      handledQuery.current = q;
+      ask(q);
+    }
+  }, [q, ask]);
 
-    await sendToGroq(updatedMessages);
-    
-    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
-  };
+  const handleSend = () => ask(inputText);
 
-  const handleSuggestion = (text: string) => {
-    setInputText(text);
+  const handleSuggestion = (text: string) => ask(text);
+
+  const openAction = (action: AuraAction) => {
+    router.push({ pathname: action.route as never, params: action.params });
   };
 
   // --- RENDER ---
-  // Filter out system and tool messages for UI
-  const displayMessages = messages.filter(m => m.role === 'user' || (m.role === 'assistant' && m.content));
+  const displayMessages = messages;
 
   return (
     <KeyboardAvoidingView 
@@ -275,8 +137,17 @@ export default function AuraScreen() {
                   styles.messageText,
                   msg.role === 'user' ? styles.messageTextUser : styles.messageTextAi
                 ]}>
-                  {msg.content?.replace(/\*\*/g, '')}
+                  {msg.content}
                 </Text>
+                {msg.actions && msg.actions.length > 0 && (
+                  <View style={styles.actionRow}>
+                    {msg.actions.map((a) => (
+                      <Pressable key={a.label} style={styles.actionChip} onPress={() => openAction(a)}>
+                        <Text style={styles.actionChipText}>{a.label} →</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                )}
               </View>
             </View>
           ))}
@@ -294,7 +165,7 @@ export default function AuraScreen() {
 
           {displayMessages.length === 1 && !isLoading && (
             <View style={styles.suggestionsContainer}>
-              {['Which card should I use for travel?', 'Compare my cards', 'Which card should I use for groceries?'].map((suggestion, i) => (
+              {AURA_SUGGESTIONS.map((suggestion, i) => (
                 <Pressable key={i} style={styles.suggestionPill} onPress={() => handleSuggestion(suggestion)}>
                   <Text style={styles.suggestionText}>{suggestion}</Text>
                 </Pressable>
@@ -330,6 +201,26 @@ export default function AuraScreen() {
 }
 
 const styles = StyleSheet.create({
+  actionRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 12,
+  },
+  actionChip: {
+    borderWidth: 1,
+    borderColor: 'rgba(245, 208, 111, 0.4)',
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(245, 208, 111, 0.08)',
+  },
+  actionChipText: {
+    fontFamily: typography.fontFamily,
+    color: '#F5D06F',
+    fontSize: 13,
+    fontWeight: '600',
+  },
   container: { 
     flex: 1, 
     backgroundColor: '#070707',

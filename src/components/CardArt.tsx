@@ -1,43 +1,22 @@
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
-// unused import removed
-import { CardData } from '../store/useCardStore';
 
-export function CardArt({ card }: { card: CardData }) {
-  let imageSource;
+import { catalog } from '../data/catalog';
+import { CardFace } from './CardFace';
+import { CARD_IMAGES } from './cardImages';
 
-  switch (card.cardName) {
-    case 'Infinia':
-      imageSource = require('../../cards picture/infinia-credit-card.png');
-      break;
-    case 'BPCL Octane':
-      imageSource = require('../../cards picture/bpcl-octane-sbi-card.png');
-      break;
-    case 'Platinum Travel':
-      imageSource = require('../../cards picture/platinumCarddec.png');
-      break;
-    case 'Diners Club Black':
-      imageSource = require('../../cards picture/infinia-credit-card.png'); // Fallback if no specific DCB image exists
-      break;
-    case 'Regalia Gold':
-      imageSource = require('../../cards picture/facie-regalia-gold.png');
-      break;
-    case 'Marriott Bonvoy':
-      imageSource = require('../../cards picture/Card-Facia-Marriott-Bonvoy.png');
-      break;
-    default:
-      // Fallback if needed
-      imageSource = require('../../cards picture/infinia-credit-card.png');
-      break;
-  }
+/** Card artwork that fills its parent (absolute). Works for any catalog card. */
+export function CardArt({ card, small }: { card: { catalogId: string }; small?: boolean }) {
+  const image = CARD_IMAGES[card.catalogId];
+  const data = catalog.byId.get(card.catalogId);
 
   return (
     <View style={styles.cardBase}>
-      <Image 
-        source={imageSource} 
-        style={styles.image} 
-        resizeMode="contain" 
-      />
+      {image ? (
+        <Image source={image} style={styles.image} resizeMode="contain" />
+      ) : (
+        <CardFace issuer={data?.issuer ?? ''} name={data?.name ?? ''} network={data?.network} tier={data?.tier} small={small ?? true} />
+      )}
     </View>
   );
 }
@@ -51,7 +30,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderRadius: 18,
     overflow: 'hidden',
-    backgroundColor: '#000', // Dark background for transparent images if any
+    backgroundColor: '#000',
   },
   image: {
     width: '100%',

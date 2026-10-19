@@ -1,50 +1,29 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import Animated from 'react-native-reanimated';
-import { CardData } from '../store/useCardStore';
+
+import { catalog } from '../data/catalog';
+import { CardFace } from './CardFace';
+import { CARD_IMAGES } from './cardImages';
 
 type Props = {
-  card: CardData;
+  card: { id: string; catalogId: string };
   style?: any;
 };
 
+/** Full-size card artwork (1.586 aspect ratio). Any catalog card without artwork gets a generated face. */
 export function CreditCardImage({ card, style }: Props) {
-  let imageSource;
-
-  switch (card.cardName) {
-    case 'Infinia':
-      imageSource = require('../../cards picture/infinia-credit-card.png');
-      break;
-    case 'BPCL Octane':
-      imageSource = require('../../cards picture/bpcl-octane-sbi-card.png');
-      break;
-    case 'Platinum Travel':
-      imageSource = require('../../cards picture/platinumCarddec.png');
-      break;
-    case 'Regalia Gold':
-      imageSource = require('../../cards picture/facie-regalia-gold.png');
-      break;
-    case 'Marriott Bonvoy':
-      imageSource = require('../../cards picture/Card-Facia-Marriott-Bonvoy.png');
-      break;
-    default:
-      imageSource = require('../../cards picture/infinia-credit-card.png');
-      break;
-  }
+  const imageSource = CARD_IMAGES[card.catalogId];
+  const data = catalog.byId.get(card.catalogId);
 
   return (
-    <Animated.View 
-      sharedTransitionTag={`card-image-${card.id}`} 
-      style={[styles.container, style]}
-    >
-      <Image 
-        source={imageSource} 
-        style={styles.image} 
-        contentFit="fill"
-        transition={200}
-        cachePolicy="memory-disk"
-      />
+    <Animated.View sharedTransitionTag={`card-image-${card.id}`} style={[styles.container, style]}>
+      {imageSource ? (
+        <Image source={imageSource} style={styles.image} contentFit="fill" transition={200} cachePolicy="memory-disk" />
+      ) : (
+        <CardFace issuer={data?.issuer ?? ''} name={data?.name ?? ''} network={data?.network} tier={data?.tier} />
+      )}
     </Animated.View>
   );
 }

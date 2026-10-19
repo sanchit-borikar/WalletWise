@@ -34,6 +34,7 @@ const EXPANDED_SPACING = 85;       // Overlapping spread distance
 // Expiry Banner (Black + Gold Theme)
 // ─────────────────────────────────────────────
 function ExpiryBanner({ cards }: { cards: CardData[] }) {
+  const router = useRouter();
   const expiringCard = cards.find(c => c.expiryDays && c.expiryDays <= 30);
   if (!expiringCard) return null;
 
@@ -54,7 +55,10 @@ function ExpiryBanner({ cards }: { cards: CardData[] }) {
         </View>
         <Text style={styles.infoSubtext}>{expiringCard.bankName} {expiringCard.cardName}</Text>
       </View>
-      <Pressable style={styles.expiryCtaButton}>
+      <Pressable
+        style={styles.expiryCtaButton}
+        onPress={() => router.push({ pathname: '/card-detail', params: { id: expiringCard.id, tab: 'Redeem' } })}
+      >
         <Text style={styles.expiryCta}>Redeem →</Text>
       </Pressable>
     </View>
@@ -64,20 +68,31 @@ function ExpiryBanner({ cards }: { cards: CardData[] }) {
 // ─────────────────────────────────────────────
 // Points Value Card (Black + Gold Theme)
 // ─────────────────────────────────────────────
-function PointsValueCard({ totalMax }: { totalMax: number }) {
+// Typical one-way domestic economy fare used to make the points value concrete.
+const TYPICAL_DOMESTIC_FARE = 5000;
+
+function PointsValueCard({ totalMin, totalMax }: { totalMin: number; totalMax: number }) {
+  const router = useRouter();
+  const flights = Math.floor(totalMin / TYPICAL_DOMESTIC_FARE);
   return (
     <View style={styles.infoCard}>
       <Text style={styles.infoLabel}>WHAT CAN YOUR POINTS GET YOU?</Text>
-      <Text style={[styles.infoBigNum, { marginTop: 8, color: colors.accent.goldStart }]}>≈ ₹{totalMax.toLocaleString()}</Text>
-      <Text style={styles.infoSubtext}>Estimated total reward value</Text>
+      <Text style={[styles.infoBigNum, { marginTop: 8, color: colors.accent.goldStart }]}>
+        ₹{totalMin.toLocaleString('en-IN')}{totalMax > totalMin ? ` – ₹${totalMax.toLocaleString('en-IN')}` : ''}
+      </Text>
+      <Text style={styles.infoSubtext}>Guaranteed value to best realistic value</Text>
       <View style={styles.horizontalDivider} />
-      <View style={styles.infoRow}>
+      <Pressable style={styles.infoRow} onPress={() => router.push('/trip-planner')}>
         <Text style={styles.infoIcon}>✈︎</Text>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={styles.infoRowTitle}>Travel</Text>
-          <Text style={styles.infoRowSub}>≈ 1 return flight, Pune → Goa</Text>
+          <Text style={styles.infoRowSub}>
+            {flights > 0
+              ? `About ${flights} one-way domestic flight${flights > 1 ? 's' : ''} at ~₹5,000 each. Plan a trip →`
+              : 'Not enough for a flight yet. See how close you are →'}
+          </Text>
         </View>
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -217,6 +232,7 @@ function StackedCard({
 // ─────────────────────────────────────────────
 export default function WalletScreen() {
   const cards = useCardStore((state) => state.cards);
+  const isDemo = useCardStore((state) => state.isDemo);
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
@@ -305,13 +321,26 @@ export default function WalletScreen() {
           <View>
             <Text style={styles.headerTitle}>My Cards</Text>
             <Text style={styles.headerSubLabel}>
-              Portfolio Value: <Text style={{ color: colors.accent.goldStart }}>₹{totalMin.toLocaleString()} - ₹{totalMax.toLocaleString()}</Text>
+              Points worth: <Text style={{ color: colors.accent.goldStart }}>₹{totalMin.toLocaleString('en-IN')} – ₹{totalMax.toLocaleString('en-IN')}</Text>
             </Text>
           </View>
-          <Pressable style={styles.plusButton}>
+          <Pressable style={styles.plusButton} onPress={() => router.push('/add-card')}>
             <Text style={styles.plusButtonText}>+</Text>
           </Pressable>
         </View>
+
+        {isDemo && (
+          <Pressable style={styles.demoBanner} onPress={() => router.push('/add-card')}>
+            <Text style={styles.demoTitle}>These are sample cards</Text>
+            <Text style={styles.demoText}>Add your own card and its points balance to get real answers. Tap to add →</Text>
+          </Pressable>
+        )}
+        {cards.length === 0 && (
+          <Pressable style={styles.demoBanner} onPress={() => router.push('/add-card')}>
+            <Text style={styles.demoTitle}>No cards yet</Text>
+            <Text style={styles.demoText}>Add the cards you hold, or use Find My Card if you have none. Tap to add →</Text>
+          </Pressable>
+        )}
 
         {/* Card Deck (Immediately below header) */}
         <GestureDetector gesture={panGesture}>
@@ -341,9 +370,9 @@ export default function WalletScreen() {
         </Animated.View>
 
         {/* Rest of the Info (Below hint) */}
-        <Text style={styles.sectionTitle}>Transactions</Text>
+        <Text style={styles.sectionTitle}>Your points</Text>
         <ExpiryBanner cards={cards} />
-        <PointsValueCard totalMax={totalMax} />
+        <PointsValueCard totalMin={totalMin} totalMax={totalMax} />
 
       </ScrollView>
     </View>
@@ -354,6 +383,16 @@ export default function WalletScreen() {
 // Styles
 // ─────────────────────────────────────────────
 const styles = StyleSheet.create({
+  demoBanner: {
+    borderWidth: 1,
+    borderColor: 'rgba(245,208,111,0.35)',
+    backgroundColor: 'rgba(245,208,111,0.06)',
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 16,
+  },
+  demoTitle: { fontFamily: typography.fontFamily, color: colors.accent.goldStart, fontSize: 14, fontWeight: '700' },
+  demoText: { fontFamily: typography.fontFamily, color: '#B0B0B0', fontSize: 13, marginTop: 4, lineHeight: 18 },
   container: {
     flex: 1,
     backgroundColor: '#070707', // Reverted to black

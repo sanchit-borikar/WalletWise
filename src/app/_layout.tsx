@@ -33,6 +33,9 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="card-detail" options={{ headerShown: false, gestureEnabled: true, gestureDirection: 'horizontal' }} />
         <Stack.Screen name="create-card" options={{ presentation: 'fullScreenModal', headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="add-card" options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="find-card" options={{ headerShown: false }} />
+        <Stack.Screen name="trip-planner" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>
   );

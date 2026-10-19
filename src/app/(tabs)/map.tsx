@@ -13,12 +13,16 @@ import { Gesture, GestureDetector, ScrollView as RNGHScrollView } from 'react-na
 import { useRouter } from 'expo-router';
 import { colors, typography } from '../../theme';
 import { CardArt } from '../../components/CardArt';
-import { useBestCardLogic } from '../../hooks/useBestCardLogic';
+import { enrichFeature, useBestCardLogic } from '../../hooks/useBestCardLogic';
+import type { EnrichedPlace } from '../../hooks/useBestCardLogic';
+import { PlacePanel } from '../../components/PlacePanel';
+import type { RankMode } from '../../components/PlacePanel';
+import { useCardStore } from '../../store/useCardStore';
+import type { MerchantCategory } from '../../utils/merchantClassifier';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const MODES = ['Max Value', 'Cashback'];
-const CATEGORIES = ['All', 'Dining', 'Grocery', 'Electronics', 'Shopping'];
+const CATEGORIES = ['All', 'Dining', 'Grocery', 'Fuel', 'Electronics', 'Shopping', 'Travel', 'Pharmacy / Health', 'Entertainment'];
 
 const MAPBOX_TOKEN = process.env.EXPO_PUBLIC_MAPBOX_TOKEN;
 const MAPBOX_URL = `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`;
@@ -94,7 +98,7 @@ export default function MapScreen() {
     searchResults,
     isSearching, setIsSearching,
     userLocation,
-    customCenter, setCustomCenter,
+    customCenter,
     places,
     selectedPlaceId, setSelectedPlaceId,
     isLoading,
@@ -106,30 +110,29 @@ export default function MapScreen() {
   const isDragging = useSharedValue(false);
   const contextOffset = useSharedValue(0);
 
-  // Active Mode (Dream Goal, Max Value, Cashback)
-  const [activeMode, setActiveMode] = useState(MODES[0]);
+  const cards = useCardStore((s) => s.cards);
 
-  // Handle Search Result Selection
-  const onSearchResultSelect = (place: any) => {
+  // Max Value counts what points are worth when transferred; Cashback counts only guaranteed value.
+  const [rankMode, setRankMode] = useState<RankMode>('Max Value');
+  // The place whose card ranking is open in the sheet.
+  const [openPlace, setOpenPlace] = useState<EnrichedPlace | null>(null);
+
+  const openPlacePanel = (place: EnrichedPlace) => {
     const [lon, lat] = place.center;
-    setCustomCenter({ lat, lon });
+    setOpenPlace(place);
+    setSelectedPlaceId(place.id);
+    sheetHeight.value = withSpring(SNAP_EXPANDED, { damping: 18, stiffness: 150, overshootClamping: true });
+    mapRef.current?.animateCamera({ center: { latitude: lat, longitude: lon }, zoom: 15.5 }, { duration: 800 });
+  };
+
+  // A searched place ("DMart Karve Nagar") opens straight into its card ranking.
+  const onSearchResultSelect = (feature: any) => {
     setIsSearching(false);
     setSearchQuery('');
-    mapRef.current?.animateCamera({
-      center: { latitude: lat, longitude: lon },
-      zoom: 14.5,
-    }, { duration: 800 });
+    openPlacePanel(enrichFeature(feature, activeCategory as MerchantCategory, userLocation, cards));
   };
 
-  // Marker interaction
-  const onMarkerPress = (place: any) => {
-    const [lon, lat] = place.center;
-    setSelectedPlaceId(place.id);
-    mapRef.current?.animateCamera({
-      center: { latitude: lat, longitude: lon },
-      zoom: 15.5,
-    }, { duration: 800 });
-  };
+  const onMarkerPress = (place: EnrichedPlace) => openPlacePanel(place);
 
   // Bulletproof Bottom Sheet Pan Gesture
   const panGesture = Gesture.Pan()
@@ -200,10 +203,17 @@ export default function MapScreen() {
               key={place.id}
               coordinate={{ latitude: lat, longitude: lon }}
               isSelected={selectedPlaceId === place.id}
-              onPress={() => onMarkerPress(place.raw)}
+              onPress={() => onMarkerPress(place)}
             />
           );
         })}
+        {openPlace && !places.some((p) => p.id === openPlace.id) && (
+          <AnimatedMarker
+            coordinate={{ latitude: openPlace.center[1], longitude: openPlace.center[0] }}
+            isSelected
+            onPress={() => {}}
+          />
+        )}
       </MapView>
 
       {/* FLOATING SEARCH BAR OVERLAY */}
@@ -262,18 +272,26 @@ export default function MapScreen() {
                 </View>
               </View>
               
-              <View style={{ flexDirection: 'row', gap: 8 }}>
-                <Pressable style={styles.actionBtn}><Text style={styles.actionBtnText}>⌘ Scan</Text></Pressable>
-                <Pressable style={styles.actionBtnSecondary}><Text style={styles.actionBtnTextSec}>🔔 Store Alert</Text></Pressable>
-              </View>
+              <Pressable style={styles.actionBtn} onPress={() => router.push('/trip-planner')}>
+                <Text style={styles.actionBtnText}>✈ Trip Planner</Text>
+              </Pressable>
             </View>
 
             <View style={styles.segmentedControl}>
-              <Text style={styles.segmentText}>Dream Goal ⓘ</Text>
-              <View style={styles.segmentActive}>
-                 <Text style={styles.segmentTextActive}>Max Value ⓘ</Text>
-              </View>
-              <Text style={styles.segmentText}>Cashback ⓘ</Text>
+              <Pressable onPress={() => router.push('/trip-planner')}>
+                <Text style={styles.segmentText}>Dream Goal ✈</Text>
+              </Pressable>
+              {(['Max Value', 'Cashback'] as const).map((m) =>
+                rankMode === m ? (
+                  <View key={m} style={styles.segmentActive}>
+                    <Text style={styles.segmentTextActive}>{m}</Text>
+                  </View>
+                ) : (
+                  <Pressable key={m} onPress={() => setRankMode(m)}>
+                    <Text style={styles.segmentText}>{m}</Text>
+                  </Pressable>
+                ),
+              )}
             </View>
 
             <RNGHScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
@@ -290,7 +308,10 @@ export default function MapScreen() {
             </RNGHScrollView>
           </View>
 
-          {/* SCROLLABLE LIST OF PLACES */}
+          {openPlace ? (
+            <PlacePanel place={openPlace} cards={cards} mode={rankMode} onClose={() => { setOpenPlace(null); setSelectedPlaceId(null); }} />
+          ) : (
+          /* SCROLLABLE LIST OF PLACES */
           <RNGHScrollView contentContainerStyle={styles.sheetContent} showsVerticalScrollIndicator={false}>
             <View style={styles.listHeaderRow}>
               <Text style={styles.listHeaderTitle}>
@@ -301,8 +322,8 @@ export default function MapScreen() {
             {places.length > 0 && (
               <View style={styles.altEarnBanner}>
                 <Text style={styles.altEarnIcon}>⚲</Text>
-                <Text style={styles.altEarnText}>Alternative ways to earn</Text>
-                <Text style={styles.altEarnSub}>1 ways ›</Text>
+                <Text style={styles.altEarnText}>Tap a place to compare all your cards</Text>
+                <Text style={styles.altEarnSub}>₹2,000 shown</Text>
               </View>
             )}
 
@@ -314,8 +335,8 @@ export default function MapScreen() {
                 
                 return (
                   <View key={place.id} style={styles.placeCard}>
-                    {/* Outer Info */}
-                    <View style={styles.placeHeader}>
+                    {/* Outer Info: tap to see every card ranked for this place */}
+                    <Pressable style={styles.placeHeader} onPress={() => openPlacePanel(place)}>
                       <View style={styles.placeIconBox}>
                         <Text style={styles.placeIconTxt}>{getCategoryIcon(catName)}</Text>
                       </View>
@@ -323,11 +344,12 @@ export default function MapScreen() {
                         <Text style={styles.placeName} numberOfLines={1}>{place.name}</Text>
                         <Text style={styles.placeMeta}>{catName} • {distanceStr}</Text>
                       </View>
-                    </View>
+                      <Text style={styles.placeMeta}>All cards ›</Text>
+                    </Pressable>
 
                     {/* Inner Card Recommendation */}
                     {bestRec && (
-                      <Pressable style={styles.recCard} onPress={() => router.push(`/card-detail?id=${bestRec.card.id}`)}>
+                      <Pressable style={styles.recCard} onPress={() => openPlacePanel(place)}>
                         <View style={styles.recCardTop}>
                           <View style={styles.recCardArt}>
                              <CardArt card={bestRec.card} />
@@ -344,8 +366,8 @@ export default function MapScreen() {
                         <View style={styles.recDivider} />
                         
                         <View style={styles.recFooter}>
-                           <Text style={styles.recPointsNum}>{bestRec.estimatedValue > 100 ? `₹${Math.round(bestRec.estimatedValue)}` : `${Math.round(bestRec.score * 2)}`}</Text>
-                           <Text style={styles.recPointsLbl}>{bestRec.estimatedValue > 100 ? 'saved' : 'points'}</Text>
+                           <Text style={styles.recPointsNum}>₹{Math.round(bestRec.estimatedValue)}</Text>
+                           <Text style={styles.recPointsLbl}>back on ₹{bestRec.spendAmount.toLocaleString('en-IN')}</Text>
                         </View>
                       </Pressable>
                     )}
@@ -354,6 +376,7 @@ export default function MapScreen() {
               })}
             </View>
           </RNGHScrollView>
+          )}
         </Animated.View>
       </GestureDetector>
     </View>
