@@ -247,4 +247,21 @@ describe('RAG', () => {
     setQueryForTests(null);
     setEmbedderForTests(null);
   });
+
+  it('compares several cards by searching each one', async () => {
+    setEmbedderForTests(async (texts) => texts.map(() => [1, 0]));
+    const asked: string[][] = [];
+    setQueryForTests(async (_v, _k, ids) => {
+      asked.push(ids ?? []);
+      const id = ids?.[0] ?? 'x';
+      return [{ id: `${id}::fees::0`, text: `${id} fees`, metadata: { cardId: id, cardName: id, bank: 'Axis Bank', section: 'Fees', last_updated: 'd', source: 's' }, score: 0.6 }];
+    });
+    // The model may send both names in one string.
+    const out = JSON.parse(await runTool('search_card_knowledge', JSON.stringify({ query: 'Compare Axis Atlas and Axis Magnus', cardIds: ['Axis Atlas, Axis Magnus'] }), ctx()));
+    assert.equal(out.status, 'match');
+    assert.deepEqual(asked, [['axis-atlas'], ['axis-magnus']]);
+    assert.deepEqual(new Set(out.chunks.map((c: { cardId: string }) => c.cardId)), new Set(['axis-atlas', 'axis-magnus']));
+    setQueryForTests(null);
+    setEmbedderForTests(null);
+  });
 });

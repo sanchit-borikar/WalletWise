@@ -258,8 +258,12 @@ export const TOOLS: Tool[] = [
     parameters: {
       type: 'object',
       properties: {
-        query: { type: 'string', description: 'The question in plain words, including the card name' },
-        cardId: { type: 'string', description: 'Card id or name to restrict the search to one card' },
+        query: { type: 'string', description: 'The question in plain words, including the card names' },
+        cardIds: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Optional card ids or names to search. For a comparison pass every card, e.g. ["Axis Atlas", "Axis Magnus"].',
+        },
       },
       required: ['query'],
       additionalProperties: false,
@@ -267,13 +271,17 @@ export const TOOLS: Tool[] = [
     run: async (args) => {
       const query = String(args.query ?? '').trim();
       if (!query) return fail('invalid_query', 'Query is empty.');
-      let cardId: string | undefined;
-      if (typeof args.cardId === 'string' && args.cardId) {
-        const card = resolveCard(args.cardId);
-        if (!card) return { ok: true, status: 'no_confident_match', message: `No card named "${args.cardId}" in the knowledge base.` };
-        cardId = card.id;
-      }
-      return searchCardKnowledge(query, cardId);
+      // Accept a list, or one string that names several cards ("Atlas, Magnus", "Atlas vs Magnus").
+      const raw = [
+        ...(Array.isArray(args.cardIds) ? args.cardIds : []),
+        ...(typeof args.cardId === 'string' ? [args.cardId] : []),
+      ]
+        .flatMap((v) => String(v).split(/,|;|\/|&|\band\b|\bvs\.?(?=\s|$)|\bversus\b/i))
+        .map((v) => v.trim())
+        .filter(Boolean);
+      const ids = [...new Set(raw.map((v) => resolveCard(v)?.id).filter((id): id is string => !!id))];
+      // Names the model passed that match nothing: let the search read the card names from the question instead.
+      return searchCardKnowledge(query, ids.length ? ids : undefined);
     },
   },
   {

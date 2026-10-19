@@ -28,6 +28,13 @@ type Message = {
   retryQuestion?: string;
 };
 
+/** Removes markdown emphasis and headings the model sometimes adds, so no raw * or # shows. */
+const plain = (text: string) =>
+  text
+    .replace(/\*\*|__/g, '')
+    .replace(/(^|\s)\*(?=\S)([^*\n]+)\*(?=\s|[.,;:!?]|$)/g, '$1$2')
+    .replace(/^#{1,6}\s+/gm, '');
+
 let nextId = 0;
 const newId = () => `m${++nextId}`;
 
@@ -180,7 +187,7 @@ export default function AuraScreen() {
                     </View>
                   ) : (
                     <Text style={[theme.text.body, styles.text]} accessibilityLiveRegion={m.state === 'streaming' ? 'polite' : 'none'}>
-                      {m.content}
+                      {m.role === 'assistant' ? plain(m.content) : m.content}
                     </Text>
                   )}
                   {m.state === 'done' && m.cta && (

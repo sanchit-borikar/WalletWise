@@ -71,6 +71,9 @@ export async function* runAgent(
       for (const call of calls) {
         if (TOOL_STATUS[call.name]) yield { type: 'status', message: TOOL_STATUS[call.name] };
         const result = await runTool(call.name, call.arguments, ctx);
+        // One line per tool call in the server terminal, to see what Aura looked up.
+        const parsed = JSON.parse(result) as { ok?: boolean; status?: string; error?: string };
+        console.log(`[aura] ${call.name} ${call.arguments.slice(0, 120)} -> ${parsed.ok === false ? `error: ${parsed.error}` : parsed.status ?? 'ok'}`);
         messages.push({ role: 'tool', toolCallId: call.id, name: call.name, content: result });
       }
     }
