@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AuraBar } from '../../components/home/AuraBar';
+import { BillCheckBanner } from '../../components/home/BillCheckBanner';
 import { CardCalculator } from '../../components/home/CardCalculator';
 import { HeroCard } from '../../components/home/HeroCard';
 import { HomeHeader } from '../../components/home/HomeHeader';
@@ -58,6 +59,8 @@ export default function HomeScreen() {
       { key: 'trip', title: 'Trip Planner', icon: 'plane', onPress: () => router.push('/trip-planner') },
       { key: 'nearby', title: 'Best Card Nearby', icon: 'pin', onPress: () => router.push('/map') },
       { key: 'add', title: 'Add a Card', icon: 'plus', onPress: () => router.push('/add-card') },
+      { key: 'bill', title: 'Bill check', icon: 'rupee', onPress: () => router.push('/bill-check') },
+      { key: 'browse', title: 'Browse cards', icon: 'search', onPress: () => router.push('/browse-cards') },
     ],
     [router],
   );
@@ -89,6 +92,8 @@ export default function HomeScreen() {
         />
 
         <AuraBar onPress={() => router.push('/aura')} />
+
+        <BillCheckBanner onPress={() => router.push('/bill-check')} />
 
         <View>
           <SectionHeader title="Quick actions" />
