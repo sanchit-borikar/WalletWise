@@ -90,6 +90,10 @@ export type UpiRewards = {
   ratePct: number | null;
   /** Monthly cap on the UPI reward, in rupees, if the issuer states one. */
   capRs?: number | null;
+  /** The UPI rate is only for scanning a shop's QR code (scan and pay). */
+  scanAndPayOnly?: boolean;
+  /** Rate for online UPI payments when the scan-and-pay rate does not apply. */
+  onlineRatePct?: number | null;
   notes: string | null;
 };
 

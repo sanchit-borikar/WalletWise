@@ -5,6 +5,7 @@
 import { CATEGORY_LABELS } from './categories';
 import { devaluationRisk, todayIso } from './devaluation';
 import { earnSegments, GST, UPI_SMALL_TICKET } from './purchase';
+import { verifiedUpiEarning } from './upi';
 import type { CapUsage, Card, Catalog, Category, Experience, Purchase, UserProfile } from './types';
 
 /** Annual "hassle" cost per extra card so the app does not push a card that adds little. */
@@ -115,16 +116,16 @@ export function walletValue(
   entries.sort((a, b) => b[1] - a[1]);
 
   type Pick = { card: Card; rate: number; capacity: number; capKey: string | null; ratePct: number; rowText: string };
-  // Earning on UPI for a card whose UPI terms were checked: one flat rate, with its own monthly cap.
-  const verifiedUpiPick = (card: Card): Pick | null => {
-    const upi = card.inclusion?.upi;
-    if (!upi) return null;
-    const ratePct = upi.earnsRewards ? (upi.ratePct ?? 0) : 0;
-    const capKey = upi.capRs != null ? `${card.id}:upi` : null;
-    const capLeft = upi.capRs != null ? Math.max(0, upi.capRs - (usage[`${card.id}:upi`] ?? 0)) : Infinity;
+  // Earning on UPI for a card whose UPI terms were checked: the bank's UPI rate, with its own monthly cap.
+  // 'CARD_RATES' means the bank's UPI rate does not cover this spend, so the card's normal rates apply.
+  const verifiedUpiPick = (card: Card, category: Category, online: boolean): Pick | null | 'CARD_RATES' => {
+    const earning = verifiedUpiEarning(card, category, online);
+    if (!earning) return 'CARD_RATES';
+    const { ratePct, capRs, label } = earning;
+    const capLeft = capRs != null ? Math.max(0, capRs - (usage[earning.capKey] ?? 0)) : Infinity;
     const capacity = capLeft === Infinity || ratePct === 0 ? Infinity : (capLeft * 100) / ratePct;
     if (capacity <= 0) return null;
-    return { card, rate: ratePct, capacity, capKey, ratePct, rowText: ratePct > 0 ? 'UPI rate from the bank' : 'no reward on UPI' };
+    return { card, rate: ratePct, capacity, capKey: capRs != null ? earning.capKey : null, ratePct, rowText: label };
   };
 
   for (const [category, monthly, channel] of entries) {
@@ -136,8 +137,9 @@ export function walletValue(
         let candidate: Pick | null;
         const rule = channel === 'UPI' ? upiRule(card) : null;
         if (rule === 'NOT_ON_UPI') continue;
-        if (rule === 'VERIFIED') {
-          candidate = verifiedUpiPick(card);
+        const upiPick = rule === 'VERIFIED' ? verifiedUpiPick(card, category, !!p.online) : 'CARD_RATES';
+        if (upiPick !== 'CARD_RATES') {
+          candidate = upiPick;
         } else {
           // Spend in a category the card may exclude is never counted in yearly value.
           const seg = earnSegments(catalog, card, p, usage, experience).find((s) => s.capacitySpend > 0 && !s.excluded);

@@ -102,7 +102,13 @@ function inclusionFor(i) {
     minFdRs: i.minFdRs ?? null,
     noIncomeProof: i.noIncomeProof ?? null,
     upi: i.upi
-      ? { earnsRewards: i.upi.earnsRewards, ratePct: i.upi.ratePct ?? null, capRs: i.upi.capRs ?? null, notes: i.upi.notes ?? null }
+      ? {
+          earnsRewards: i.upi.earnsRewards,
+          ratePct: i.upi.ratePct ?? null,
+          capRs: i.upi.capRs ?? null,
+          ...(i.upi.scanAndPayOnly ? { scanAndPayOnly: true, onlineRatePct: i.upi.onlineRatePct ?? null } : {}),
+          notes: i.upi.notes ?? null,
+        }
       : null,
     ...(i.existingCustomersOnly ? { existingCustomersOnly: true } : {}),
     source: i.source,

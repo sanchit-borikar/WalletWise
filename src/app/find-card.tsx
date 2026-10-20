@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CardArt } from '../components/CardArt';
 import { catalog, DATA_ATTRIBUTION } from '../data/catalog';
 import { FIRST_CARD_MAX_FEE, recommendCards, recommendFirstCard } from '../engine';
-import type { Category, Experience, FirstCardPlan, PortfolioAdvice, RepaymentHabit, UserProfile } from '../engine';
+import type { Card, Category, Experience, FirstCardPlan, PortfolioAdvice, RepaymentHabit, UserProfile } from '../engine';
 import { useCardStore } from '../store/useCardStore';
 import { colors, typography } from '../theme';
 
@@ -47,6 +47,14 @@ const YES_NO: { value: boolean; label: string }[] = [
 ];
 
 const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
+
+/** The card's yearly fee in plain words, so a value figure is never mistaken for a fee. */
+const feeLabel = (card: Card) =>
+  card.lifetimeFree || card.annualFee === 0
+    ? 'No annual fee'
+    : card.annualFee == null
+      ? 'Fee not published'
+      : `Fee ${inr(card.annualFee)} + GST a year${card.feeWaiverSpend ? `, waived at ${inr(card.feeWaiverSpend)} spend` : ''}`;
 const toNumber = (s: string) => Number(s.replace(/[^0-9]/g, '')) || 0;
 
 /**
@@ -248,7 +256,7 @@ export default function FindCardScreen() {
                 <View key={o.card.id} style={styles.routeOption}>
                   <View style={styles.altRow}>
                     <Text style={styles.altName}>{o.card.name}</Text>
-                    <Text style={styles.altGain}>{o.valuePerYear > 0 ? `+${inr(o.valuePerYear)}/yr` : 'Low gain'}</Text>
+                    <Text style={styles.altGain}>{o.valuePerYear > 0 ? `Earns ~${inr(o.valuePerYear)} a year` : 'Small rewards'}</Text>
                   </View>
                   {o.why.map((w) => (
                     <Text key={w} style={styles.whySmall}>
@@ -288,7 +296,8 @@ export default function FindCardScreen() {
                 <CardArt card={{ catalogId: p.card.id }} small={false} />
               </View>
               <Text style={styles.pickName}>{p.card.name}</Text>
-              <Text style={styles.pickGain}>About {inr(p.gainPerYear)} a year after fees</Text>
+              <Text style={styles.pickGain}>Worth about {inr(p.gainPerYear)} a year to you, after fees</Text>
+              <Text style={styles.feeLine}>{feeLabel(p.card)}</Text>
               {p.why.map((w) => (
                 <Text key={w} style={styles.why}>
                   • {w}
@@ -303,14 +312,20 @@ export default function FindCardScreen() {
           ))}
 
           {advice.alternatives.length > 0 && <Text style={styles.section}>OTHER STRONG OPTIONS</Text>}
+          {advice.alternatives.length > 0 && (
+            <Text style={styles.fieldHint}>The amount is what each card would earn you in a year at your spending, after its fee. It is not a fee.</Text>
+          )}
           {advice.alternatives
             .filter((a) => !advice.picks.some((p) => p.card.id === a.card.id))
             .map((a) => (
               <View key={a.card.id} style={styles.altRow}>
-                <Text style={styles.altName} numberOfLines={1}>
-                  {a.card.name}
-                </Text>
-                <Text style={styles.altGain}>{a.gainPerYear > 0 ? `+${inr(a.gainPerYear)}/yr` : 'Low gain'}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.altName} numberOfLines={1}>
+                    {a.card.name}
+                  </Text>
+                  <Text style={styles.altFee}>{feeLabel(a.card)}</Text>
+                </View>
+                <Text style={styles.altGain}>{a.gainPerYear > 0 ? `Earns ~${inr(a.gainPerYear)} a year` : 'Small rewards'}</Text>
               </View>
             ))}
           <Text style={styles.disclaimer}>
@@ -359,6 +374,8 @@ const styles = StyleSheet.create({
   altRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#1A1A1A', gap: 12 },
   altName: { flex: 1, fontFamily: typography.fontFamily, color: '#D0D0D0', fontSize: 14 },
   altGain: { fontFamily: typography.fontFamily, color: '#8A8A8A', fontSize: 13 },
+  altFee: { fontFamily: typography.fontFamily, color: '#6F6F6F', fontSize: 12, marginTop: 2 },
+  feeLine: { fontFamily: typography.fontFamily, color: '#9A9A9A', fontSize: 13, marginTop: 4 },
   firstBox: { backgroundColor: '#111', borderRadius: 14, borderWidth: 1, borderColor: '#2A2A2A', padding: 14, marginTop: 16 },
   firstBoxTitle: { fontFamily: typography.fontFamily, color: '#F5F5F5', fontSize: 16, fontWeight: '700' },
   question: { fontFamily: typography.fontFamily, color: '#D0D0D0', fontSize: 14, marginTop: 14, marginBottom: 8 },

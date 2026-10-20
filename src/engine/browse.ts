@@ -16,11 +16,7 @@ export type CardFilter = {
 
 const hasNoFee = (c: Card) => c.lifetimeFree || c.annualFee === 0;
 
-/**
- * Catalog filters. To add one, append a line, for example once the inclusion overlay
- * adds a `secured` field:
- *   { key: 'FD_BACKED', label: 'FD-backed', hint: '...', test: (c) => (c as Card & { secured?: boolean }).secured === true },
- */
+/** Catalog filters. To add one, append a line. Inclusion facts were checked on the issuer's page. */
 export const CARD_FILTERS: CardFilter[] = [
   { key: 'LIFETIME_FREE', label: 'Lifetime free', hint: 'No joining or annual fee.', test: hasNoFee },
   {
@@ -30,7 +26,25 @@ export const CARD_FILTERS: CardFilter[] = [
     test: (c) => hasNoFee(c) || (c.annualFee != null && c.annualFee <= 500),
   },
   { key: 'RUPAY', label: 'RuPay (works on UPI)', hint: 'Only RuPay credit cards can be linked to UPI apps.', test: (c) => c.network === 'RUPAY' },
+  {
+    key: 'UPI_REWARDS',
+    label: 'Rewards on UPI',
+    hint: 'The bank’s page says UPI payments earn rewards on this card.',
+    test: (c) => c.network === 'RUPAY' && c.inclusion?.upi?.earnsRewards === true,
+  },
   { key: 'ENTRY', label: 'Entry level', hint: 'Easier to get, usually lower income needed.', test: (c) => c.tier === 'ENTRY' },
+  {
+    key: 'FD_BACKED',
+    label: 'FD-backed',
+    hint: 'Given against a fixed deposit. Good for a first card or no credit history.',
+    test: (c) => c.inclusion?.secured === true,
+  },
+  {
+    key: 'NO_INCOME_PROOF',
+    label: 'No income proof',
+    hint: 'The bank’s page says no salary slip or ITR is needed.',
+    test: (c) => c.inclusion?.noIncomeProof === true,
+  },
 ];
 
 export type BrowseRow = {

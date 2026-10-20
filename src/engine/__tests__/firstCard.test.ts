@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
-import { buildCatalog, recommendCards, recommendFirstCard, upiRule, walletValue } from '../index';
+import { buildCatalog, recommendCards, recommendFirstCard, scorePurchase, upiRule, walletValue } from '../index';
 import type { Card, Catalog, Inclusion, RawData, RewardRow, UserProfile } from '../index';
 
 const TODAY = '2026-10-20';
@@ -257,5 +257,31 @@ describe('first-card path on real data', () => {
       assert.notEqual(o.card.tier, 'SUPER_PREMIUM');
     }
     for (const o of fd.options) assert.equal(o.card.inclusion?.secured, true);
+  });
+
+  it('Kiwi pays 1.5% only on UPI scan and pay, and 0.5% on online UPI', () => {
+    const kiwi = cat.byId.get('kiwi')!;
+    const v = walletValue(cat, [kiwi], { monthlySpend: { GROCERY: 10000, ONLINE_SHOPPING: 10000 }, repayment: 'ALWAYS_FULL', experience: 'NEW', upiShare: 1 });
+    const grocery = v.allocations.find((a) => a.category === 'GROCERY')!;
+    const online = v.allocations.find((a) => a.category === 'ONLINE_SHOPPING')!;
+    assert.equal(Math.round(grocery.reward), 150);
+    assert.equal(Math.round(online.reward), 50);
+  });
+
+  it('PNB Kiwi UPI rewards stop at the ₹500 monthly cap', () => {
+    const pnbKiwi = cat.byId.get('pnb-kiwi')!;
+    const v = walletValue(cat, [pnbKiwi], { monthlySpend: { DINING: 40000, GROCERY: 10000 }, repayment: 'ALWAYS_FULL', experience: 'NEW', upiShare: 1 });
+    assert.equal(Math.round(v.annualReward), 6000);
+  });
+
+  it('the swipe advisor uses the same UPI rates and cap as the yearly value', () => {
+    const kiwi = cat.byId.get('kiwi')!;
+    const pnbKiwi = cat.byId.get('pnb-kiwi')!;
+    const shop = scorePurchase(cat, kiwi, { amount: 1000, category: 'GROCERY', channel: 'UPI' })!;
+    assert.equal(shop.safeValue, 15);
+    const web = scorePurchase(cat, kiwi, { amount: 1000, category: 'ONLINE_SHOPPING', online: true, channel: 'UPI' })!;
+    assert.equal(web.safeValue, 5);
+    const capped = scorePurchase(cat, pnbKiwi, { amount: 50000, category: 'DINING', channel: 'UPI' }, { usage: { 'pnb-kiwi:upi': 400 } })!;
+    assert.equal(capped.safeValue, 100);
   });
 });

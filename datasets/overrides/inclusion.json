@@ -88,6 +88,8 @@
         "earnsRewards": true,
         "ratePct": 1.5,
         "capRs": null,
+        "scanAndPayOnly": true,
+        "onlineRatePct": 0.5,
         "notes": "1.5% cashback on UPI scan and pay through the Kiwi app; 0.5% on online spends. Page by Kiwi, the co-brand partner of YES Bank."
       },
       "source": "https://gokiwi.in/cards/yesbank/",
@@ -208,8 +210,10 @@
       "upi": {
         "earnsRewards": true,
         "ratePct": 1.5,
-        "capRs": null,
-        "notes": "1.5% cashback as Kiwis on UPI scan and pay; monthly cap 1% of the credit limit."
+        "capRs": 500,
+        "scanAndPayOnly": true,
+        "onlineRatePct": 0.5,
+        "notes": "1.5% cashback as Kiwis on UPI scan and pay; 0.5% on online spends. Monthly cap is 1% of the credit limit; WalletWise assumes a ₹50,000 limit (₹500 a month)."
       },
       "source": "https://creditcard.pnb.bank.in/types18.html",
       "verifiedAt": "2026-10-20"
