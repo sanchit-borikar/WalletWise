@@ -79,7 +79,7 @@ export const RIGHTS: Right[] = [
 
 /** One line for every devaluation or adverse-change alert. */
 export const CLOSE_FREE_LINE =
-  'Your right: once dues are paid, you can close this card within 7 working days (RBI para 19). If a change in charges hurts you, closing has no extra charge, and the bank must give one month’s notice (para 23(7)).';
+  'Your right: once dues are paid, you can close this card within 7 working days (RBI para 19), with no extra closure charge if a change in charges hurts you (para 23(7)).';
 
 /** Small finance bank cards follow a separate set of RBI Directions. */
 export const SFB_NOTE =

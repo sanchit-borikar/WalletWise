@@ -173,6 +173,9 @@ export default function SpendsScreen() {
                   {inr(c.spent)} spent
                   {c.rewardUnit !== 'CASHBACK' && c.pointsEarned > 0 ? ` · about ${c.pointsEarned.toLocaleString('en-IN')} ${c.rewardUnit === 'MILES' ? 'miles' : 'points'}` : ''}
                 </Text>
+                {c.rewardsRs === 0 && (
+                  <Text style={theme.text.caption}>No reward counted: the card may exclude this spend, or its top rate needs a named shop or brand.</Text>
+                )}
               </View>
               <Text style={[theme.text.body, kitStyles.gold]}>≈ {inr(c.rewardsRs)}</Text>
             </View>

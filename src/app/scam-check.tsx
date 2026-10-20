@@ -34,6 +34,7 @@ export default function ScamCheckScreen() {
             onPress={() => toggle(t.key)}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: on }}
+            aria-checked={on}
             accessibilityLabel={`${t.title}. ${t.sign}`}
             style={[styles.item, on && styles.itemOn]}
           >

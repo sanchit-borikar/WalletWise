@@ -270,7 +270,7 @@ function UpdatesTab({ card }: { card: CardData }) {
                 </View>
               </View>
               <Text style={s.offerDesc}>{offer.desc}</Text>
-              {offer.tag === 'Cut' && <Text style={[s.offerDesc, { marginTop: 8, color: '#BDBDBD' }]}>{CLOSE_FREE_LINE}</Text>}
+              {offer.tag !== 'Better' && <Text style={[s.offerDesc, { marginTop: 8, color: '#BDBDBD' }]}>{CLOSE_FREE_LINE}</Text>}
             </View>
           ))}
         </View>

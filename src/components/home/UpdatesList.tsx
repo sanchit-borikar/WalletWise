@@ -25,7 +25,7 @@ type Update = {
   date: string;
   upcoming: boolean;
   severity: Severity;
-  /** A cut in value or terms: show the cardholder's right to close. */
+  /** A cut or a neutral change in terms (not an improvement): show the cardholder's right to close. */
   adverse: boolean;
 };
 
@@ -84,7 +84,7 @@ export function UpdatesList({ cards, onOpenCard }: Props) {
           date: e.date,
           upcoming: e.date > today,
           severity: updateSeverity(e),
-          adverse: e.direction === 'devaluation',
+          adverse: e.direction !== 'revaluation',
         });
       }
     }

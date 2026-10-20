@@ -8,6 +8,9 @@ import { RBI_DIRECTIONS_NAME, RBI_OMBUDSMAN_URL, RIGHTS, SFB_NOTE } from '../con
 import { catalog } from '../data/catalog';
 import { useCardStore } from '../store/useCardStore';
 
+/** Display names for small finance bank issuer codes in the catalog. */
+const ISSUER_NAMES: Record<string, string> = { AU: 'AU', UNITY: 'Unity', SLICE: 'slice', UTKARSH: 'Utkarsh' };
+
 /** "Your rights": what RBI rules promise every cardholder, in plain words, with paragraph numbers. */
 export default function RightsScreen() {
   const router = useRouter();
@@ -16,7 +19,8 @@ export default function RightsScreen() {
   const sfb = useMemo(() => {
     const cards = catalog.cards.filter((c) => c.issuerType === 'SFB');
     const mine = holdings.filter((h) => catalog.byId.get(h.catalogId)?.issuerType === 'SFB');
-    return { count: cards.length, issuers: [...new Set(cards.map((c) => c.issuer))].join(', '), mine: mine.length };
+    const name = (issuer: string) => ISSUER_NAMES[issuer] ?? issuer;
+    return { count: cards.length, issuers: [...new Set(cards.map((c) => name(c.issuer)))].join(', '), mine: mine.length };
   }, [holdings]);
 
   return (

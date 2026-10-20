@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { useRouter } from 'expo-router';
 
@@ -37,20 +37,9 @@ export default function FamilyScreen() {
   const paste = async () => setPasted(await Clipboard.getStringAsync());
 
   const doImport = (cards: SharedCard[]) => {
-    const message = isDemo
-      ? `Add ${cards.length} card${cards.length === 1 ? '' : 's'}? They replace the sample cards.`
-      : `Add ${cards.length} card${cards.length === 1 ? '' : 's'} to the ${holdings.length} already on this phone?`;
-    Alert.alert('Add these cards?', message, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Add',
-        onPress: () => {
-          importCards(cards);
-          setPasted('');
-          router.push('/wallet');
-        },
-      },
-    ]);
+    importCards(cards);
+    setPasted('');
+    router.push('/wallet');
   };
 
   return (
@@ -139,6 +128,11 @@ export default function FamilyScreen() {
             {parsed.skipped > 0 && (
               <Para muted>{`${parsed.skipped} card${parsed.skipped === 1 ? '' : 's'} in the code could not be matched and will be left out.`}</Para>
             )}
+            <Para muted>
+              {isDemo
+                ? 'These cards will replace the sample cards.'
+                : `These cards will be added to the ${holdings.length} already on this phone.`}
+            </Para>
             <Button label={`Add ${parsed.cards.length} card${parsed.cards.length === 1 ? '' : 's'}`} onPress={() => doImport(parsed.cards)} />
           </>
         )}
