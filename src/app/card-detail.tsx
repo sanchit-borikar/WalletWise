@@ -5,7 +5,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { typography } from '../theme';
-import { useCardStore, CardData } from '../store/useCardStore';
+import { useCardStore, CardData, newHolding, toCardData } from '../store/useCardStore';
+import { BillCheckLink, FeeCheckBlock, RedemptionCheckBlock } from '../components/money/CardMoneyBlocks';
 import { CreditCardImage } from '../components/CreditCardImage';
 import { catalog, DATA_ATTRIBUTION } from '../data/catalog';
 import { CATEGORY_LABELS, cardChanges, planRedemption, redemptionRoutes, todayIso } from '../engine';
@@ -75,7 +76,7 @@ function getUpdatesContent(card: CardData) {
 // Tab Content Components
 // ─────────────────────────────────────────────
 
-function EarnTab({ card }: { card: CardData }) {
+function EarnTab({ card, inWallet }: { card: CardData; inWallet: boolean }) {
   const data = getEarnContent(card);
   return (
     <Animated.View entering={FadeInDown.duration(350).springify()}>
@@ -126,6 +127,8 @@ function EarnTab({ card }: { card: CardData }) {
           <Text style={s.feeValue}>{card.renewalFee}</Text>
         </View>
       </View>
+      {inWallet && <FeeCheckBlock catalogId={card.catalogId} />}
+      <BillCheckLink catalogId={card.catalogId} />
     </Animated.View>
   );
 }
@@ -205,6 +208,7 @@ function RedeemTab({ card }: { card: CardData }) {
           </Text>
         </View>
       </View>
+      <RedemptionCheckBlock catalogId={card.catalogId} />
     </Animated.View>
   );
 }
@@ -281,7 +285,8 @@ function UpdatesTab({ card }: { card: CardData }) {
 
 export default function CardDetailScreen() {
   const router = useRouter();
-  const { id, tab } = useLocalSearchParams<{ id?: string; tab?: TabKey }>();
+  // `catalogId` opens any catalog card (Browse cards, Aura); it shows the wallet copy if the user holds it.
+  const { id, tab, catalogId } = useLocalSearchParams<{ id?: string; tab?: TabKey; catalogId?: string }>();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<TabKey>(tab && TABS.includes(tab) ? tab : 'Earn');
   const [editing, setEditing] = useState(false);
@@ -291,7 +296,10 @@ export default function CardDetailScreen() {
   const cards = useCardStore((state) => state.cards);
   const updateHolding = useCardStore((state) => state.updateHolding);
   const removeHolding = useCardStore((state) => state.removeHolding);
-  const card = cards.find(c => c.id === id) || cards[0];
+  const addCard = useCardStore((state) => state.addCard);
+  const held = cards.find((c) => c.id === id) ?? (catalogId ? cards.find((c) => c.catalogId === catalogId) : undefined);
+  const preview = !held && catalogId && catalog.byId.has(catalogId) ? toCardData(newHolding(catalogId, '', 0)) : null;
+  const card = held ?? preview ?? (catalogId ? undefined : cards[0]);
 
   if (!card) {
     return (
@@ -328,6 +336,11 @@ export default function CardDetailScreen() {
           <Text style={s.backButtonText}>←</Text>
           <Text style={s.backLabel}>My Cards</Text>
         </Pressable>
+        {preview ? (
+          <Pressable onPress={() => addCard(preview.catalogId, '', 0)} accessibilityRole="button">
+            <Text style={s.backLabel}>I have it, add</Text>
+          </Pressable>
+        ) : (
         <View style={{ flexDirection: 'row', gap: 16 }}>
           <Pressable onPress={editing ? saveEdit : startEdit}>
             <Text style={s.backLabel}>{editing ? 'Save' : 'Edit'}</Text>
@@ -336,6 +349,7 @@ export default function CardDetailScreen() {
             <Text style={[s.backLabel, { color: '#C9412E' }]}>Remove</Text>
           </Pressable>
         </View>
+        )}
       </View>
 
       <ScrollView
@@ -354,6 +368,7 @@ export default function CardDetailScreen() {
         </Animated.View>
 
         {/* Points & Estimated Value */}
+        {!preview && (
         <Animated.View entering={FadeInDown.delay(250).duration(400)} style={s.statsPanelWrapper}>
           <View style={s.statsPanel}>
             <Text style={s.statsLabel}>AVAILABLE {card.currencyName.toUpperCase()}</Text>
@@ -373,6 +388,7 @@ export default function CardDetailScreen() {
             </View>
           </View>
         </Animated.View>
+        )}
 
         {/* Tab Bar */}
         <Animated.View entering={FadeIn.delay(350).duration(400)}>
@@ -408,7 +424,7 @@ export default function CardDetailScreen() {
 
           {/* Tab Content */}
           <View style={s.tabBody}>
-            {activeTab === 'Earn' && <EarnTab card={card} />}
+            {activeTab === 'Earn' && <EarnTab card={card} inWallet={!preview} />}
             {activeTab === 'Transfers' && <TransfersTab card={card} />}
             {activeTab === 'Redeem' && <RedeemTab card={card} />}
             {activeTab === 'Benefits' && <BenefitsTab card={card} />}
