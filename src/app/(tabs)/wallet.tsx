@@ -19,6 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { typography, colors } from '../../theme';
 import { useCardStore, CardData } from '../../store/useCardStore';
 import { CreditCardImage } from '../../components/CreditCardImage';
+import { WalletMoneyLinks } from '../../components/money/WalletMoneyLinks';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -373,6 +374,7 @@ export default function WalletScreen() {
         <Text style={styles.sectionTitle}>Your points</Text>
         <ExpiryBanner cards={cards} />
         <PointsValueCard totalMin={totalMin} totalMax={totalMax} />
+        <WalletMoneyLinks />
 
       </ScrollView>
     </View>

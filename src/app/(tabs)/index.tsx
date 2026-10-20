@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuraBar } from '../../components/home/AuraBar';
 import { BillCheckBanner } from '../../components/home/BillCheckBanner';
 import { CardCalculator } from '../../components/home/CardCalculator';
+import { GoalCard } from '../../components/home/GoalCard';
 import { HeroCard } from '../../components/home/HeroCard';
 import { HomeHeader } from '../../components/home/HomeHeader';
 import { LearnCarousel } from '../../components/home/LearnCarousel';
@@ -90,6 +91,8 @@ export default function HomeScreen() {
           isDemo={isDemo}
           onSeeHow={openWallet}
         />
+
+        <GoalCard onPress={() => router.push('/goal')} />
 
         <AuraBar onPress={() => router.push('/aura')} />
 
