@@ -54,6 +54,17 @@ export type Holding = {
   expiryDays?: number;
 };
 
+/** A savings goal paid for with points: a trip, a gadget, Diwali gifts, a bill credit. */
+export type Goal = {
+  id: string;
+  name: string;
+  /** What the goal costs in rupees. */
+  targetRs: number;
+  /** Holding ids whose points count. Empty means every card in the wallet. */
+  holdingIds: string[];
+  createdAt: string;
+};
+
 /** Typical monthly spend used for "potential annual value" until the user enters their own. */
 export const DEFAULT_PROFILE: UserProfile = {
   monthlySpend: { ONLINE_SHOPPING: 8000, DINING: 4000, GROCERY: 5000, UTILITY_BILLS: 3000, FUEL: 2000, TRAVEL: 3000, DEFAULT: 6000 },
@@ -183,6 +194,11 @@ interface CardStore {
   setAuraSimple: (simple: boolean) => void;
   setLiteMode: (lite: boolean) => void;
   setIntroSeen: () => void;
+  /** Points goals (optional slice, added for the Goals screen). */
+  goals?: Goal[];
+  addGoal: (goal: Omit<Goal, 'id' | 'createdAt'>) => void;
+  updateGoal: (id: string, changes: Partial<Omit<Goal, 'id' | 'createdAt'>>) => void;
+  removeGoal: (id: string) => void;
 }
 
 const derive = (holdings: Holding[]) => holdings.flatMap((h) => (catalog.byId.has(h.catalogId) ? [toCardData(h)] : []));
@@ -233,13 +249,28 @@ export const useCardStore = create<CardStore>()(
       setAuraSimple: (auraSimple) => set({ auraSimple }),
       setLiteMode: (liteMode) => set({ liteMode }),
       setIntroSeen: () => set({ introSeen: true }),
+      goals: [],
+      addGoal: (goal) =>
+        set((s) => ({ goals: [...(s.goals ?? []), { ...goal, id: `goal-${Date.now()}`, createdAt: new Date().toISOString().slice(0, 10) }] })),
+      updateGoal: (id, changes) => set((s) => ({ goals: (s.goals ?? []).map((g) => (g.id === id ? { ...g, ...changes } : g)) })),
+      removeGoal: (id) => set((s) => ({ goals: (s.goals ?? []).filter((g) => g.id !== id) })),
     }),
     {
       name: 'walletwise-wallet',
       storage: createJSONStorage(() => AsyncStorage),
       // Card facts always come from the bundled catalog, so only the user's own data is saved.
-      partialize: (s) => ({ userId: s.userId, holdings: s.holdings, profile: s.profile, isDemo: s.isDemo, profileSaved: s.profileSaved,
-        auraLanguage: s.auraLanguage, auraSimple: s.auraSimple, liteMode: s.liteMode, introSeen: s.introSeen }),
+      partialize: (s) => ({
+        userId: s.userId,
+        holdings: s.holdings,
+        profile: s.profile,
+        isDemo: s.isDemo,
+        profileSaved: s.profileSaved,
+        goals: s.goals,
+        auraLanguage: s.auraLanguage,
+        auraSimple: s.auraSimple,
+        liteMode: s.liteMode,
+        introSeen: s.introSeen,
+      }),
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<CardStore>;
         const holdings = saved.holdings ?? current.holdings;

@@ -237,9 +237,12 @@ function passesSafetyGate(card: Card): boolean {
   return card.lifetimeFree || (card.annualFee ?? Infinity) <= SAFE_PATH_MAX_FEE;
 }
 
+/** Monthly interest assumed when a card does not publish one (typical Indian card rate, about 45% a year). */
+export const DEFAULT_APR_MONTHLY_PCT = 3.75;
+
 /** Interest on a revolving balance for one month, to show in rupees why rewards do not cover it. */
 export function interestExample(card: Card | null, balance = 10000) {
-  const monthlyPct = card?.aprMonthlyPct ?? 3.75;
+  const monthlyPct = card?.aprMonthlyPct ?? DEFAULT_APR_MONTHLY_PCT;
   const monthly = (balance * monthlyPct) / 100;
   return {
     monthlyPct,

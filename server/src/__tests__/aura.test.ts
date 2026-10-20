@@ -53,11 +53,13 @@ async function collect(gen: AsyncGenerator<AgentEvent>) {
 }
 
 describe('tools', () => {
-  it('exposes the six tools plus show_app_screen with JSON schemas', () => {
-    assert.deepEqual(
-      TOOL_DEFINITIONS.map((t) => t.name).sort(),
-      ['get_best_card', 'get_card_updates', 'get_points_value', 'get_user_wallet', 'plan_trip', 'search_card_knowledge', 'show_app_screen'],
-    );
+  it('exposes the core tools with JSON schemas', () => {
+    // A subset check, so branches that append tools do not all edit this list.
+    const names = TOOL_DEFINITIONS.map((t) => t.name);
+    for (const name of ['get_best_card', 'get_card_updates', 'get_points_value', 'get_user_wallet', 'plan_trip', 'search_card_knowledge', 'show_app_screen']) {
+      assert.ok(names.includes(name), name);
+    }
+    assert.equal(new Set(names).size, names.length);
     for (const t of TOOL_DEFINITIONS) assert.equal((t.parameters as { type: string }).type, 'object');
   });
 
@@ -102,6 +104,65 @@ describe('tools', () => {
   it('resolves card names, including "Diners Black International"', () => {
     assert.equal(resolveCard('Diners Black International')?.id, 'hdfc-diners-black');
     assert.equal(resolveCard('hdfc-infinia')?.id, 'hdfc-infinia');
+  });
+});
+
+describe('money tools', () => {
+  it('get_interest_cost: minimum due uses the engine and the card rate', async () => {
+    const c = ctx();
+    const out = JSON.parse(await runTool('get_interest_cost', JSON.stringify({ kind: 'minimum_due', amount: 10000, cardId: 'hdfc-infinia' }), c));
+    assert.equal(out.ok, true);
+    assert.equal(out.card, 'HDFC Bank Infinia Metal Credit Card');
+    assert.equal(out.interest_rate_monthly_pct, 1.99);
+    assert.equal(out.interest_rate_source, 'card data');
+    assert.equal(out.outcome, 'clears');
+    assert.ok(out.months_to_clear > 12);
+    assert.equal(out.extra_cost_inr, out.total_interest_inr + out.gst_on_interest_inr);
+    assert.equal(out.first_minimum_payment_inr, 500);
+    assert.ok(out.assumptions.some((a: string) => a.includes('Minimum due assumed at 5%')));
+    assert.deepEqual(c.cta, { label: 'Open Bill check', route: '/bill-check', params: { card: 'hdfc-infinia' } });
+  });
+
+  it('get_interest_cost: minimum below interest never clears', async () => {
+    const out = JSON.parse(await runTool('get_interest_cost', JSON.stringify({ kind: 'minimum_due', amount: 10000, min_due_pct: 2 }), ctx()));
+    assert.equal(out.outcome, 'never_clears');
+  });
+
+  it('get_interest_cost: EMI flags a "no-cost" label as wrong when interest is charged', async () => {
+    const out = JSON.parse(
+      await runTool('get_interest_cost', JSON.stringify({ kind: 'emi', amount: 12000, annual_rate_pct: 15, months: 6, processing_fee: 199 }), ctx()),
+    );
+    assert.equal(out.emi_inr, 2088);
+    assert.equal(out.no_cost_label_would_be_wrong, true);
+    assert.equal(out.gst_on_fee_inr, 36);
+    const free = JSON.parse(await runTool('get_interest_cost', JSON.stringify({ kind: 'emi', amount: 12000, months: 6 }), ctx()));
+    assert.equal(free.no_cost_label_would_be_wrong, false);
+  });
+
+  it('get_interest_cost: cash withdrawal and bad input', async () => {
+    const out = JSON.parse(await runTool('get_interest_cost', JSON.stringify({ kind: 'cash_withdrawal', amount: 10000, days: 30 }), ctx({ cards: [], profile: { experience: 'NEW' } })));
+    assert.deepEqual([out.fee_inr, out.interest_rate_source], [500, 'assumed (card does not publish one)']);
+    assert.equal(JSON.parse(await runTool('get_interest_cost', JSON.stringify({ kind: 'emi', amount: 5000 }), ctx())).error, 'invalid_months');
+    assert.equal(JSON.parse(await runTool('get_interest_cost', JSON.stringify({ kind: 'minimum_due', amount: 0 }), ctx())).error, 'invalid_amount');
+  });
+
+  it('find_cards filters the catalog and sorts by value at the given spend', async () => {
+    const c = ctx();
+    const out = JSON.parse(
+      await runTool('find_cards', JSON.stringify({ filters: ['LIFETIME_FREE', 'RUPAY'], monthly_spend: { GROCERY: 8000, DEFAULT: 5000 }, limit: 3 }), c),
+    );
+    assert.equal(out.ok, true);
+    assert.equal(out.cards.length, 3);
+    for (const card of out.cards) assert.deepEqual([card.lifetime_free, card.works_on_upi, card.annual_fee_incl_gst_inr], [true, true, 0]);
+    assert.ok(out.cards[0].yearly_value_inr >= out.cards[2].yearly_value_inr);
+    assert.deepEqual(c.cta, { label: 'Browse all cards', route: '/browse-cards' });
+  });
+
+  it('find_cards without spend sorts by fee and rejects unknown filters', async () => {
+    const out = JSON.parse(await runTool('find_cards', JSON.stringify({ filters: ['FEE_UPTO_500'] }), ctx()));
+    assert.equal(out.sorted_by, 'annual fee, lowest first');
+    assert.ok(out.cards.every((x: { annual_fee_incl_gst_inr: number }) => x.annual_fee_incl_gst_inr <= 590));
+    assert.equal(JSON.parse(await runTool('find_cards', JSON.stringify({ filters: ['FREE_MONEY'] }), ctx())).error, 'unknown_filter');
   });
 });
 

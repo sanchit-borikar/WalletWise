@@ -7,7 +7,7 @@ import type { IconName } from '../Icon';
 
 export type QuickAction = { key: string; title: string; icon: IconName; onPress: () => void };
 
-/** 2 x 2 grid of the main tools. A fixed set of four, so it is a plain View, not a list. */
+/** Two-column grid of the main tools. A short fixed set, so it is a plain View, not a list. */
 export function QuickActions({ actions }: { actions: QuickAction[] }) {
   return (
     <View style={styles.grid}>

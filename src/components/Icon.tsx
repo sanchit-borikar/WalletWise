@@ -18,7 +18,9 @@ export type IconName =
   | 'plus'
   | 'plane'
   | 'chevron-right'
-  | 'play';
+  | 'play'
+  | 'rupee'
+  | 'search';
 
 type Props = { name: IconName; size?: number; color?: string; strokeWidth?: number };
 
@@ -65,6 +67,13 @@ export function Icon({ name, size = theme.sizes.icon, color = theme.colors.textP
       {name === 'plane' && <Path d="M10.5 21 12 18l1.5 3M12 18V4.5a1.5 1.5 0 0 0-3 0V18M12 4.5a1.5 1.5 0 0 1 3 0V18M3 13l9-4 9 4" {...stroke} />}
       {name === 'chevron-right' && <Path d="m9 6 6 6-6 6" {...stroke} />}
       {name === 'play' && <Path d="M8 5.5v13l10.5-6.5z" fill={color} />}
+      {name === 'rupee' && <Path d="M7 4.5h10M7 9h10M7 4.5h3.5a4.5 4.5 0 0 1 0 9H7l7.5 7" {...stroke} />}
+      {name === 'search' && (
+        <>
+          <Circle cx={10.5} cy={10.5} r={6.5} {...stroke} />
+          <Path d="m15.5 15.5 5 5" {...stroke} />
+        </>
+      )}
     </Svg>
   );
 }

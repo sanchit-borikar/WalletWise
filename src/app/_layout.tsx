@@ -74,6 +74,10 @@ export default function RootLayout() {
         <Stack.Screen name="find-card" options={{ headerShown: false }} />
         <Stack.Screen name="trip-planner" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen name="bill-check" options={{ headerShown: false }} />
+        <Stack.Screen name="browse-cards" options={{ headerShown: false }} />
+        <Stack.Screen name="goal" options={{ headerShown: false }} />
+        <Stack.Screen name="missed-rewards" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>
   );
