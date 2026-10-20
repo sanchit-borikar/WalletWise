@@ -75,6 +75,34 @@ export type Card = {
   rewards: RewardRow[];
   perks: string[];
   lounge: LoungeSummary | null;
+  /** Hand-checked first-card and UPI facts (datasets/overrides/inclusion.json). Absent means not checked. */
+  inclusion?: Inclusion;
+  /** Issuer page for a card added by hand (datasets/overrides/extra-cards.json). */
+  source?: string;
+  /** Date a hand-added card was checked on the issuer's page. */
+  verifiedAt?: string;
+};
+
+/** What the issuer says about paying with this card on UPI. */
+export type UpiRewards = {
+  earnsRewards: boolean;
+  /** Reward rate on UPI as a % of spend, if the issuer states one. */
+  ratePct: number | null;
+  notes: string | null;
+};
+
+/** Facts for people getting a first card, each checked on the issuer's own page. */
+export type Inclusion = {
+  /** Issued against a fixed deposit (FD-backed). */
+  secured: boolean;
+  /** Smallest FD the issuer accepts, in rupees. */
+  minFdRs: number | null;
+  /** True when the issuer says no income proof is needed; null when it does not say. */
+  noIncomeProof: boolean | null;
+  /** null when UPI earning was not checked. */
+  upi: UpiRewards | null;
+  source: string;
+  verifiedAt: string;
 };
 
 export type ProgrammeNode = { id: string; kind: 'BANK' | 'AIRLINE' | 'HOTEL'; name: string; verifiedAt: string | null };
