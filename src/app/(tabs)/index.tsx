@@ -13,10 +13,12 @@ import { LearnCarousel } from '../../components/home/LearnCarousel';
 import { QuickActions } from '../../components/home/QuickActions';
 import type { QuickAction } from '../../components/home/QuickActions';
 import { RewardsList } from '../../components/home/RewardsList';
+import { SpendsSummaryCard, StaySafeCard } from '../../components/home/SafetyCards';
 import { SectionHeader } from '../../components/home/SectionHeader';
 import { UpdatesList } from '../../components/home/UpdatesList';
 import { catalog } from '../../data/catalog';
 import { walletAlerts } from '../../engine';
+import { useBillReminderSync } from '../../hooks/useBillReminderSync';
 import { useCardStore } from '../../store/useCardStore';
 import { theme } from '../../theme';
 
@@ -33,6 +35,7 @@ export default function HomeScreen() {
   const cards = useCardStore((s) => s.cards);
   const holdings = useCardStore((s) => s.holdings);
   const isDemo = useCardStore((s) => s.isDemo);
+  useBillReminderSync();
 
   const totals = useMemo(
     () => ({
@@ -111,6 +114,10 @@ export default function HomeScreen() {
         <RewardsList cards={cards} onOpenCard={openCard} onViewAll={openWallet} />
 
         <UpdatesList cards={cards} onOpenCard={openCardUpdates} />
+
+        <SpendsSummaryCard />
+
+        <StaySafeCard />
 
         <View style={styles.fullBleed}>
           <LearnCarousel />

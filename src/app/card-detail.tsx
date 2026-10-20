@@ -11,6 +11,9 @@ import { CreditCardImage } from '../components/CreditCardImage';
 import { catalog, DATA_ATTRIBUTION } from '../data/catalog';
 import { CATEGORY_LABELS, cardChanges, planRedemption, redemptionRoutes, todayIso } from '../engine';
 import type { Category } from '../engine';
+import { parseBillDay } from '../engine/billing';
+import { BillDayPanel } from '../components/BillDayPanel';
+import { CLOSE_FREE_LINE } from '../constants/safety';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -271,6 +274,7 @@ function UpdatesTab({ card }: { card: CardData }) {
                 </View>
               </View>
               <Text style={s.offerDesc}>{offer.desc}</Text>
+              {offer.tag !== 'Better' && <Text style={[s.offerDesc, { marginTop: 8, color: '#BDBDBD' }]}>{CLOSE_FREE_LINE}</Text>}
             </View>
           ))}
         </View>
@@ -292,6 +296,8 @@ export default function CardDetailScreen() {
   const [editing, setEditing] = useState(false);
   const [pointsText, setPointsText] = useState('');
   const [lastFourText, setLastFourText] = useState('');
+  const [statementDayText, setStatementDayText] = useState('');
+  const [dueDayText, setDueDayText] = useState('');
 
   const cards = useCardStore((state) => state.cards);
   const updateHolding = useCardStore((state) => state.updateHolding);
@@ -300,6 +306,7 @@ export default function CardDetailScreen() {
   const held = cards.find((c) => c.id === id) ?? (catalogId ? cards.find((c) => c.catalogId === catalogId) : undefined);
   const preview = !held && catalogId && catalog.byId.has(catalogId) ? toCardData(newHolding(catalogId, '', 0)) : null;
   const card = held ?? preview ?? (catalogId ? undefined : cards[0]);
+  const holding = useCardStore((state) => state.holdings.find((h) => h.id === card?.id));
 
   if (!card) {
     return (
@@ -315,10 +322,12 @@ export default function CardDetailScreen() {
   const startEdit = () => {
     setPointsText(String(card.points));
     setLastFourText(card.lastFour);
+    setStatementDayText(holding?.statementDay ? String(holding.statementDay) : '');
+    setDueDayText(holding?.dueDay ? String(holding.dueDay) : '');
     setEditing(true);
   };
   const saveEdit = () => {
-    updateHolding(card.id, { points: Number(pointsText.replace(/[^0-9]/g, '')) || 0, lastFour: lastFourText.replace(/[^0-9]/g, '').slice(-4) });
+    updateHolding(card.id, { points: Number(pointsText.replace(/[^0-9]/g, '')) || 0, lastFour: lastFourText.replace(/[^0-9]/g, '').slice(-4), statementDay: parseBillDay(statementDayText), dueDay: parseBillDay(dueDayText) });
     setEditing(false);
   };
   const confirmRemove = () => {
@@ -376,7 +385,9 @@ export default function CardDetailScreen() {
               <View style={{ gap: 10, marginVertical: 8 }}>
                 <TextInput value={pointsText} onChangeText={setPointsText} keyboardType="number-pad" style={s.editInput} placeholder="Points balance" placeholderTextColor="#555" keyboardAppearance="dark" />
                 <TextInput value={lastFourText} onChangeText={setLastFourText} keyboardType="number-pad" maxLength={4} style={s.editInput} placeholder="Last 4 digits" placeholderTextColor="#555" keyboardAppearance="dark" />
-                <Text style={s.statsValue}>Copy the balance from your latest statement or bank app.</Text>
+                <TextInput value={statementDayText} onChangeText={setStatementDayText} keyboardType="number-pad" maxLength={2} style={s.editInput} placeholder="Statement day (1–31, optional)" placeholderTextColor="#555" keyboardAppearance="dark" />
+                <TextInput value={dueDayText} onChangeText={setDueDayText} keyboardType="number-pad" maxLength={2} style={s.editInput} placeholder="Due day (1–31, for reminders)" placeholderTextColor="#555" keyboardAppearance="dark" />
+                <Text style={s.statsValue}>Copy the balance and dates from your latest statement or bank app.</Text>
               </View>
             ) : (
               <Text style={s.pointsNumerals}>{card.points.toLocaleString()}</Text>
@@ -389,6 +400,8 @@ export default function CardDetailScreen() {
           </View>
         </Animated.View>
         )}
+
+        {holding && <BillDayPanel holding={holding} onEdit={startEdit} />}
 
         {/* Tab Bar */}
         <Animated.View entering={FadeIn.delay(350).duration(400)}>

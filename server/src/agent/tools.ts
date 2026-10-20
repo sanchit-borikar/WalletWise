@@ -90,6 +90,8 @@ const SCREENS: Record<string, { label: string; route: string }> = {
   wallet: { label: 'Open my Wallet', route: '/wallet' },
   add_card: { label: 'Add a card', route: '/add-card' },
   card_details: { label: 'Open card details', route: '/card-detail' },
+  scam_check: { label: 'Is this a scam?', route: '/scam-check' },
+  your_rights: { label: 'Your rights', route: '/rights' },
 };
 
 export const TOOLS: Tool[] = [

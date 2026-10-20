@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { CLOSE_FREE_LINE } from '../../constants/safety';
 import { catalog } from '../../data/catalog';
 import { cardChanges } from '../../engine';
 import type { CardData } from '../../store/useCardStore';
@@ -24,6 +25,8 @@ type Update = {
   date: string;
   upcoming: boolean;
   severity: Severity;
+  /** A cut or a neutral change in terms (not an improvement): show the cardholder's right to close. */
+  adverse: boolean;
 };
 
 type Props = {
@@ -38,7 +41,7 @@ const UpdateRow = React.memo(function UpdateRow({ item, onOpen }: { item: Update
     <Pressable
       onPress={() => onOpen(item.cardId)}
       accessibilityRole="button"
-      accessibilityLabel={`${style.label}, ${when}: ${item.title}. ${item.cardLabel}`}
+      accessibilityLabel={`${style.label}, ${when}: ${item.title}. ${item.cardLabel}${item.adverse ? `. ${CLOSE_FREE_LINE}` : ''}`}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <View style={styles.tagRow}>
@@ -50,6 +53,7 @@ const UpdateRow = React.memo(function UpdateRow({ item, onOpen }: { item: Update
       <Text style={[theme.text.body, styles.title]} numberOfLines={2}>
         {item.title}
       </Text>
+      {item.adverse && <Text style={theme.text.caption}>{CLOSE_FREE_LINE}</Text>}
       <View style={styles.cardRow}>
         <BankBadge issuer={item.issuer} small />
         <Text style={[theme.text.body, styles.cardLabel]} numberOfLines={1}>
@@ -80,6 +84,7 @@ export function UpdatesList({ cards, onOpenCard }: Props) {
           date: e.date,
           upcoming: e.date > today,
           severity: updateSeverity(e),
+          adverse: e.direction !== 'revaluation',
         });
       }
     }

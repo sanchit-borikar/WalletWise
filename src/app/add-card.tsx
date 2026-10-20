@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -7,6 +7,7 @@ import { CardFace } from '../components/CardFace';
 import { CardArt } from '../components/CardArt';
 import { catalog, DATA_ATTRIBUTION } from '../data/catalog';
 import { searchCards } from '../engine';
+import { parseBillDay } from '../engine/billing';
 import type { Card } from '../engine';
 import { useCardStore } from '../store/useCardStore';
 import { colors, typography } from '../theme';
@@ -28,6 +29,8 @@ export default function AddCardScreen() {
   const [picked, setPicked] = useState<Card | null>(null);
   const [lastFour, setLastFour] = useState('');
   const [points, setPoints] = useState('');
+  const [statementDay, setStatementDay] = useState('');
+  const [dueDay, setDueDay] = useState('');
 
   const results = useMemo(() => {
     if (query.trim().length < 2) return POPULAR.map((id) => catalog.byId.get(id)).filter((c): c is Card => !!c);
@@ -36,14 +39,21 @@ export default function AddCardScreen() {
 
   const save = () => {
     if (!picked) return;
-    addCard(picked.id, lastFour.replace(/\D/g, '').slice(-4), Number(points.replace(/\D/g, '')) || 0);
+    addCard(picked.id, lastFour.replace(/\D/g, '').slice(-4), Number(points.replace(/\D/g, '')) || 0, {
+      statementDay: parseBillDay(statementDay),
+      dueDay: parseBillDay(dueDay),
+    });
     router.replace('/wallet');
   };
 
   if (picked) {
     const isCashback = picked.rewards.every((r) => r.type === 'CASHBACK');
     return (
-      <View style={[styles.container, { paddingTop: insets.top + 12 }]}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: insets.bottom + 40 }}
+        keyboardShouldPersistTaps="handled"
+      >
         <Pressable onPress={() => setPicked(null)} style={styles.back}>
           <Text style={styles.backText}>← Choose another card</Text>
         </Pressable>
@@ -76,13 +86,39 @@ export default function AddCardScreen() {
           style={styles.input}
           keyboardAppearance="dark"
         />
+        <Text style={styles.label}>BILL DATES (OPTIONAL, DAY OF THE MONTH)</Text>
+        <View style={styles.dayRow}>
+          <TextInput
+            value={statementDay}
+            onChangeText={setStatementDay}
+            keyboardType="number-pad"
+            maxLength={2}
+            placeholder="Statement day"
+            placeholderTextColor="#555"
+            style={[styles.input, styles.dayInput]}
+            keyboardAppearance="dark"
+            accessibilityLabel="Statement day, 1 to 31"
+          />
+          <TextInput
+            value={dueDay}
+            onChangeText={setDueDay}
+            keyboardType="number-pad"
+            maxLength={2}
+            placeholder="Due day"
+            placeholderTextColor="#555"
+            style={[styles.input, styles.dayInput]}
+            keyboardAppearance="dark"
+            accessibilityLabel="Due day, 1 to 31"
+          />
+        </View>
+        <Text style={styles.hint}>With a due day, WalletWise can remind you 3 days and 1 day before each bill.</Text>
         <Text style={styles.hint}>WalletWise never asks for your full card number, CVV or PIN. Everything stays on this phone.</Text>
         {isDemo && <Text style={styles.hint}>Your first card replaces the sample cards.</Text>}
 
         <Pressable style={styles.primary} onPress={save}>
           <Text style={styles.primaryText}>Add to my wallet</Text>
         </Pressable>
-      </View>
+      </ScrollView>
     );
   }
 
@@ -153,6 +189,8 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily, color: '#F5F5F5', fontSize: 18, backgroundColor: '#141414',
     borderRadius: 12, borderWidth: 1, borderColor: '#2A2A2A', paddingHorizontal: 14, paddingVertical: 12,
   },
+  dayRow: { flexDirection: 'row', gap: 12 },
+  dayInput: { flex: 1 },
   hint: { fontFamily: typography.fontFamily, color: '#6F6F6F', fontSize: 12, marginTop: 12, lineHeight: 17 },
   primary: { marginTop: 24, backgroundColor: colors.accent.goldStart, borderRadius: 14, paddingVertical: 16, alignItems: 'center' },
   primaryText: { fontFamily: typography.fontFamily, color: '#0A0A0A', fontSize: 16, fontWeight: '700' },
