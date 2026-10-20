@@ -39,6 +39,12 @@ const AnimatedCard = ({ children, style, onPress }: any) => {
   );
 };
 
+const SAFETY_LINKS = [
+  { href: '/scam-check', title: 'Is this a scam?', sub: 'Fake “points expire” texts, APK files, OTP calls: check one and see what to do.' },
+  { href: '/rights', title: 'Your rights as a cardholder', sub: 'What RBI rules promise you, and a complaint letter you can copy.' },
+  { href: '/family', title: 'Family and add-on cards', sub: 'Share a card safely, and copy your wallet to another phone.' },
+] as const;
+
 // ==========================================
 // 3. EXPLORE TOPICS
 // ==========================================
@@ -454,6 +460,17 @@ export default function LearnScreen() {
             <Text style={styles.continueSub}>Answer a few questions about your spending and get an honest pick from 280 Indian cards.</Text>
             <Text style={styles.continueLink}>Find My Card →</Text>
           </AnimatedCard>
+        </View>
+
+        {/* Stay safe: rights, scams, family cards (src/app/rights.tsx, scam-check.tsx, family.tsx) */}
+        <View style={[styles.section, { paddingHorizontal: 24, gap: 12 }]}>
+          <Text style={[styles.sectionTitle, { marginBottom: 4 }]}>STAY SAFE</Text>
+          {SAFETY_LINKS.map((l) => (
+            <AnimatedCard key={l.href} style={styles.continueCard} onPress={() => router.push(l.href)}>
+              <Text style={styles.continueTitle}>{l.title}</Text>
+              <Text style={[styles.continueSub, { marginBottom: 0 }]}>{l.sub}</Text>
+            </AnimatedCard>
+          ))}
         </View>
 
         <View style={styles.section}>
