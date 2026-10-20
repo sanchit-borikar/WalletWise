@@ -41,7 +41,7 @@ export function HomeHeader({ topInset, hasAlerts, onAlerts, onSettings }: Props)
         <Pressable
           onPress={onSettings}
           accessibilityRole="button"
-          accessibilityLabel="Settings and spending profile"
+          accessibilityLabel="Settings"
           style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}
         >
           <Icon name="settings" color={theme.colors.gold} size={theme.sizes.iconLarge} />

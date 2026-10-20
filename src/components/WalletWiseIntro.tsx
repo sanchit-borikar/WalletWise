@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEventListener } from 'expo';
 import * as SplashScreen from 'expo-splash-screen';
@@ -54,6 +54,19 @@ export function WalletWiseIntro({ onFinish }: WalletWiseIntroProps) {
         nativeControls={false}
         contentFit="cover"
       />
+      <Pressable
+        onPress={() => {
+          player.pause();
+          SplashScreen.hideAsync();
+          onFinish();
+        }}
+        accessibilityRole="button"
+        accessibilityLabel="Skip intro"
+        hitSlop={12}
+        style={styles.skip}
+      >
+        <Text style={styles.skipText}>Skip</Text>
+      </Pressable>
     </View>
   );
 }
@@ -66,5 +79,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 9999,
-  }
+  },
+  skip: {
+    position: 'absolute',
+    top: 56,
+    right: 20,
+    minHeight: 44,
+    paddingHorizontal: 18,
+    justifyContent: 'center',
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    borderWidth: 1,
+    borderColor: 'rgba(245,208,111,0.6)',
+  },
+  skipText: { color: '#F5D06F', fontSize: 15, fontWeight: '700' },
 });

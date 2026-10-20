@@ -68,7 +68,7 @@ export default function HomeScreen() {
         topInset={insets.top}
         hasAlerts={hasAlerts}
         onAlerts={() => router.push({ pathname: '/aura', params: { q: 'Any changes to my cards?' } })}
-        onSettings={() => router.push('/find-card')}
+        onSettings={() => router.push('/settings')}
       />
 
       <ScrollView

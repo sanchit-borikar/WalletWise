@@ -6,17 +6,22 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Icon } from '../../components/Icon';
+import { catalog } from '../../data/catalog';
 import { AuraError, askAura } from '../../services/auraApi';
-import type { AuraCta, AuraTurn } from '../../services/auraApi';
+import type { AuraCta, AuraErrorKind, AuraTurn } from '../../services/auraApi';
+import { AURA_STRINGS } from '../../services/auraStrings';
+import { answerOffline, offlineUnavailableText } from '../../services/offlineAura';
 import { useCardStore } from '../../store/useCardStore';
 import { theme } from '../../theme';
 
 // Aura answers on the WalletWise server (server/): a Groq model that calls the app's
-// engine and a verified card knowledge base. These are shortcuts that send a question.
-const SUGGESTIONS = ['Which card for ₹1,500 at Swiggy?', 'Tell me about Diners Black International', 'Any changes to my cards?', 'How should I use my points?'];
+// engine and a verified card knowledge base. Suggestion chips and the welcome text
+// come from services/auraStrings.ts in the chosen language.
 
-const WELCOME =
-  "Hi, I'm Aura. Ask me which of your cards to use, what your points are worth, about any Indian credit card, or how credit cards work.";
+/** Errors after which the phone answers common questions itself (services/offlineAura.ts). */
+const OFFLINE_FALLBACK: AuraErrorKind[] = ['offline', 'busy', 'timeout'];
+/** Wait before the one automatic retry when Aura is busy. */
+const BUSY_RETRY_MS = 3000;
 
 type Message = {
   id: string;
@@ -24,8 +29,10 @@ type Message = {
   content: string;
   cta?: AuraCta | null;
   state?: 'streaming' | 'done' | 'error';
-  /** For error bubbles: the question to send again. */
+  /** For error bubbles and offline answers: the question to send again. */
   retryQuestion?: string;
+  /** Answered on the phone because Aura could not be reached. */
+  offline?: boolean;
 };
 
 /** Removes markdown emphasis and headings the model sometimes adds, so no raw * or # shows. */
@@ -39,7 +46,7 @@ let nextId = 0;
 const newId = () => `m${++nextId}`;
 
 /** Three gold dots that pulse while Aura is working. */
-function TypingDots() {
+function TypingDots({ label }: { label: string }) {
   const dots = [useSharedValue(0.3), useSharedValue(0.3), useSharedValue(0.3)];
   useEffect(() => {
     dots.forEach((d, i) =>
@@ -51,7 +58,7 @@ function TypingDots() {
   const s1 = useAnimatedStyle(() => ({ opacity: dots[1].get() }));
   const s2 = useAnimatedStyle(() => ({ opacity: dots[2].get() }));
   return (
-    <View style={styles.dots} accessibilityLabel="Aura is typing">
+    <View style={styles.dots} accessibilityLabel={label}>
       {[s0, s1, s2].map((s, i) => (
         <Animated.View key={i} style={[styles.dot, s]} />
       ))}
@@ -64,10 +71,14 @@ export default function AuraScreen() {
   const router = useRouter();
   const { q } = useLocalSearchParams<{ q?: string }>();
   const { userId, holdings, profile } = useCardStore();
+  const language = useCardStore((s) => s.auraLanguage ?? 'en');
+  const simple = useCardStore((s) => s.auraSimple === true);
+  const setAuraLanguage = useCardStore((s) => s.setAuraLanguage);
+  const t = AURA_STRINGS[language];
   const scrollRef = useRef<ScrollView>(null);
   const handledQuery = useRef<string | undefined>(undefined);
 
-  const [messages, setMessages] = useState<Message[]>([{ id: 'welcome', role: 'assistant', content: WELCOME, state: 'done' }]);
+  const [messages, setMessages] = useState<Message[]>([{ id: 'welcome', role: 'assistant', content: '', state: 'done' }]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
@@ -87,7 +98,7 @@ export default function AuraScreen() {
 
       // History for the server: finished messages only, plus this question.
       const history: AuraTurn[] = messages
-        .filter((m) => m.id !== 'welcome' && m.state !== 'error' && m.id !== options.retryOf && m.content.trim())
+        .filter((m) => m.id !== 'welcome' && m.state !== 'error' && !m.offline && m.id !== options.retryOf && m.content.trim())
         .map((m) => ({ role: m.role, content: m.content }));
       const replyId = newId();
       setMessages((prev) => [
@@ -97,8 +108,10 @@ export default function AuraScreen() {
       ]);
       scrollToEnd();
 
-      try {
-        const result = await askAura(
+      const request = () => {
+        // A failed attempt may have streamed part of an answer; start clean.
+        patch(replyId, { content: '' });
+        return askAura(
           {
             userId,
             messages: [...history, { role: 'user' as const, content: question }].slice(-12),
@@ -106,26 +119,54 @@ export default function AuraScreen() {
               cards: holdings.map((h) => ({ catalogId: h.catalogId, points: h.points })),
               profile: { experience: profile.experience, repayment: profile.repayment, monthlySpend: profile.monthlySpend as Record<string, number> },
             },
+            language,
+            simple,
           },
           {
-            onStatus: setStatus,
+            onStatus: (message) => setStatus(t.statuses[message] ?? message),
             onText: (delta) => {
               setStatus(null);
               patch(replyId, (m) => ({ content: m.content + delta }));
             },
           },
         );
+      };
+
+      try {
+        let result;
+        try {
+          result = await request();
+        } catch (error) {
+          // Busy usually clears quickly: retry once before falling back.
+          if (!(error instanceof AuraError) || error.kind !== 'busy') throw error;
+          await new Promise((r) => setTimeout(r, BUSY_RETRY_MS));
+          result = await request();
+        }
         patch(replyId, { content: result.text, cta: result.cta, state: 'done' });
       } catch (error) {
-        const message = error instanceof AuraError ? error.message : 'Something went wrong. Please try again.';
-        patch(replyId, { content: message, state: 'error', retryQuestion: question });
+        const kind: AuraErrorKind = error instanceof AuraError ? error.kind : 'failed';
+        const local = OFFLINE_FALLBACK.includes(kind)
+          ? answerOffline(question, {
+              catalog,
+              holdings: holdings.map((h) => ({ catalogId: h.catalogId, points: h.points })),
+              language,
+              simple,
+              experience: profile.experience,
+            })
+          : null;
+        if (local) {
+          patch(replyId, { content: local.text, state: 'done', offline: true, cta: null, retryQuestion: question });
+        } else {
+          const message = kind === 'offline' ? offlineUnavailableText(language) : t.errors[kind];
+          patch(replyId, { content: message, state: 'error', retryQuestion: question });
+        }
       } finally {
         setBusy(false);
         setStatus(null);
         scrollToEnd();
       }
     },
-    [busy, messages, userId, holdings, profile],
+    [busy, messages, userId, holdings, profile, language, simple, t],
   );
 
   // Questions sent from other screens (for example the Home Aura bar).
@@ -158,7 +199,18 @@ export default function AuraScreen() {
           <Text style={[theme.text.body, styles.headerTitle]} accessibilityRole="header">
             AURA
           </Text>
-          <Text style={theme.text.caption}>Your credit card assistant</Text>
+          <Text style={theme.text.caption}>{simple ? `${t.caption} · ${t.simpleOn}` : t.caption}</Text>
+          <Pressable
+            onPress={() => setAuraLanguage(language === 'hi' ? 'en' : 'hi')}
+            accessibilityRole="button"
+            accessibilityLabel={t.languageToggle}
+            hitSlop={theme.spacing.sm}
+            style={({ pressed }) => [styles.langToggle, pressed && styles.pressed]}
+          >
+            <Text style={[theme.text.caption, language === 'en' ? styles.langOn : undefined]}>EN</Text>
+            <Text style={theme.text.caption}>|</Text>
+            <Text style={[theme.text.caption, language === 'hi' ? styles.langOn : undefined]}>हिं</Text>
+          </Pressable>
         </View>
 
         <ScrollView
@@ -179,15 +231,16 @@ export default function AuraScreen() {
                     <Icon name="sparkle" color={theme.colors.gold} size={theme.fontSize.caption} />
                   </View>
                 )}
-                <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleAi, m.state === 'error' && styles.bubbleError]}>
+                <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleAi, m.state === 'error' && styles.bubbleError, m.offline && styles.bubbleOffline]}>
+                  {m.offline && <Text style={[theme.text.caption, styles.offlineLabel]}>{t.offlineLabel}</Text>}
                   {streamingEmpty ? (
                     <View>
-                      <TypingDots />
+                      <TypingDots label={t.typing} />
                       {!!status && <Text style={[theme.text.caption, styles.status]}>{status}</Text>}
                     </View>
                   ) : (
                     <Text style={[theme.text.body, styles.text]} accessibilityLiveRegion={m.state === 'streaming' ? 'polite' : 'none'}>
-                      {m.role === 'assistant' ? plain(m.content) : m.content}
+                      {m.id === 'welcome' ? t.welcome : m.role === 'assistant' ? plain(m.content) : m.content}
                     </Text>
                   )}
                   {m.state === 'done' && m.cta && (
@@ -200,15 +253,15 @@ export default function AuraScreen() {
                       <Text style={[theme.text.body, styles.ctaText]}>{m.cta.label} →</Text>
                     </Pressable>
                   )}
-                  {m.state === 'error' && m.retryQuestion && (
+                  {(m.state === 'error' || m.offline) && m.retryQuestion && (
                     <Pressable
                       onPress={() => ask(m.retryQuestion!, { retryOf: m.id })}
                       disabled={busy}
                       accessibilityRole="button"
-                      accessibilityLabel="Try again"
+                      accessibilityLabel={m.offline ? t.askOnline : t.tryAgain}
                       style={({ pressed }) => [styles.cta, pressed && styles.pressed]}
                     >
-                      <Text style={[theme.text.body, styles.ctaText]}>Try again ↻</Text>
+                      <Text style={[theme.text.body, styles.ctaText]}>{m.offline ? t.askOnline : t.tryAgain}</Text>
                     </Pressable>
                   )}
                 </View>
@@ -218,12 +271,12 @@ export default function AuraScreen() {
 
           {showSuggestions && (
             <View style={styles.suggestions}>
-              {SUGGESTIONS.map((s) => (
+              {t.suggestions.map((s) => (
                 <Pressable
                   key={s}
                   onPress={() => ask(s)}
                   accessibilityRole="button"
-                  accessibilityLabel={`Ask: ${s}`}
+                  accessibilityLabel={`${t.askPrefix}: ${s}`}
                   style={({ pressed }) => [styles.chip, pressed && styles.pressed]}
                 >
                   <Text style={[theme.text.body, styles.chipText]}>{s}</Text>
@@ -238,7 +291,7 @@ export default function AuraScreen() {
           <View style={styles.inputBox}>
             <TextInput
               style={[theme.text.body, styles.input]}
-              placeholder="Ask Aura anything about cards…"
+              placeholder={t.placeholder}
               placeholderTextColor={theme.colors.textMuted}
               keyboardAppearance="dark"
               value={input}
@@ -247,13 +300,13 @@ export default function AuraScreen() {
               returnKeyType="send"
               multiline
               maxLength={1000}
-              accessibilityLabel="Message to Aura"
+              accessibilityLabel={t.messageLabel}
             />
             <Pressable
               onPress={() => ask(input)}
               disabled={busy || !input.trim()}
               accessibilityRole="button"
-              accessibilityLabel="Send message"
+              accessibilityLabel={t.send}
               accessibilityState={{ disabled: busy || !input.trim() }}
               style={({ pressed }) => [styles.send, (busy || !input.trim()) && styles.sendDisabled, pressed && styles.pressed]}
             >
@@ -287,6 +340,21 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.goldBorder,
   },
   headerTitle: { color: theme.colors.gold, fontWeight: '700', letterSpacing: 2 },
+  langToggle: {
+    position: 'absolute',
+    right: theme.spacing.md,
+    top: theme.spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+    minHeight: theme.sizes.touch,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.radius.pill,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface,
+  },
+  langOn: { color: theme.colors.gold },
   chat: { flex: 1, paddingHorizontal: theme.spacing.md, paddingTop: theme.spacing.md },
   row: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: theme.spacing.md },
   rowUser: { justifyContent: 'flex-end' },
@@ -307,6 +375,8 @@ const styles = StyleSheet.create({
   bubbleAi: { backgroundColor: theme.colors.surface, borderTopLeftRadius: theme.spacing.xs, borderWidth: 1, borderColor: theme.colors.border },
   bubbleUser: { backgroundColor: theme.colors.surfaceRaised, borderTopRightRadius: theme.spacing.xs },
   bubbleError: { borderColor: theme.colors.warning, backgroundColor: theme.colors.warningSoft },
+  bubbleOffline: { borderColor: theme.colors.goldBorder },
+  offlineLabel: { color: theme.colors.gold, marginBottom: theme.spacing.xs },
   text: { color: theme.colors.textPrimary },
   status: { marginTop: theme.spacing.sm },
   dots: { flexDirection: 'row', gap: theme.spacing.xs, paddingVertical: theme.spacing.xs },

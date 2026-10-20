@@ -65,7 +65,7 @@ function decodeUtf8(bytes: Uint8Array): string {
 
 /** Sends one question and streams the answer. Resolves with the final text and button. */
 export async function askAura(
-  input: { userId: string; messages: AuraTurn[]; wallet: AuraWallet },
+  input: { userId: string; messages: AuraTurn[]; wallet: AuraWallet; language?: 'en' | 'hi'; simple?: boolean },
   handlers: Handlers = {},
 ): Promise<{ text: string; cta: AuraCta | null }> {
   const base = auraBaseUrl();
