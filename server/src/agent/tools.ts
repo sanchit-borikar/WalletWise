@@ -15,6 +15,15 @@ import {
   walletValue,
 } from '../../../src/engine';
 import type { Card, Category, Experience, UserProfile } from '../../../src/engine';
+import {
+  browseCards,
+  CARD_FILTERS,
+  cardMonthlyRate,
+  cashWithdrawalCost,
+  emiCost,
+  revolvingCost,
+  rewardsOnSpend,
+} from '../../../src/engine';
 import type { ToolDefinition } from '../llm/index.ts';
 import { searchCardKnowledge } from '../rag/search.ts';
 
@@ -308,6 +317,165 @@ export const TOOLS: Tool[] = [
         ctx.setCta(screen);
       }
       return { ok: true, shown: screen.label };
+    },
+  },
+  {
+    name: 'get_interest_cost',
+    description:
+      'Cost of paying only the minimum due, converting a purchase to EMI, or withdrawing cash on a credit card: months to clear, interest, 18% GST, fees, and the rewards the same spend earns. Use for any "minimum due", "EMI", "no-cost EMI" or "cash from credit card" question. Never estimate interest yourself.',
+    parameters: {
+      type: 'object',
+      properties: {
+        kind: { type: 'string', enum: ['minimum_due', 'emi', 'cash_withdrawal'] },
+        amount: { type: 'number', description: 'Bill balance (minimum_due), purchase price (emi) or cash amount (cash_withdrawal), in INR' },
+        cardId: { type: 'string', description: 'Card id or name, for its interest rate. Omit to use the first card in the wallet.' },
+        min_due_pct: { type: 'number', description: 'minimum_due only: minimum due as % of the bill, if the user knows it (default 5%, assumed)' },
+        new_monthly_spend: { type: 'number', description: 'minimum_due only: new spending on the card each month, INR' },
+        annual_rate_pct: { type: 'number', description: 'emi only: yearly interest rate of the EMI offer in %, 0 for a true zero-interest plan' },
+        months: { type: 'number', description: 'emi only: number of months' },
+        processing_fee: { type: 'number', description: 'emi only: processing fee in INR before GST' },
+        discount_lost: { type: 'number', description: 'emi only: discount given up by choosing EMI, INR' },
+        days: { type: 'number', description: 'cash_withdrawal only: days until the cash is repaid (default 30)' },
+      },
+      required: ['kind', 'amount'],
+      additionalProperties: false,
+    },
+    run: (args, ctx) => {
+      const amount = Number(args.amount);
+      if (!(amount > 0)) return fail('invalid_amount', 'Amount must be a positive number of rupees.');
+      const asked = typeof args.cardId === 'string' && args.cardId ? args.cardId : null;
+      const named = asked ? resolveCard(asked) : null;
+      if (asked && !named) return fail('card_not_found', `No card matches "${asked}".`);
+      const card = named ?? walletCards(ctx)[0]?.card ?? null;
+      const rate = cardMonthlyRate(card);
+      const cardRate = rate.source === 'ASSUMED' ? null : rate.pct;
+      const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
+      const rewards = card ? rewardsOnSpend(catalog, card, amount, { experience: experience(ctx) }) : null;
+      const cardParam: Record<string, string> = card ? { card: card.id } : {};
+      const base = {
+        ok: true,
+        card: card?.name ?? null,
+        interest_rate_monthly_pct: rate.pct,
+        interest_rate_source: rate.source === 'ASSUMED' ? 'assumed (card does not publish one)' : 'card data',
+      };
+      if (args.kind === 'minimum_due') {
+        const r = revolvingCost({ balance: amount, aprMonthlyPct: cardRate, minDuePct: num(args.min_due_pct), newMonthlySpend: num(args.new_monthly_spend) });
+        ctx.setCta({ label: 'Open Bill check', route: '/bill-check', params: cardParam });
+        return {
+          ...base,
+          kind: 'minimum_due',
+          balance_inr: amount,
+          min_due_pct: r.minDuePct,
+          outcome: r.status === 'CLEARS' ? 'clears' : r.status === 'NEVER' ? 'never_clears' : 'still_owing_after_50_years',
+          months_to_clear: r.months,
+          first_minimum_payment_inr: r.firstPayment,
+          total_interest_inr: r.totalInterest,
+          gst_on_interest_inr: r.totalGst,
+          extra_cost_inr: r.extraCost,
+          still_owed_after_12_months_inr: r.schedule[11] ? round(r.schedule[11].closing) : 0,
+          rewards_this_spend_earned_inr: rewards,
+          assumptions: r.assumptions,
+        };
+      }
+      if (args.kind === 'emi') {
+        const months = num(args.months);
+        if (!months || months < 1) return fail('invalid_months', 'EMI needs the number of months.');
+        const r = emiCost({
+          price: amount,
+          annualRatePct: num(args.annual_rate_pct) ?? 0,
+          months,
+          processingFee: num(args.processing_fee),
+          discountLost: num(args.discount_lost),
+        });
+        ctx.setCta({ label: 'Open Bill check', route: '/bill-check', params: { tab: 'EMI', ...cardParam } });
+        return {
+          ...base,
+          kind: 'emi',
+          price_inr: amount,
+          emi_inr: r.emi,
+          months: r.months,
+          total_interest_inr: r.totalInterest,
+          gst_on_interest_inr: r.gstOnInterest,
+          processing_fee_inr: r.processingFee,
+          gst_on_fee_inr: r.gstOnFee,
+          discount_lost_inr: r.discountLost,
+          true_extra_cost_inr: r.trueExtraCost,
+          no_cost_label_would_be_wrong: r.noCostLabelWrong,
+          rule: 'RBI 2025 Directions para 12(3): an EMI that charges interest cannot be called zero-interest or no-cost.',
+          rewards_this_spend_earned_inr: rewards,
+          assumptions: r.assumptions,
+        };
+      }
+      if (args.kind === 'cash_withdrawal') {
+        const days = num(args.days) ?? 30;
+        const r = cashWithdrawalCost({ amount, days, aprMonthlyPct: cardRate });
+        ctx.setCta({ label: 'Open Bill check', route: '/bill-check', params: { tab: 'CASH', ...cardParam } });
+        return {
+          ...base,
+          kind: 'cash_withdrawal',
+          cash_inr: amount,
+          days,
+          fee_inr: r.fee,
+          gst_on_fee_inr: r.gstOnFee,
+          interest_inr: r.interest,
+          gst_on_interest_inr: r.gstOnInterest,
+          total_cost_inr: r.totalCost,
+          cost_pct_of_cash: r.costPct,
+          assumptions: r.assumptions,
+        };
+      }
+      return fail('invalid_kind', 'kind must be minimum_due, emi or cash_withdrawal.');
+    },
+  },
+  {
+    name: 'find_cards',
+    description:
+      "Search all Indian cards in the catalog with filters (lifetime free, fee up to ₹500, RuPay for UPI, entry level), sorted by yearly value at the user's spend (rewards + perks - fee) when spend is known, else by fee. Use for \"lifetime free cards\", \"cards that work on UPI\", \"cheap card for groceries\".",
+    parameters: {
+      type: 'object',
+      properties: {
+        filters: { type: 'array', items: { type: 'string', enum: CARD_FILTERS.map((f) => f.key) }, description: 'Filters that must all match' },
+        query: { type: 'string', description: 'Optional bank or card name words, e.g. "SBI"' },
+        monthly_spend: {
+          type: 'object',
+          description: "Optional monthly spend in INR by category, e.g. {\"GROCERY\": 8000, \"DEFAULT\": 5000}. Omit to use the user's saved spend.",
+          additionalProperties: { type: 'number' },
+        },
+        limit: { type: 'number', description: 'How many cards to return (default 5, max 10)' },
+      },
+      additionalProperties: false,
+    },
+    run: (args, ctx) => {
+      const filterKeys = Array.isArray(args.filters) ? args.filters.map(String) : [];
+      const unknown = filterKeys.filter((k) => !CARD_FILTERS.some((f) => f.key === k));
+      if (unknown.length > 0) return fail('unknown_filter', `Unknown filter ${unknown.join(', ')}. Use ${CARD_FILTERS.map((f) => f.key).join(', ')}.`);
+      const given = args.monthly_spend && typeof args.monthly_spend === 'object' ? (args.monthly_spend as Record<string, unknown>) : null;
+      const spend: Partial<Record<Category, number>> = {};
+      for (const [k, v] of Object.entries(given ?? ctx.wallet.profile?.monthlySpend ?? {})) {
+        if (CATEGORIES.includes(k as Category) && Number(v) > 0) spend[k as Category] = Number(v);
+      }
+      const profile: UserProfile | null =
+        Object.keys(spend).length > 0 ? { monthlySpend: spend, repayment: ctx.wallet.profile?.repayment ?? 'ALWAYS_FULL', experience: experience(ctx) } : null;
+      const limit = Math.min(10, Math.max(1, Number(args.limit) || 5));
+      const all = browseCards(catalog, { query: typeof args.query === 'string' ? args.query : undefined, filterKeys, profile });
+      if (all.length === 0) return fail('no_match', 'No card matches these filters.');
+      ctx.setCta({ label: 'Browse all cards', route: '/browse-cards' });
+      return {
+        ok: true,
+        matching_cards: all.length,
+        sorted_by: profile ? 'yearly value at the given spend (rewards + perks - annual fee incl. GST)' : 'annual fee, lowest first',
+        filters: CARD_FILTERS.filter((f) => filterKeys.includes(f.key)).map((f) => f.label),
+        cards: all.slice(0, limit).map((r) => ({
+          ...cardSummary(r.card),
+          lifetime_free: r.card.lifetimeFree || r.card.annualFee === 0,
+          annual_fee_incl_gst_inr: r.feeWithGst,
+          yearly_value_inr: r.yearlyValue,
+          works_on_upi: r.card.network === 'RUPAY',
+        })),
+        ...(ctx.wallet.profile?.repayment === 'SOMETIMES_MINIMUM'
+          ? { note: 'The user sometimes pays only the minimum: suggest no-fee cards and paying the full bill first.' }
+          : {}),
+      };
     },
   },
 ];
