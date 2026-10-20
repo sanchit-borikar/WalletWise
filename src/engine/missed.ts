@@ -9,6 +9,8 @@ export type PastSpend = {
   amount: number;
   category: Category;
   online?: boolean;
+  /** Shop or brand if known (BPCL, Swiggy, Amazon); many card rates only apply there. */
+  merchant?: string;
   /** Catalog id of the card that was used. */
   usedCardId: string;
 };
@@ -43,7 +45,12 @@ export function missedRewards(
   const rows: MissedSpend[] = spends
     .filter((s) => s.amount > 0)
     .map((spend) => {
-      const purchase = { amount: spend.amount, category: spend.category, online: spend.online ?? spend.category === 'ONLINE_SHOPPING' };
+      const purchase = {
+        amount: spend.amount,
+        category: spend.category,
+        merchant: spend.merchant?.trim() || undefined,
+        online: spend.online ?? spend.category === 'ONLINE_SHOPPING',
+      };
       const usedCard = catalog.byId.get(spend.usedCardId) ?? null;
       const used = usedCard ? scorePurchase(catalog, usedCard, purchase, options) : null;
       const ranked = rankCardsForPurchase(catalog, walletCards, purchase, options);

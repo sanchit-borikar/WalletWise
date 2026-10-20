@@ -226,6 +226,12 @@ describe('feeCheck', () => {
     assert.ok(r.advice.some((a) => a.includes('you can close')));
   });
 
+  it('explains a card that gets none of the spend in a bigger wallet', () => {
+    const r = feeCheck(cat, [base1, feeCard], 'fee1000', profile(5000))!;
+    assert.equal(r.annualReward, 0);
+    assert.ok(r.headline.includes('Your other cards earn more'));
+  });
+
   it('knows lifetime-free cards and cards not in the wallet', () => {
     assert.equal(feeCheck(cat, [base1], 'base1', profile(5000))!.verdict, 'FREE');
     assert.equal(feeCheck(cat, [base1], 'fee1000', profile(5000)), null);
@@ -290,5 +296,15 @@ describe('missedRewards', () => {
     assert.deepEqual([r.rows[0].earned, r.rows[0].bestEarned, r.rows[0].missed, r.rows[0].bestCard?.id], [100, 500, 400, 'online5']);
     assert.equal(r.rows[1].missed, 0);
     assert.equal(r.totalMissed, 400);
+  });
+
+  it('uses the merchant, so shop-only rates count', () => {
+    const swiggy = card({
+      id: 'swiggy10',
+      rewards: [row({ category: 'DEFAULT', ratePct: 1 }), row({ category: 'DINING', ratePct: 10, merchants: ['swiggy'], merchantsText: 'Swiggy' })],
+    });
+    const cat2 = fixtureCatalog([base1, swiggy]);
+    const at = missedRewards(cat2, [base1, swiggy], [{ amount: 1000, category: 'DINING', online: true, merchant: 'Swiggy', usedCardId: 'base1' }], { today: TODAY });
+    assert.deepEqual([at.rows[0].bestCard?.id, at.totalMissed], ['swiggy10', 90]);
   });
 });

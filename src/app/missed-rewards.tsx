@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { Body, Chips, inr, Label, LinkButton, MoneyInput, MoneyScreen, Panel, PrimaryButton, StatRow, toNumber } from '../components/money/MoneyUi';
@@ -20,7 +20,7 @@ const CATEGORIES: { value: Category; label: string }[] = [
   { value: 'DEFAULT', label: 'Other' },
 ];
 
-type SpendDraft = { amount: string; category: Category; online: 'YES' | 'NO'; usedCardId: string };
+type SpendDraft = { amount: string; category: Category; merchant: string; online: 'YES' | 'NO'; usedCardId: string };
 
 /**
  * Missed-rewards check: a few recent spends and the card used for each, then how much
@@ -33,7 +33,7 @@ export default function MissedRewardsScreen() {
   const walletCards = holdings.map((h) => catalog.byId.get(h.catalogId)).filter((c): c is Card => !!c);
   const firstCard = walletCards[0]?.id ?? '';
 
-  const [spends, setSpends] = useState<SpendDraft[]>([{ amount: '', category: 'GROCERY', online: 'NO', usedCardId: firstCard }]);
+  const [spends, setSpends] = useState<SpendDraft[]>([{ amount: '', category: 'GROCERY', merchant: '', online: 'NO', usedCardId: firstCard }]);
   const [checked, setChecked] = useState(false);
   const update = (i: number, changes: Partial<SpendDraft>) => {
     setChecked(false);
@@ -52,7 +52,7 @@ export default function MissedRewardsScreen() {
   const result = missedRewards(
     catalog,
     walletCards,
-    valid.map((s) => ({ amount: toNumber(s.amount), category: s.category, online: s.online === 'YES', usedCardId: s.usedCardId })),
+    valid.map((s) => ({ amount: toNumber(s.amount), category: s.category, merchant: s.merchant, online: s.online === 'YES', usedCardId: s.usedCardId })),
     { experience },
   );
   const cardOptions = walletCards.map((c) => ({ value: c.id, label: c.name }));
@@ -84,6 +84,17 @@ export default function MissedRewardsScreen() {
           <MoneyInput value={s.amount} onChangeText={(v) => update(i, { amount: v })} accessibilityLabel={`Amount of spend ${i + 1}`} />
           <Label>WHAT WAS IT?</Label>
           <Chips options={CATEGORIES} value={s.category} onChange={(category) => update(i, { category })} />
+          <Label>WHERE? (OPTIONAL, E.G. BPCL, SWIGGY, AMAZON)</Label>
+          <TextInput
+            value={s.merchant}
+            onChangeText={(merchant) => update(i, { merchant })}
+            placeholder="Shop or app name"
+            placeholderTextColor={theme.colors.textMuted}
+            style={styles.input}
+            keyboardAppearance="dark"
+            accessibilityLabel={`Shop for spend ${i + 1}`}
+          />
+          <Text style={styles.hint}>Many card rates only apply at one brand, so this makes the check more accurate.</Text>
           <Label>PAID ONLINE OR IN AN APP?</Label>
           <Chips
             options={[
@@ -101,7 +112,7 @@ export default function MissedRewardsScreen() {
       {spends.length < MAX_SPENDS && (
         <LinkButton
           label="+ Add another spend"
-          onPress={() => setSpends((list) => [...list, { amount: '', category: 'DEFAULT', online: 'NO', usedCardId: firstCard }])}
+          onPress={() => setSpends((list) => [...list, { amount: '', category: 'DEFAULT', merchant: '', online: 'NO', usedCardId: firstCard }])}
         />
       )}
 
@@ -153,5 +164,17 @@ const styles = StyleSheet.create({
   remove: { fontFamily: theme.fontFamily, color: theme.colors.danger, fontSize: 14, fontWeight: '600' },
   headline: { fontFamily: theme.fontFamily, color: theme.colors.textPrimary, fontSize: 18, fontWeight: '700', lineHeight: 24, marginBottom: theme.spacing.sm },
   small: { fontSize: 13, marginTop: 6 },
+  input: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.sm + 2,
+    borderWidth: 1,
+    borderColor: theme.colors.borderStrong,
+    paddingHorizontal: 12,
+    minHeight: theme.sizes.touch,
+    fontFamily: theme.fontFamily,
+    color: theme.colors.textPrimary,
+    fontSize: 16,
+  },
+  hint: { ...theme.text.caption, fontWeight: '400', marginTop: 4 },
   disclaimer: { ...theme.text.caption, fontWeight: '400', marginTop: theme.spacing.lg, lineHeight: 17 },
 });

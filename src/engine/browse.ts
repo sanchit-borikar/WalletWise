@@ -139,7 +139,10 @@ export function feeCheck(catalog: Catalog, walletCards: Card[], cardId: string, 
     }
   } else {
     verdict = 'NOT_WORTH';
-    headline = `It earns about ${inr(annualReward + perks)} a year but the fee is ${inr(feeCharged)}. You lose about ${inr(feeCharged - annualReward - perks)}.`;
+    headline =
+      year.annualSpend === 0 && walletCards.length > 1
+        ? `Your other cards earn more on all of your spending, so this card adds nothing, and its fee is ${inr(feeCharged)} a year.`
+        : `It earns about ${inr(annualReward + perks)} a year but the fee is ${inr(feeCharged)}. You lose about ${inr(feeCharged - annualReward - perks)}.`;
     if (spendToWaiver != null && spendToWaiver > 0) {
       advice.push(`The fee is waived at ${inr(card.feeWaiverSpend ?? 0)} a year; you are ${inr(spendToWaiver)} short. Do not spend extra just to reach it.`);
     }
@@ -150,6 +153,10 @@ export function feeCheck(catalog: Catalog, walletCards: Card[], cardId: string, 
         : 'Ask whether the bank has a lifetime-free version you can move to.',
     );
     advice.push('If neither works, you can close the card. Pay the full bill and use your points first.');
+  }
+
+  if (!free && card.perks.includes('MILESTONE_BONUS')) {
+    advice.push('Milestone bonuses and welcome vouchers are not counted here. Add them in your head only if you really use them.');
   }
 
   return {
