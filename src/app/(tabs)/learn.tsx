@@ -451,8 +451,13 @@ export default function LearnScreen() {
           </AnimatedCard>
           <AnimatedCard style={[styles.continueCard, { marginTop: 12 }]} onPress={() => router.push('/find-card')}>
             <Text style={styles.continueTitle}>Which card is right for me?</Text>
-            <Text style={styles.continueSub}>Answer a few questions about your spending and get an honest pick from 280 Indian cards.</Text>
+            <Text style={styles.continueSub}>Answer a few questions about your spending and get an honest pick from {catalog.cards.length} Indian cards.</Text>
             <Text style={styles.continueLink}>Find My Card →</Text>
+          </AnimatedCard>
+          <AnimatedCard style={[styles.continueCard, { marginTop: 12 }]} onPress={() => router.push('/build-credit')}>
+            <Text style={styles.continueTitle}>Build your CIBIL score</Text>
+            <Text style={styles.continueSub}>Six simple steps for a good credit score, whether you are getting your first card or already have one.</Text>
+            <Text style={styles.continueLink}>See the plan →</Text>
           </AnimatedCard>
         </View>
 
