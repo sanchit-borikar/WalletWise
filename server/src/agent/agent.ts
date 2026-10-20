@@ -111,6 +111,26 @@ export async function* runAgent(
     return;
   }
 
+  // Some models write a tool call as text ({{show_app_screen({...})}}) instead of calling it.
+  // Run a written show_app_screen so the button still appears, and strip every such call from the answer.
+  const written = findWrittenToolCalls(answer);
+  for (const call of written.calls) {
+    if (call.name === 'show_app_screen' && !cta) await runTool(call.name, call.arguments, ctx);
+  }
+  answer = written.text;
+
   if (cta) yield { type: 'cta', cta };
   yield { type: 'done', text: answer.trim(), cta };
+}
+
+const WRITTEN_CALL = /\{\{\s*([a-z_]+)\s*\(\s*(\{[\s\S]*?\})?\s*\)\s*\}\}|<function=([a-z_]+)>\s*(\{[\s\S]*?\})?\s*<\/function>/g;
+
+/** Tool calls the model wrote into its answer as text, and the answer without them. */
+export function findWrittenToolCalls(text: string): { text: string; calls: { name: string; arguments: string }[] } {
+  const calls: { name: string; arguments: string }[] = [];
+  const cleaned = text.replace(WRITTEN_CALL, (_m, name1?: string, args1?: string, name2?: string, args2?: string) => {
+    calls.push({ name: (name1 ?? name2) as string, arguments: args1 ?? args2 ?? '{}' });
+    return '';
+  });
+  return { text: calls.length ? cleaned.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n') : text, calls };
 }

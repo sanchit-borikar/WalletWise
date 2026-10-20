@@ -4,7 +4,7 @@ import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { after, describe, it } from 'node:test';
 
-import { buildSystemPrompt, runAgent } from '../agent/agent.ts';
+import { buildSystemPrompt, findWrittenToolCalls, runAgent } from '../agent/agent.ts';
 import type { AgentEvent } from '../agent/agent.ts';
 import { resolveCard, runTool, TOOL_DEFINITIONS } from '../agent/tools.ts';
 import type { ToolContext } from '../agent/tools.ts';
@@ -363,5 +363,19 @@ describe('reply language and simple answers', () => {
     assert.ok(typeof hi !== 'string' && hi.language === 'hi' && hi.simple === true);
     assert.equal(typeof parseChatRequest({ ...base, language: 'fr' }), 'string');
     assert.equal(typeof parseChatRequest({ ...base, simple: 'yes' }), 'string');
+  });
+});
+
+describe('tool calls written as text', () => {
+  it('strips {{show_app_screen(...)}} from an answer and keeps the call', () => {
+    const answer = 'Use HDFC Infinia.\n\n{{show_app_screen({"screen":"best_card_map"})}}\n';
+    const { text, calls } = findWrittenToolCalls(answer);
+    assert.equal(text.trim(), 'Use HDFC Infinia.');
+    assert.deepEqual(calls, [{ name: 'show_app_screen', arguments: '{"screen":"best_card_map"}' }]);
+  });
+
+  it('leaves normal answers untouched', () => {
+    const answer = 'Pay the full bill: interest is about 3.75% a month.';
+    assert.equal(findWrittenToolCalls(answer).text, answer);
   });
 });
