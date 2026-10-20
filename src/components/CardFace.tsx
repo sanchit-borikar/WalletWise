@@ -14,7 +14,7 @@ type Props = {
 };
 
 // Issuer brand-inspired gradients so cards are easy to tell apart.
-const ISSUER_COLORS: Record<string, [string, string]> = {
+export const ISSUER_COLORS: Record<string, [string, string]> = {
   HDFC: ['#0B2A5B', '#071733'],
   SBI: ['#1A4C8C', '#0B2346'],
   AXIS: ['#7A1638', '#3D0A1C'],

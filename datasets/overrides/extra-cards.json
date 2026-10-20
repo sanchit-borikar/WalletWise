@@ -1,0 +1,816 @@
+{
+  "dataset": "WalletWise hand-added cards",
+  "description": "Public-sector bank cards that the CardAdvisor data does not cover, copied by hand from each bank's own card page. Same shape as datasets/cards.json plus source, verifiedAt and notes. Unknown numbers are null. Not part of the CardAdvisor CC BY 4.0 dataset.",
+  "asOf": "2026-10-20",
+  "cards": [
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-visa-classic",
+      "name": "PNB Visa Classic Credit Card",
+      "issuer": "PNB",
+      "network": "VISA",
+      "tier": "ENTRY",
+      "annualFeeRs": 0,
+      "joiningFeeRs": 0,
+      "lifetimeFree": true,
+      "feeWaiverSpendRs": null,
+      "minSalaryRs": 20833,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.25,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [],
+      "source": "https://creditcard.pnb.bank.in/types2.html",
+      "notes": "Reward points worth Rs 0.25 each, redeemed from 1,000 points.",
+      "rewardRateMinPct": 0.25,
+      "rewardRateMaxPct": 0.25,
+      "url": "https://creditcard.pnb.bank.in/types2.html"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-visa-gold",
+      "name": "PNB Visa Gold Credit Card",
+      "issuer": "PNB",
+      "network": "VISA",
+      "tier": "ENTRY",
+      "annualFeeRs": 300,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": null,
+      "minSalaryRs": 29167,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.25,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [],
+      "source": "https://creditcard.pnb.bank.in/types1.html",
+      "notes": "Reward points worth Rs 0.25 each, redeemed from 1,000 points. Fee waived only if yearly use exceeds the credit limit, with a retail spend every quarter and no missed payments (not modelled).",
+      "rewardRateMinPct": 0.25,
+      "rewardRateMaxPct": 0.25,
+      "url": "https://creditcard.pnb.bank.in/types1.html"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-visa-platinum",
+      "name": "PNB Visa Platinum Credit Card",
+      "issuer": "PNB",
+      "network": "VISA",
+      "tier": "MID",
+      "annualFeeRs": 500,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": null,
+      "minSalaryRs": 41667,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.25,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [],
+      "source": "https://creditcard.pnb.bank.in/types3.html",
+      "notes": "Reward points worth Rs 0.25 each, redeemed from 1,000 points. Fee waived only if yearly use exceeds the credit limit, with a retail spend every quarter and no missed payments (not modelled).",
+      "rewardRateMinPct": 0.25,
+      "rewardRateMaxPct": 0.25,
+      "url": "https://creditcard.pnb.bank.in/types3.html"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-visa-signature",
+      "name": "PNB Visa Signature Credit Card",
+      "issuer": "PNB",
+      "network": "VISA",
+      "tier": "PREMIUM",
+      "annualFeeRs": 2000,
+      "joiningFeeRs": 1500,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 300000,
+      "minSalaryRs": 62500,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.5,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "CONCIERGE"
+        }
+      ],
+      "source": "https://creditcard.pnb.bank.in/types9.html",
+      "notes": "Reward points worth Rs 0.25 each, redeemed from 1,000 points. 2 points per Rs 100.",
+      "rewardRateMinPct": 0.5,
+      "rewardRateMaxPct": 0.5,
+      "url": "https://creditcard.pnb.bank.in/types9.html"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-rupay-platinum",
+      "name": "PNB RuPay Platinum Credit Card",
+      "issuer": "PNB",
+      "network": "RUPAY",
+      "tier": "ENTRY",
+      "annualFeeRs": 500,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": null,
+      "minSalaryRs": 20833,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.25,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "INSURANCE"
+        },
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://creditcard.pnb.bank.in/types5.html",
+      "notes": "Reward points worth Rs 0.25 each, redeemed from 1,000 points. Annual fee waived if the card is used at least once every quarter (not modelled). Works on UPI. Lounges: 2 domestic a quarter, 2 international a year.",
+      "rewardRateMinPct": 0.25,
+      "rewardRateMaxPct": 0.25,
+      "url": "https://creditcard.pnb.bank.in/types5.html"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-rupay-select",
+      "name": "PNB RuPay Select Credit Card",
+      "issuer": "PNB",
+      "network": "RUPAY",
+      "tier": "MID",
+      "annualFeeRs": 750,
+      "joiningFeeRs": 500,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": null,
+      "minSalaryRs": 41667,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.333,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "INSURANCE"
+        },
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://creditcard.pnb.bank.in/types6.html",
+      "notes": "Reward points worth Rs 0.25 each, redeemed from 1,000 points. 2 points per Rs 150. Annual fee waived if the card is used at least once every quarter (not modelled). Works on UPI.",
+      "rewardRateMinPct": 0.333,
+      "rewardRateMaxPct": 0.333,
+      "url": "https://creditcard.pnb.bank.in/types6.html"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-rupay-millennial",
+      "name": "PNB RuPay Millennial Credit Card",
+      "issuer": "PNB",
+      "network": "RUPAY",
+      "tier": "MID",
+      "annualFeeRs": 999,
+      "joiningFeeRs": 399,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 100000,
+      "minSalaryRs": 41667,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.333,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "INSURANCE"
+        },
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://creditcard.pnb.bank.in/types10.html",
+      "notes": "Reward points worth Rs 0.25 each, redeemed from 1,000 points. 2 points per Rs 150. Works on UPI.",
+      "rewardRateMinPct": 0.333,
+      "rewardRateMaxPct": 0.333,
+      "url": "https://creditcard.pnb.bank.in/types10.html"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-patanjali-rupay-platinum",
+      "name": "PNB Patanjali RuPay Platinum Credit Card",
+      "issuer": "PNB",
+      "network": "RUPAY",
+      "tier": "ENTRY",
+      "annualFeeRs": 500,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": null,
+      "minSalaryRs": 20833,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.25,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "INSURANCE"
+        },
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://creditcard.pnb.bank.in/types12.html",
+      "notes": "Reward points worth Rs 0.25 each, redeemed from 1,000 points. Also 2% cashback at Patanjali on payments above Rs 2,500, capped at Rs 50 (not modelled). Annual fee waived if the card is used at least once every quarter (not modelled).",
+      "rewardRateMinPct": 0.25,
+      "rewardRateMaxPct": 0.25,
+      "url": "https://creditcard.pnb.bank.in/types12.html"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-patanjali-rupay-select",
+      "name": "PNB Patanjali RuPay Select Credit Card",
+      "issuer": "PNB",
+      "network": "RUPAY",
+      "tier": "MID",
+      "annualFeeRs": 750,
+      "joiningFeeRs": 500,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": null,
+      "minSalaryRs": 41667,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.333,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "INSURANCE"
+        },
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://creditcard.pnb.bank.in/types11.html",
+      "notes": "Reward points worth Rs 0.25 each, redeemed from 1,000 points. 2 points per Rs 150. Also 2% cashback at Patanjali on payments above Rs 2,500, capped at Rs 50 (not modelled). Annual fee waived if the card is used at least once every quarter (not modelled).",
+      "rewardRateMinPct": 0.333,
+      "rewardRateMaxPct": 0.333,
+      "url": "https://creditcard.pnb.bank.in/types11.html"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-kiwi",
+      "name": "PNB Kiwi RuPay Credit Card",
+      "issuer": "PNB",
+      "network": "RUPAY",
+      "tier": "ENTRY",
+      "annualFeeRs": 0,
+      "joiningFeeRs": 0,
+      "lifetimeFree": true,
+      "feeWaiverSpendRs": null,
+      "minSalaryRs": 20833,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "CASHBACK",
+          "ratePct": 0.5,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 100,
+          "merchants": null
+        }
+      ],
+      "perks": [],
+      "source": "https://creditcard.pnb.bank.in/types18.html",
+      "notes": "Virtual card: no joining or annual fee (a physical card costs Rs 500 to join and Rs 750 a year, waived at Rs 1.5 lakh spend). 0.5% cashback on online spends, 1.5% on UPI scan and pay (see inclusion.json). Monthly cashback capped at 1% of the credit limit (not modelled). Used through the Kiwi app; RuPay because it works on UPI.",
+      "rewardRateMinPct": 0.5,
+      "rewardRateMaxPct": 0.5,
+      "url": "https://creditcard.pnb.bank.in/types18.html"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-zaggle",
+      "name": "PNB Zaggle Co-Branded Twin Credit Card",
+      "issuer": "PNB",
+      "network": "RUPAY",
+      "tier": "MID",
+      "annualFeeRs": 499,
+      "joiningFeeRs": 499,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 150000,
+      "minSalaryRs": 20833,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.833,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "INSURANCE"
+        },
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://creditcard.pnb.bank.in/types19.html",
+      "notes": "Twin card: RuPay Select and Visa Platinum on one limit. 10 reward points (worth Rs 2.50) per Rs 300 spent.",
+      "rewardRateMinPct": 0.833,
+      "rewardRateMaxPct": 0.833,
+      "url": "https://creditcard.pnb.bank.in/types19.html"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "pnb-salary-rupay-platinum",
+      "name": "PNB SALARY RuPay Platinum Credit Card",
+      "issuer": "PNB",
+      "network": "RUPAY",
+      "tier": "ENTRY",
+      "annualFeeRs": 0,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": null,
+      "minSalaryRs": null,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.25,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "INSURANCE"
+        },
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://creditcard.pnb.bank.in/types14.html",
+      "notes": "Reward points worth Rs 0.25 each, redeemed from 1,000 points. Only for PNB salary account holders (EXCEL scheme); no annual fee while salary is credited. Works on UPI for merchant payments.",
+      "rewardRateMinPct": 0.25,
+      "rewardRateMaxPct": 0.25,
+      "url": "https://creditcard.pnb.bank.in/types14.html"
+    },
+    {
+      "forexMarkupPct": 3,
+      "aprMonthlyPct": 2.5,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "canara-rupay-classic",
+      "name": "Canara Bank RuPay Classic Credit Card",
+      "issuer": "CANARA",
+      "network": "RUPAY",
+      "tier": "ENTRY",
+      "annualFeeRs": 100,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 12000,
+      "minSalaryRs": 16667,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.5,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [],
+      "source": "https://www.canarabank.bank.in/rupay-classic-credit-card",
+      "notes": "No joining or annual fee, but Canara charges an inactivity fee when yearly spend is below a threshold; stored as annualFeeRs with feeWaiverSpendRs = that threshold. 2 reward points per Rs 100 on card and online spends; point value Rs 0.25 as stated on the Canara RuPay Select pages. Interest 2.5% a month; forex markup 3% plus GST.",
+      "rewardRateMinPct": 0.5,
+      "rewardRateMaxPct": 0.5,
+      "url": "https://www.canarabank.bank.in/rupay-classic-credit-card"
+    },
+    {
+      "forexMarkupPct": 3,
+      "aprMonthlyPct": 2.5,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "canara-rupay-platinum",
+      "name": "Canara Bank RuPay Platinum Credit Card",
+      "issuer": "CANARA",
+      "network": "RUPAY",
+      "tier": "ENTRY",
+      "annualFeeRs": 200,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 50000,
+      "minSalaryRs": 25000,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.5,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "INSURANCE"
+        },
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://www.canarabank.bank.in/rupay-platinum-credit-card",
+      "notes": "No joining or annual fee, but Canara charges an inactivity fee when yearly spend is below a threshold; stored as annualFeeRs with feeWaiverSpendRs = that threshold. 2 reward points per Rs 100 on card and online spends; point value Rs 0.25 as stated on the Canara RuPay Select pages. Interest 2.5% a month; forex markup 3% plus GST. Domestic lounges: 2 a quarter, up to 4 a year.",
+      "rewardRateMinPct": 0.5,
+      "rewardRateMaxPct": 0.5,
+      "url": "https://www.canarabank.bank.in/rupay-platinum-credit-card"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": null,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "canara-rupay-select",
+      "name": "Canara Bank RuPay Select Credit Card",
+      "issuer": "CANARA",
+      "network": "RUPAY",
+      "tier": "MID",
+      "annualFeeRs": 300,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 100000,
+      "minSalaryRs": 83333,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.5,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "CONCIERGE"
+        },
+        {
+          "perkType": "INSURANCE"
+        },
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://www.canarabank.bank.in/rupay-select-credit-card",
+      "notes": "No joining or annual fee, but Canara charges an inactivity fee when yearly spend is below a threshold; stored as annualFeeRs with feeWaiverSpendRs = that threshold. 2 reward points per Rs 100 on card and online spends; point value Rs 0.25 as stated on the Canara RuPay Select pages. Interest 2.5% a month; forex markup 3% plus GST. NPCI offers (5% cashback on utilities and on restaurants, each capped at Rs 50 a month) may change and are not modelled.",
+      "rewardRateMinPct": 0.5,
+      "rewardRateMaxPct": 0.5,
+      "url": "https://www.canarabank.bank.in/rupay-select-credit-card"
+    },
+    {
+      "forexMarkupPct": 3,
+      "aprMonthlyPct": 2.5,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "canara-rupay-platinum-secured",
+      "name": "Canara Bank RuPay Platinum Secured Credit Card",
+      "issuer": "CANARA",
+      "network": "RUPAY",
+      "tier": "ENTRY",
+      "annualFeeRs": 200,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 50000,
+      "minSalaryRs": 16667,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.5,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "INSURANCE"
+        },
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://www.canarabank.bank.in/rupay-platinum-secured-credit-card",
+      "notes": "No joining or annual fee, but Canara charges an inactivity fee when yearly spend is below a threshold; stored as annualFeeRs with feeWaiverSpendRs = that threshold. 2 reward points per Rs 100 on card and online spends; point value Rs 0.25 as stated on the Canara RuPay Select pages. Interest 2.5% a month; forex markup 3% plus GST. Issued against a fixed deposit: limit up to 75% of the FD, minimum card limit Rs 25,000.",
+      "rewardRateMinPct": 0.5,
+      "rewardRateMaxPct": 0.5,
+      "url": "https://www.canarabank.bank.in/rupay-platinum-secured-credit-card"
+    },
+    {
+      "forexMarkupPct": null,
+      "aprMonthlyPct": 2.5,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "canara-rupay-select-secured",
+      "name": "Canara Bank RuPay Select Secured Credit Card",
+      "issuer": "CANARA",
+      "network": "RUPAY",
+      "tier": "MID",
+      "annualFeeRs": 300,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 100000,
+      "minSalaryRs": null,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.5,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "CONCIERGE"
+        },
+        {
+          "perkType": "INSURANCE"
+        },
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://www.canarabank.bank.in/rupay-select-secured-credit-card",
+      "notes": "No joining or annual fee, but Canara charges an inactivity fee when yearly spend is below a threshold; stored as annualFeeRs with feeWaiverSpendRs = that threshold. 2 reward points per Rs 100 on card and online spends; point value Rs 0.25 as stated on the Canara RuPay Select pages. Interest 2.5% a month; forex markup 3% plus GST. Issued against a fixed deposit: limit up to 75% of the FD, minimum card limit Rs 25,000.",
+      "rewardRateMinPct": 0.5,
+      "rewardRateMaxPct": 0.5,
+      "url": "https://www.canarabank.bank.in/rupay-select-secured-credit-card"
+    },
+    {
+      "forexMarkupPct": 3,
+      "aprMonthlyPct": 2.5,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "canara-visa-classic",
+      "name": "Canara Bank Visa Classic Credit Card",
+      "issuer": "CANARA",
+      "network": "VISA",
+      "tier": "ENTRY",
+      "annualFeeRs": 100,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 12000,
+      "minSalaryRs": 16667,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.5,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [],
+      "source": "https://www.canarabank.bank.in/visa-classic-credit-card",
+      "notes": "No joining or annual fee, but Canara charges an inactivity fee when yearly spend is below a threshold; stored as annualFeeRs with feeWaiverSpendRs = that threshold. 2 reward points per Rs 100 on card and online spends; point value Rs 0.25 as stated on the Canara RuPay Select pages. Interest 2.5% a month; forex markup 3% plus GST.",
+      "rewardRateMinPct": 0.5,
+      "rewardRateMaxPct": 0.5,
+      "url": "https://www.canarabank.bank.in/visa-classic-credit-card"
+    },
+    {
+      "forexMarkupPct": 3,
+      "aprMonthlyPct": 2.5,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "canara-visa-gold",
+      "name": "Canara Bank Visa Gold Credit Card",
+      "issuer": "CANARA",
+      "network": "VISA",
+      "tier": "ENTRY",
+      "annualFeeRs": 150,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 25000,
+      "minSalaryRs": 25000,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.5,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [],
+      "source": "https://www.canarabank.bank.in/visa-gold-credit-card",
+      "notes": "No joining or annual fee, but Canara charges an inactivity fee when yearly spend is below a threshold; stored as annualFeeRs with feeWaiverSpendRs = that threshold. 2 reward points per Rs 100 on card and online spends; point value Rs 0.25 as stated on the Canara RuPay Select pages. Interest 2.5% a month; forex markup 3% plus GST.",
+      "rewardRateMinPct": 0.5,
+      "rewardRateMaxPct": 0.5,
+      "url": "https://www.canarabank.bank.in/visa-gold-credit-card"
+    },
+    {
+      "forexMarkupPct": 3,
+      "aprMonthlyPct": 2.5,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "canara-visa-platinum",
+      "name": "Canara Bank Visa Platinum Credit Card",
+      "issuer": "CANARA",
+      "network": "VISA",
+      "tier": "MID",
+      "annualFeeRs": 200,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 50000,
+      "minSalaryRs": 25000,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.5,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://www.canarabank.bank.in/visa-platinum-credit-card",
+      "notes": "No joining or annual fee, but Canara charges an inactivity fee when yearly spend is below a threshold; stored as annualFeeRs with feeWaiverSpendRs = that threshold. 2 reward points per Rs 100 on card and online spends; point value Rs 0.25 as stated on the Canara RuPay Select pages. Interest 2.5% a month; forex markup 3% plus GST.",
+      "rewardRateMinPct": 0.5,
+      "rewardRateMaxPct": 0.5,
+      "url": "https://www.canarabank.bank.in/visa-platinum-credit-card"
+    },
+    {
+      "forexMarkupPct": 3,
+      "aprMonthlyPct": 2.5,
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "lastVerified": "2026-10-20",
+      "verifiedAt": "2026-10-20",
+      "cardKey": "canara-visa-signature",
+      "name": "Canara Bank Visa Signature Credit Card",
+      "issuer": "CANARA",
+      "network": "VISA",
+      "tier": "PREMIUM",
+      "annualFeeRs": 1000,
+      "joiningFeeRs": 0,
+      "lifetimeFree": false,
+      "feeWaiverSpendRs": 200000,
+      "minSalaryRs": 83333,
+      "rewards": [
+        {
+          "category": "DEFAULT",
+          "rewardType": "REWARD_POINTS",
+          "ratePct": 0.5,
+          "monthlyCapRs": null,
+          "pointValuePaisa": 25,
+          "merchants": null
+        }
+      ],
+      "perks": [
+        {
+          "perkType": "LOUNGE_ACCESS"
+        }
+      ],
+      "source": "https://www.canarabank.bank.in/visa-signature-credit-card",
+      "notes": "No joining or annual fee, but Canara charges an inactivity fee when yearly spend is below a threshold; stored as annualFeeRs with feeWaiverSpendRs = that threshold. 2 reward points per Rs 100 on card and online spends; point value Rs 0.25 as stated on the Canara RuPay Select pages. Interest 2.5% a month; forex markup 3% plus GST. Domestic lounges: 3 a quarter.",
+      "rewardRateMinPct": 0.5,
+      "rewardRateMaxPct": 0.5,
+      "url": "https://www.canarabank.bank.in/visa-signature-credit-card"
+    }
+  ]
+}

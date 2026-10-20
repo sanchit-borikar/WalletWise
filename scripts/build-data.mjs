@@ -2,11 +2,13 @@
  * Builds the compact, typed-friendly data bundle the app ships with.
  *
  * Input:  datasets/*.json (CardAdvisor open data, CC BY 4.0)
+ *         datasets/overrides/extra-cards.json (cards added by hand from issuer pages)
+ *         datasets/overrides/inclusion.json (hand-checked FD-backed and UPI facts per card)
  * Output: src/data/generated/*.json
  *
- * Run: npm run build:data
+ * Run: npm run build:data (offline: reads local files only)
  */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -15,6 +17,7 @@ const inDir = join(root, 'datasets');
 const outDir = join(root, 'src', 'data', 'generated');
 
 const read = (name) => JSON.parse(readFileSync(join(inDir, name), 'utf8'));
+const readOptional = (name, fallback) => (existsSync(join(inDir, name)) ? read(name) : fallback);
 const write = (name, data) => writeFileSync(join(outDir, name), JSON.stringify(data));
 
 // Banks covered by the RBI Small Finance Bank directions rather than the
@@ -58,6 +61,20 @@ function parseRatios(label, fromUnits, toUnits) {
 
 // ── Cards ──────────────────────────────────────────────
 const cardsRaw = read('cards.json');
+// Hand-added cards (public-sector banks the CardAdvisor data does not cover). Each has its own source and date.
+const extraRaw = readOptional('overrides/extra-cards.json', { cards: [] });
+const inclusionRaw = readOptional('overrides/inclusion.json', { cards: {} });
+const knownKeys = new Set(cardsRaw.cards.map((c) => c.cardKey));
+for (const c of extraRaw.cards) {
+  if (knownKeys.has(c.cardKey)) throw new Error(`extra-cards.json repeats an existing card: ${c.cardKey}`);
+  if (!c.source || !c.verifiedAt) throw new Error(`extra-cards.json card without source or verifiedAt: ${c.cardKey}`);
+  knownKeys.add(c.cardKey);
+}
+for (const [key, inc] of Object.entries(inclusionRaw.cards)) {
+  if (!knownKeys.has(key)) throw new Error(`inclusion.json names an unknown card: ${key}`);
+  if (!inc.source || !inc.verifiedAt) throw new Error(`inclusion.json entry without source or verifiedAt: ${key}`);
+}
+const allCards = [...cardsRaw.cards, ...extraRaw.cards];
 const valuationsRaw = read('valuations.json');
 const transfersRaw = read('transfers.json');
 const loungesRaw = read('lounges.json');
@@ -78,6 +95,26 @@ const findNode = (programName) => {
 };
 const valuationByCard = new Map(valuationsRaw.cards.map((v) => [v.cardKey, v]));
 const loungeByCard = new Map(loungesRaw.cards.map((l) => [l.cardKey, l]));
+
+function inclusionFor(i) {
+  return {
+    secured: i.secured,
+    minFdRs: i.minFdRs ?? null,
+    noIncomeProof: i.noIncomeProof ?? null,
+    upi: i.upi
+      ? {
+          earnsRewards: i.upi.earnsRewards,
+          ratePct: i.upi.ratePct ?? null,
+          capRs: i.upi.capRs ?? null,
+          ...(i.upi.scanAndPayOnly ? { scanAndPayOnly: true, onlineRatePct: i.upi.onlineRatePct ?? null } : {}),
+          notes: i.upi.notes ?? null,
+        }
+      : null,
+    ...(i.existingCustomersOnly ? { existingCustomersOnly: true } : {}),
+    source: i.source,
+    verifiedAt: i.verifiedAt,
+  };
+}
 
 function loungeSummary(l) {
   if (!l) return null;
@@ -103,7 +140,7 @@ function loungeSummary(l) {
   };
 }
 
-const cards = cardsRaw.cards.map((c) => {
+const cards = allCards.map((c) => {
   const valuation = valuationByCard.get(c.cardKey);
   const node = valuation ? findNode(valuation.programName) : undefined;
   if (valuation && !node) warnings.push(`No transfer node for programme "${valuation.programName}" (${c.cardKey})`);
@@ -164,6 +201,8 @@ const cards = cardsRaw.cards.map((c) => {
     rewards,
     perks: c.perks.map((p) => p.perkType),
     lounge: loungeSummary(loungeByCard.get(c.cardKey)),
+    ...(c.source ? { source: c.source, verifiedAt: c.verifiedAt } : {}),
+    ...(inclusionRaw.cards[c.cardKey] ? { inclusion: inclusionFor(inclusionRaw.cards[c.cardKey]) } : {}),
   };
 });
 
@@ -221,15 +260,17 @@ write('meta.json', {
   generatedAt: new Date().toISOString(),
   source: 'CardAdvisor open data (https://cardadvisor.in/data)',
   license: 'CC BY 4.0',
-  attribution: 'Card data: CardAdvisor (cardadvisor.in/data), licensed CC BY 4.0. Values derived by WalletWise are estimates.',
+  attribution: 'Card data: CardAdvisor (cardadvisor.in/data), licensed CC BY 4.0. Public-sector bank cards and FD/UPI facts were checked by WalletWise on issuer websites. Values derived by WalletWise are estimates.',
   asOf: {
     cards: cardsRaw.asOf,
+    ...(extraRaw.asOf ? { extraCards: extraRaw.asOf } : {}),
+    ...(inclusionRaw.asOf ? { inclusion: inclusionRaw.asOf } : {}),
     valuations: valuationsRaw.asOf,
     transfers: transfersRaw.asOf,
     lounges: loungesRaw.asOf,
     changes: changesRaw.asOf,
   },
-  counts: { cards: cards.length, edges: edges.length, changes: changes.length },
+  counts: { cards: cards.length, extraCards: extraRaw.cards.length, inclusion: Object.keys(inclusionRaw.cards).length, edges: edges.length, changes: changes.length },
 });
 
 console.log(`Wrote ${cards.length} cards, ${edges.length} transfer routes, ${changes.length} change events to src/data/generated/`);

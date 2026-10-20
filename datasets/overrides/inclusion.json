@@ -1,0 +1,231 @@
+{
+  "note": "Hand-checked first-card and UPI facts, keyed by card id. Every entry was read on the issuer's own page (or the co-brand partner's official page, noted) on verifiedAt. null means the page does not say. upi.ratePct is the rate when paying through the app the issuer names; capRs is the monthly cap on UPI rewards in rupees. Merged by scripts/build-data.mjs.",
+  "asOf": "2026-10-20",
+  "cards": {
+    "idfc-wow": {
+      "secured": true,
+      "minFdRs": 20000,
+      "noIncomeProof": true,
+      "upi": null,
+      "source": "https://www.idfcfirst.bank.in/credit-card/wow",
+      "verifiedAt": "2026-10-20"
+    },
+    "idfc-wow-black": {
+      "secured": true,
+      "minFdRs": 20000,
+      "noIncomeProof": true,
+      "upi": null,
+      "source": "https://www.idfcfirst.bank.in/credit-card/wow-black-credit-card",
+      "verifiedAt": "2026-10-20"
+    },
+    "idfc-earn": {
+      "secured": true,
+      "minFdRs": 5000,
+      "noIncomeProof": true,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": 1,
+        "capRs": 500,
+        "notes": "1% cashback on UPI via the IDFC FIRST app, 0.5% via other UPI apps; cashback capped at Rs 500 a statement cycle"
+      },
+      "source": "https://www.idfcfirst.bank.in/credit-card/secured-rupay-credit-card",
+      "verifiedAt": "2026-10-20"
+    },
+    "idfc-hello-cashback": {
+      "secured": true,
+      "minFdRs": 10000,
+      "noIncomeProof": true,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": 1,
+        "notes": "1% cashback only on UPI paid through the IDFC FIRST app; UPI through GPay, PhonePe, Paytm and other apps earns nothing"
+      },
+      "source": "https://www.idfcfirst.bank.in/credit-card/hello-cashback-credit-card",
+      "verifiedAt": "2026-10-20"
+    },
+    "kotak-811": {
+      "secured": true,
+      "minFdRs": 10000,
+      "noIncomeProof": true,
+      "upi": null,
+      "source": "https://www.kotak811.bank.in/credit-cards/811-dream-different-credit-card-against-fd",
+      "verifiedAt": "2026-10-20"
+    },
+    "au-nomo": {
+      "secured": true,
+      "minFdRs": 20000,
+      "noIncomeProof": true,
+      "upi": null,
+      "source": "https://www.au.bank.in/personal-banking/credit-cards/nomo-credit-card",
+      "verifiedAt": "2026-10-20"
+    },
+    "sbi-unnati": {
+      "secured": true,
+      "minFdRs": 25000,
+      "noIncomeProof": null,
+      "upi": null,
+      "source": "https://www.sbicard.com/en/personal/credit-cards/sbi-card-unnati.html",
+      "verifiedAt": "2026-10-20"
+    },
+    "utkarsh-supercard": {
+      "secured": true,
+      "minFdRs": 100,
+      "noIncomeProof": null,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": 1,
+        "capRs": 500,
+        "notes": "1% cashback on UPI and other spends from 11 Aug 2025; UPI cashback capped at Rs 500 a statement month. Minimum deposit Rs 100 (limit set by the deposit)."
+      },
+      "source": "https://www.utkarsh.bank.in/personal/cards/credit-card/supercard",
+      "verifiedAt": "2026-10-20"
+    },
+    "kiwi": {
+      "secured": false,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": 1.5,
+        "capRs": null,
+        "scanAndPayOnly": true,
+        "onlineRatePct": 0.5,
+        "notes": "1.5% cashback on UPI scan and pay through the Kiwi app; 0.5% on online spends. Page by Kiwi, the co-brand partner of YES Bank."
+      },
+      "source": "https://gokiwi.in/cards/yesbank/",
+      "verifiedAt": "2026-10-20"
+    },
+    "axis-supermoney": {
+      "secured": false,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": 1,
+        "capRs": null,
+        "notes": "1% on other eligible spends including UPI. 3% on UPI through the super.money app, but that 3% is capped at the cashback earned from other spends in the same cycle, so 1% is used here."
+      },
+      "source": "https://www.axis.bank.in/cards/credit-card/supermoney-credit-card",
+      "verifiedAt": "2026-10-20"
+    },
+    "au-instapay": {
+      "secured": false,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": null,
+        "capRs": null,
+        "notes": "1% cashback on UPI at departmental stores, dining, pharmacy and grocery, capped at Rs 100 a statement cycle. Same as the card's normal rates."
+      },
+      "source": "https://www.au.bank.in/personal-banking/credit-cards/instapay-credit-card",
+      "verifiedAt": "2026-10-20"
+    },
+    "hdfc-upi-rupay": {
+      "secured": false,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "existingCustomersOnly": true,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": null,
+        "capRs": null,
+        "notes": "Earns CashPoints on UPI at the card's normal rates (3% groceries, supermarkets, dining and PayZapp; 2% utilities; 1% other; each capped at 500 a month). Issued only as an extra card to existing HDFC Bank cardholders."
+      },
+      "source": "https://www.hdfc.bank.in/credit-cards/hdfc-bank-upi-rupay-credit-card",
+      "verifiedAt": "2026-10-20"
+    },
+    "hdfc-tata-neu-plus": {
+      "secured": false,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": 1,
+        "capRs": 500,
+        "notes": "0.25% back as NeuCoins on eligible UPI, plus 0.75% when paying with a Tata Neu UPI ID; UPI NeuCoins capped at 500 a calendar month. No NeuCoins on fuel, wallet, rent, government or gaming."
+      },
+      "source": "https://www.hdfc.bank.in/credit-cards/tata-neu-plus-hdfc-bank-credit-card",
+      "verifiedAt": "2026-10-20"
+    },
+    "hdfc-tata-neu-infinity": {
+      "secured": false,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": 1.5,
+        "capRs": 500,
+        "notes": "0.5% back as NeuCoins on eligible UPI, plus 1% when paying with a Tata Neu UPI ID; UPI NeuCoins capped at 500 a calendar month."
+      },
+      "source": "https://www.hdfc.bank.in/credit-cards/tata-neu-infinity-hdfc-bank-credit-card",
+      "verifiedAt": "2026-10-20"
+    },
+    "sbi-tata-neu-plus": {
+      "secured": false,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": 1,
+        "capRs": null,
+        "notes": "1% value back as NeuCoins on other spends, including UPI transactions."
+      },
+      "source": "https://www.sbicard.com/en/personal/credit-cards/tata-neu-plus-sbi-card.html",
+      "verifiedAt": "2026-10-20"
+    },
+    "sbi-tata-neu-infinity": {
+      "secured": false,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": 1.5,
+        "capRs": null,
+        "notes": "1.5% value back as NeuCoins on other spends, including UPI transactions (RuPay variant)."
+      },
+      "source": "https://www.sbicard.com/en/personal/credit-cards/tata-neu-infinity-sbi-card.html",
+      "verifiedAt": "2026-10-20"
+    },
+    "canara-rupay-platinum-secured": {
+      "secured": true,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "upi": null,
+      "source": "https://www.canarabank.bank.in/rupay-platinum-secured-credit-card",
+      "verifiedAt": "2026-10-20"
+    },
+    "canara-rupay-select-secured": {
+      "secured": true,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "upi": null,
+      "source": "https://www.canarabank.bank.in/rupay-select-secured-credit-card",
+      "verifiedAt": "2026-10-20"
+    },
+    "pnb-kiwi": {
+      "secured": false,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "upi": {
+        "earnsRewards": true,
+        "ratePct": 1.5,
+        "capRs": 500,
+        "scanAndPayOnly": true,
+        "onlineRatePct": 0.5,
+        "notes": "1.5% cashback as Kiwis on UPI scan and pay; 0.5% on online spends. Monthly cap is 1% of the credit limit; WalletWise assumes a ₹50,000 limit (₹500 a month)."
+      },
+      "source": "https://creditcard.pnb.bank.in/types18.html",
+      "verifiedAt": "2026-10-20"
+    },
+    "pnb-salary-rupay-platinum": {
+      "secured": false,
+      "minFdRs": null,
+      "noIncomeProof": null,
+      "upi": null,
+      "existingCustomersOnly": true,
+      "source": "https://creditcard.pnb.bank.in/types14.html",
+      "verifiedAt": "2026-10-20"
+    }
+  }
+}

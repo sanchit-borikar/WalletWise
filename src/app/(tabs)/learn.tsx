@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   StyleSheet, Text, View, Pressable, ScrollView, 
   useWindowDimensions, TextInput
@@ -29,8 +29,8 @@ const AnimatedCard = ({ children, style, onPress }: any) => {
   }));
   return (
     <AnimatedPressable
-      onPressIn={() => (scale.value = withSpring(0.97, { damping: 20, stiffness: 180 }))}
-      onPressOut={() => (scale.value = withSpring(1))}
+      onPressIn={() => scale.set(withSpring(0.97, { damping: 20, stiffness: 180 }))}
+      onPressOut={() => scale.set(withSpring(1))}
       onPress={onPress}
       style={[style, animatedStyle]}
     >
@@ -38,6 +38,12 @@ const AnimatedCard = ({ children, style, onPress }: any) => {
     </AnimatedPressable>
   );
 };
+
+const SAFETY_LINKS = [
+  { href: '/scam-check', title: 'Is this a scam?', sub: 'Fake “points expire” texts, APK files, OTP calls: check one and see what to do.' },
+  { href: '/rights', title: 'Your rights as a cardholder', sub: 'What RBI rules promise you, and a complaint letter you can copy.' },
+  { href: '/family', title: 'Family and add-on cards', sub: 'Share a card safely, and copy your wallet to another phone.' },
+] as const;
 
 // ==========================================
 // 3. EXPLORE TOPICS
@@ -219,15 +225,11 @@ const QUIZ_BANK = [
 
 const CardQuiz = () => {
   const [answered, setAnswered] = useState(false);
-  const [quizItem, setQuizItem] = useState(QUIZ_BANK[0]);
+  // A random question, picked once when the quiz first shows.
+  const [quizItem] = useState(() => QUIZ_BANK[Math.floor(Math.random() * QUIZ_BANK.length)]);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const ringScale = useSharedValue(0);
 
-  useEffect(() => {
-    // Pick a random quiz question on mount
-    const randomIdx = Math.floor(Math.random() * QUIZ_BANK.length);
-    setQuizItem(QUIZ_BANK[randomIdx]);
-  }, []);
   
   const handleAnswer = (idx: number) => {
     if (answered) return;
@@ -292,7 +294,7 @@ const InteractiveTools = () => {
 const MYTH_BANK = [
   {
     myth: '"Having multiple credit cards hurts your CIBIL score."',
-    fact: 'More cards increase your total credit limit, which lowers your utilization ratio, actually boosting your score.'
+    fact: 'Holding a few cards does not hurt your score by itself. What hurts is applying for many at once, missing a payment, or using most of your limit. Only add a card you need.'
   },
   {
     myth: '"Paying only the Minimum Amount Due protects your credit score without extra costs."',
@@ -310,13 +312,9 @@ const MYTH_BANK = [
 
 const MythVsFact = () => {
   const [flipped, setFlipped] = useState(false);
-  const [content, setContent] = useState(MYTH_BANK[0]);
+  const [content] = useState(() => MYTH_BANK[Math.floor(Math.random() * MYTH_BANK.length)]);
   const flipVal = useSharedValue(0);
 
-  useEffect(() => {
-    const randomIdx = Math.floor(Math.random() * MYTH_BANK.length);
-    setContent(MYTH_BANK[randomIdx]);
-  }, []);
 
   const frontStyle = useAnimatedStyle(() => ({
     transform: [{ rotateY: `${interpolate(flipVal.value, [0, 1], [0, 90])}deg` }],
@@ -331,7 +329,7 @@ const MythVsFact = () => {
   }));
 
   const handlePress = () => {
-    flipVal.value = withSpring(flipped ? 0 : 1, { damping: 15, stiffness: 120 });
+    flipVal.set(withSpring(flipped ? 0 : 1, { damping: 15, stiffness: 120 }));
     setFlipped(!flipped);
   };
 
@@ -451,9 +449,25 @@ export default function LearnScreen() {
           </AnimatedCard>
           <AnimatedCard style={[styles.continueCard, { marginTop: 12 }]} onPress={() => router.push('/find-card')}>
             <Text style={styles.continueTitle}>Which card is right for me?</Text>
-            <Text style={styles.continueSub}>Answer a few questions about your spending and get an honest pick from 280 Indian cards.</Text>
+            <Text style={styles.continueSub}>Answer a few questions about your spending and get an honest pick from {catalog.cards.length} Indian cards.</Text>
             <Text style={styles.continueLink}>Find My Card →</Text>
           </AnimatedCard>
+          <AnimatedCard style={[styles.continueCard, { marginTop: 12 }]} onPress={() => router.push('/build-credit')}>
+            <Text style={styles.continueTitle}>Build your CIBIL score</Text>
+            <Text style={styles.continueSub}>Six simple steps for a good credit score, whether you are getting your first card or already have one.</Text>
+            <Text style={styles.continueLink}>See the plan →</Text>
+          </AnimatedCard>
+        </View>
+
+        {/* Stay safe: rights, scams, family cards (src/app/rights.tsx, scam-check.tsx, family.tsx) */}
+        <View style={[styles.section, { paddingHorizontal: 24, gap: 12 }]}>
+          <Text style={[styles.sectionTitle, { marginBottom: 4 }]}>STAY SAFE</Text>
+          {SAFETY_LINKS.map((l) => (
+            <AnimatedCard key={l.href} style={styles.continueCard} onPress={() => router.push(l.href)}>
+              <Text style={styles.continueTitle}>{l.title}</Text>
+              <Text style={[styles.continueSub, { marginBottom: 0 }]}>{l.sub}</Text>
+            </AnimatedCard>
+          ))}
         </View>
 
         <View style={styles.section}>

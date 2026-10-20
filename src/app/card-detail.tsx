@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, View, Pressable, ScrollView, Dimensions } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View, Pressable, ScrollView, Dimensions, Platform } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { typography } from '../theme';
-import { useCardStore, CardData } from '../store/useCardStore';
+import { useCardStore, CardData, newHolding, toCardData } from '../store/useCardStore';
+import { BillCheckLink, FeeCheckBlock, RedemptionCheckBlock } from '../components/money/CardMoneyBlocks';
 import { CreditCardImage } from '../components/CreditCardImage';
 import { catalog, DATA_ATTRIBUTION } from '../data/catalog';
 import { CATEGORY_LABELS, cardChanges, planRedemption, redemptionRoutes, todayIso } from '../engine';
 import type { Category } from '../engine';
+import { parseBillDay } from '../engine/billing';
+import { BillDayPanel } from '../components/BillDayPanel';
+import { CLOSE_FREE_LINE } from '../constants/safety';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+/** Entering animations stay stuck at their first frame on web, so web shows content without them. */
+const enter = <T,>(animation: T): T | undefined => (Platform.OS === 'web' ? undefined : animation);
 
 const TABS = ['Earn', 'Transfers', 'Redeem', 'Benefits', 'Updates'] as const;
 type TabKey = (typeof TABS)[number];
@@ -75,10 +82,10 @@ function getUpdatesContent(card: CardData) {
 // Tab Content Components
 // ─────────────────────────────────────────────
 
-function EarnTab({ card }: { card: CardData }) {
+function EarnTab({ card, inWallet }: { card: CardData; inWallet: boolean }) {
   const data = getEarnContent(card);
   return (
-    <Animated.View entering={FadeInDown.duration(350).springify()}>
+    <Animated.View entering={enter(FadeInDown.duration(350).springify())}>
       {/* Rate Card */}
       <View style={s.infoCard}>
         <Text style={s.infoCardLabel}>{data.rateLabel}</Text>
@@ -126,6 +133,8 @@ function EarnTab({ card }: { card: CardData }) {
           <Text style={s.feeValue}>{card.renewalFee}</Text>
         </View>
       </View>
+      {inWallet && <FeeCheckBlock catalogId={card.catalogId} />}
+      <BillCheckLink catalogId={card.catalogId} />
     </Animated.View>
   );
 }
@@ -133,7 +142,7 @@ function EarnTab({ card }: { card: CardData }) {
 function TransfersTab({ card }: { card: CardData }) {
   const data = getTransferContent(card);
   return (
-    <Animated.View entering={FadeInDown.duration(350).springify()}>
+    <Animated.View entering={enter(FadeInDown.duration(350).springify())}>
       <View style={s.infoCard}>
         <Text style={s.infoCardLabel}>FOREX MARKUP</Text>
         <Text style={s.infoCardBigValue}>{data.forex}</Text>
@@ -158,7 +167,7 @@ function RedeemTab({ card }: { card: CardData }) {
   const data = catalog.byId.get(card.catalogId);
   const plan = data && card.points > 0 ? planRedemption(catalog, data, card.points, { experience }) : null;
   return (
-    <Animated.View entering={FadeInDown.duration(350).springify()}>
+    <Animated.View entering={enter(FadeInDown.duration(350).springify())}>
       {plan && (
         <View style={[s.infoCard, { marginBottom: 16 }]}>
           <Text style={s.infoCardLabel}>BEST WAY TO USE {card.points.toLocaleString('en-IN')} POINTS</Text>
@@ -184,7 +193,7 @@ function RedeemTab({ card }: { card: CardData }) {
         </View>
         <Text style={s.infoCardLabel}>REWARD VALUE</Text>
         <Text style={[s.infoCardBigValue, { color: '#F5D06F' }]}>
-          ₹{card.highValue.toLocaleString()}
+          ₹{card.highValue.toLocaleString('en-IN')}
         </Text>
         <Text style={s.infoCardDesc}>Best estimated redemption value</Text>
       </View>
@@ -201,17 +210,18 @@ function RedeemTab({ card }: { card: CardData }) {
         <View style={s.feeRow}>
           <Text style={s.feeLabel}>Annual Potential</Text>
           <Text style={[s.feeValue, { color: '#F5D06F' }]}>
-            ≈ ₹{card.intelligence.potentialAnnualValue.toLocaleString()}
+            ≈ ₹{card.intelligence.potentialAnnualValue.toLocaleString('en-IN')}
           </Text>
         </View>
       </View>
+      <RedemptionCheckBlock catalogId={card.catalogId} />
     </Animated.View>
   );
 }
 
 function BenefitsTab({ card }: { card: CardData }) {
   return (
-    <Animated.View entering={FadeInDown.duration(350).springify()}>
+    <Animated.View entering={enter(FadeInDown.duration(350).springify())}>
       {/* Lounge */}
       <View style={s.highlightCard}>
         <Text style={s.highlightIcon}>✈︎</Text>
@@ -249,7 +259,7 @@ function BenefitsTab({ card }: { card: CardData }) {
 function UpdatesTab({ card }: { card: CardData }) {
   const offers = getUpdatesContent(card);
   return (
-    <Animated.View entering={FadeInDown.duration(350).springify()}>
+    <Animated.View entering={enter(FadeInDown.duration(350).springify())}>
       {offers.length === 0 ? (
         <View style={s.infoCard}>
           <Text style={s.infoCardDesc}>
@@ -267,6 +277,7 @@ function UpdatesTab({ card }: { card: CardData }) {
                 </View>
               </View>
               <Text style={s.offerDesc}>{offer.desc}</Text>
+              {offer.tag === 'Cut' && <Text style={[s.offerDesc, { marginTop: 8, color: '#BDBDBD' }]}>{CLOSE_FREE_LINE}</Text>}
             </View>
           ))}
         </View>
@@ -281,17 +292,24 @@ function UpdatesTab({ card }: { card: CardData }) {
 
 export default function CardDetailScreen() {
   const router = useRouter();
-  const { id, tab } = useLocalSearchParams<{ id?: string; tab?: TabKey }>();
+  // `catalogId` opens any catalog card (Browse cards, Aura); it shows the wallet copy if the user holds it.
+  const { id, tab, catalogId } = useLocalSearchParams<{ id?: string; tab?: TabKey; catalogId?: string }>();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<TabKey>(tab && TABS.includes(tab) ? tab : 'Earn');
   const [editing, setEditing] = useState(false);
   const [pointsText, setPointsText] = useState('');
   const [lastFourText, setLastFourText] = useState('');
+  const [statementDayText, setStatementDayText] = useState('');
+  const [dueDayText, setDueDayText] = useState('');
 
   const cards = useCardStore((state) => state.cards);
   const updateHolding = useCardStore((state) => state.updateHolding);
   const removeHolding = useCardStore((state) => state.removeHolding);
-  const card = cards.find(c => c.id === id) || cards[0];
+  const addCard = useCardStore((state) => state.addCard);
+  const held = cards.find((c) => c.id === id) ?? (catalogId ? cards.find((c) => c.catalogId === catalogId) : undefined);
+  const preview = !held && catalogId && catalog.byId.has(catalogId) ? toCardData(newHolding(catalogId, '', 0)) : null;
+  const card = held ?? preview ?? (catalogId ? undefined : cards[0]);
+  const holding = useCardStore((state) => state.holdings.find((h) => h.id === card?.id));
 
   if (!card) {
     return (
@@ -307,10 +325,12 @@ export default function CardDetailScreen() {
   const startEdit = () => {
     setPointsText(String(card.points));
     setLastFourText(card.lastFour);
+    setStatementDayText(holding?.statementDay ? String(holding.statementDay) : '');
+    setDueDayText(holding?.dueDay ? String(holding.dueDay) : '');
     setEditing(true);
   };
   const saveEdit = () => {
-    updateHolding(card.id, { points: Number(pointsText.replace(/[^0-9]/g, '')) || 0, lastFour: lastFourText.replace(/[^0-9]/g, '').slice(-4) });
+    updateHolding(card.id, { points: Number(pointsText.replace(/[^0-9]/g, '')) || 0, lastFour: lastFourText.replace(/[^0-9]/g, '').slice(-4), statementDay: parseBillDay(statementDayText), dueDay: parseBillDay(dueDayText) });
     setEditing(false);
   };
   const confirmRemove = () => {
@@ -328,6 +348,11 @@ export default function CardDetailScreen() {
           <Text style={s.backButtonText}>←</Text>
           <Text style={s.backLabel}>My Cards</Text>
         </Pressable>
+        {preview ? (
+          <Pressable onPress={() => addCard(preview.catalogId, '', 0)} accessibilityRole="button">
+            <Text style={s.backLabel}>I have it, add</Text>
+          </Pressable>
+        ) : (
         <View style={{ flexDirection: 'row', gap: 16 }}>
           <Pressable onPress={editing ? saveEdit : startEdit}>
             <Text style={s.backLabel}>{editing ? 'Save' : 'Edit'}</Text>
@@ -336,6 +361,7 @@ export default function CardDetailScreen() {
             <Text style={[s.backLabel, { color: '#C9412E' }]}>Remove</Text>
           </Pressable>
         </View>
+        )}
       </View>
 
       <ScrollView
@@ -343,39 +369,45 @@ export default function CardDetailScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Hero Card Art */}
-        <Animated.View entering={FadeIn.duration(400)} style={s.heroWrapper}>
+        <Animated.View entering={enter(FadeIn.duration(400))} style={s.heroWrapper}>
           <CreditCardImage card={card} />
         </Animated.View>
 
         {/* Card Identity */}
-        <Animated.View entering={FadeIn.delay(150).duration(400)} style={s.titleSection}>
+        <Animated.View entering={enter(FadeIn.delay(150).duration(400))} style={s.titleSection}>
           <Text style={s.bankName}>{card.bankName}</Text>
           <Text style={s.cardName}>{card.cardName}</Text>
         </Animated.View>
 
         {/* Points & Estimated Value */}
-        <Animated.View entering={FadeInDown.delay(250).duration(400)} style={s.statsPanelWrapper}>
+        {!preview && (
+        <Animated.View entering={enter(FadeInDown.delay(250).duration(400))} style={s.statsPanelWrapper}>
           <View style={s.statsPanel}>
             <Text style={s.statsLabel}>AVAILABLE {card.currencyName.toUpperCase()}</Text>
             {editing ? (
               <View style={{ gap: 10, marginVertical: 8 }}>
                 <TextInput value={pointsText} onChangeText={setPointsText} keyboardType="number-pad" style={s.editInput} placeholder="Points balance" placeholderTextColor="#555" keyboardAppearance="dark" />
                 <TextInput value={lastFourText} onChangeText={setLastFourText} keyboardType="number-pad" maxLength={4} style={s.editInput} placeholder="Last 4 digits" placeholderTextColor="#555" keyboardAppearance="dark" />
-                <Text style={s.statsValue}>Copy the balance from your latest statement or bank app.</Text>
+                <TextInput value={statementDayText} onChangeText={setStatementDayText} keyboardType="number-pad" maxLength={2} style={s.editInput} placeholder="Statement day (1–31, optional)" placeholderTextColor="#555" keyboardAppearance="dark" />
+                <TextInput value={dueDayText} onChangeText={setDueDayText} keyboardType="number-pad" maxLength={2} style={s.editInput} placeholder="Due day (1–31, for reminders)" placeholderTextColor="#555" keyboardAppearance="dark" />
+                <Text style={s.statsValue}>Copy the balance and dates from your latest statement or bank app.</Text>
               </View>
             ) : (
-              <Text style={s.pointsNumerals}>{card.points.toLocaleString()}</Text>
+              <Text style={s.pointsNumerals}>{card.points.toLocaleString('en-IN')}</Text>
             )}
             <View style={s.statsValueRow}>
               <Text style={s.statsValue}>
-                Estimated Value  ₹{card.lowValue.toLocaleString()} – ₹{card.highValue.toLocaleString()}
+                Estimated Value  ₹{card.lowValue.toLocaleString('en-IN')}{card.highValue > card.lowValue ? ` – ₹${card.highValue.toLocaleString('en-IN')}` : ''}
               </Text>
             </View>
           </View>
         </Animated.View>
+        )}
+
+        {holding && <BillDayPanel holding={holding} onEdit={startEdit} />}
 
         {/* Tab Bar */}
-        <Animated.View entering={FadeIn.delay(350).duration(400)}>
+        <Animated.View entering={enter(FadeIn.delay(350).duration(400))}>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -408,7 +440,7 @@ export default function CardDetailScreen() {
 
           {/* Tab Content */}
           <View style={s.tabBody}>
-            {activeTab === 'Earn' && <EarnTab card={card} />}
+            {activeTab === 'Earn' && <EarnTab card={card} inWallet={!preview} />}
             {activeTab === 'Transfers' && <TransfersTab card={card} />}
             {activeTab === 'Redeem' && <RedeemTab card={card} />}
             {activeTab === 'Benefits' && <BenefitsTab card={card} />}

@@ -13,12 +13,12 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { ScrollView, GestureDetector, Gesture } from 'react-native-gesture-handler';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { typography, colors } from '../../theme';
 import { useCardStore, CardData } from '../../store/useCardStore';
 import { CreditCardImage } from '../../components/CreditCardImage';
+import { WalletMoneyLinks } from '../../components/money/WalletMoneyLinks';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -44,7 +44,7 @@ function ExpiryBanner({ cards }: { cards: CardData[] }) {
         <Text style={[styles.infoLabel, { color: colors.accent.danger }]}>POINTS EXPIRING SOON</Text>
         <View style={styles.expiryStats}>
           <View style={styles.expiryStat}>
-            <Text style={styles.infoBigNum}>{expiringCard.points.toLocaleString()}</Text>
+            <Text style={styles.infoBigNum}>{expiringCard.points.toLocaleString('en-IN')}</Text>
             <Text style={styles.infoUnit}>pts</Text>
           </View>
           <View style={styles.expiryDivider} />
@@ -373,6 +373,7 @@ export default function WalletScreen() {
         <Text style={styles.sectionTitle}>Your points</Text>
         <ExpiryBanner cards={cards} />
         <PointsValueCard totalMin={totalMin} totalMax={totalMax} />
+        <WalletMoneyLinks />
 
       </ScrollView>
     </View>

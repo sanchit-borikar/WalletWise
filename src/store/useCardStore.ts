@@ -11,6 +11,7 @@ import {
   walletValue,
 } from '../engine';
 import type { Card, UserProfile } from '../engine';
+import type { Spend } from '../engine/budget';
 import { shortCardName } from '../components/CardFace';
 
 export type CardData = {
@@ -52,6 +53,21 @@ export type Holding = {
   lastFour: string;
   points: number;
   expiryDays?: number;
+  /** Day of the month the statement is made (1 to 31). Optional, set by the user. */
+  statementDay?: number;
+  /** Day of the month the bill is due (1 to 31). Used for bill-day reminders. */
+  dueDay?: number;
+};
+
+/** A savings goal paid for with points: a trip, a gadget, Diwali gifts, a bill credit. */
+export type Goal = {
+  id: string;
+  name: string;
+  /** What the goal costs in rupees. */
+  targetRs: number;
+  /** Holding ids whose points count. Empty means every card in the wallet. */
+  holdingIds: string[];
+  createdAt: string;
 };
 
 /** Typical monthly spend used for "potential annual value" until the user enters their own. */
@@ -129,9 +145,11 @@ export function toCardData(h: Holding): CardData {
       card.rateMinPct != null && card.rateMaxPct != null && card.rateMaxPct > card.rateMinPct
         ? `${card.rateMinPct}% to ${card.rateMaxPct}% value back`
         : `${card.rateMinPct ?? card.rewards[0]?.ratePct ?? 0}% value back`,
-    translatorExample: bestRoute
-      ? `${inr(value.low)} on the default route, or about ${inr(h.points * bestRoute.rupeesPerPoint)} via ${bestRoute.label}`
-      : `${inr(value.low)} on the default route`,
+    // A transfer is mentioned only when it beats the default route.
+    translatorExample:
+      bestRoute && h.points * bestRoute.rupeesPerPoint > value.low
+        ? `${inr(value.low)} on the default route, or about ${inr(h.points * bestRoute.rupeesPerPoint)} via ${bestRoute.label}`
+        : `${inr(value.low)} on the default route`,
     benefits: card.perks.filter((p) => p !== 'MILESTONE_BONUS').map((p) => PERK_LABELS[p] ?? p),
     milestones: card.perks.includes('MILESTONE_BONUS') ? ['Milestone bonuses on yearly spend (check current issuer terms)'] : [],
     rewardCategories: [...new Set(card.rewards.filter((r) => r.category !== 'DEFAULT').map((r) => CATEGORY_LABELS[r.category]))],
@@ -154,7 +172,11 @@ const DEMO_HOLDINGS: Holding[] = [
   { id: '5', catalogId: 'hdfc-marriott-bonvoy', bankName: 'HDFC BANK', cardName: 'Marriott Bonvoy', lastFour: '9012', points: 18000 },
 ];
 
+/** Random id for this install. Sent to the Aura server only for rate limiting. */
+const newUserId = () => `u-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+
 interface CardStore {
+  userId: string;
   holdings: Holding[];
   cards: CardData[];
   profile: UserProfile;
@@ -163,10 +185,39 @@ interface CardStore {
   /** Set once the user has answered the Find My Card questions. */
   profileSaved: boolean;
   setProfile: (profile: UserProfile) => void;
-  addCard: (catalogId: string, lastFour: string, points: number) => void;
-  updateHolding: (id: string, changes: Partial<Pick<Holding, 'lastFour' | 'points' | 'expiryDays'>>) => void;
+  addCard: (catalogId: string, lastFour: string, points: number, billDays?: Pick<Holding, 'statementDay' | 'dueDay'>) => void;
+  updateHolding: (
+    id: string,
+    changes: Partial<Pick<Holding, 'lastFour' | 'points' | 'expiryDays' | 'statementDay' | 'dueDay'>>,
+  ) => void;
   removeHolding: (id: string) => void;
   clearDemo: () => void;
+  /** Aura reply language. Missing means English. */
+  auraLanguage?: 'en' | 'hi';
+  /** Aura gives one number and one action in short sentences. */
+  auraSimple?: boolean;
+  /** Plain surfaces, no autoplay or heavy animation, list before map. */
+  liteMode?: boolean;
+  /** Set once the intro video has played (or was skipped). */
+  introSeen?: boolean;
+  setAuraLanguage: (language: 'en' | 'hi') => void;
+  setAuraSimple: (simple: boolean) => void;
+  setLiteMode: (lite: boolean) => void;
+  setIntroSeen: () => void;
+  /** Points goals (optional slice, added for the Goals screen). */
+  goals?: Goal[];
+  addGoal: (goal: Omit<Goal, 'id' | 'createdAt'>) => void;
+  updateGoal: (id: string, changes: Partial<Omit<Goal, 'id' | 'createdAt'>>) => void;
+  removeGoal: (id: string) => void;
+  /** Bill-day reminders (local notifications) are on. Off until the user turns them on. */
+  billRemindersOn?: boolean;
+  setBillRemindersOn: (on: boolean) => void;
+  /** Spends logged by hand on the Spends screen. */
+  spends: Spend[];
+  addSpend: (spend: Omit<Spend, 'id'>) => void;
+  removeSpend: (id: string) => void;
+  /** Adds cards from a "Share my wallet" code. The first real cards replace the demo wallet. */
+  importCards: (cards: { catalogId: string; lastFour: string; points: number }[]) => void;
 }
 
 const derive = (holdings: Holding[]) => holdings.flatMap((h) => (catalog.byId.has(h.catalogId) ? [toCardData(h)] : []));
@@ -188,17 +239,18 @@ export function newHolding(catalogId: string, lastFour: string, points: number):
 export const useCardStore = create<CardStore>()(
   persist(
     (set) => ({
+      userId: newUserId(),
       holdings: DEMO_HOLDINGS,
       cards: derive(DEMO_HOLDINGS),
       profile: DEFAULT_PROFILE,
       isDemo: true,
       profileSaved: false,
       setProfile: (profile) => set({ profile, profileSaved: true }),
-      addCard: (catalogId, lastFour, points) =>
+      addCard: (catalogId, lastFour, points, billDays) =>
         set((s) => {
           // The first real card replaces the demo wallet.
           const base = s.isDemo ? [] : s.holdings;
-          const holdings = [...base, newHolding(catalogId, lastFour, points)];
+          const holdings = [...base, { ...newHolding(catalogId, lastFour, points), ...billDays }];
           return { holdings, cards: derive(holdings), isDemo: false };
         }),
       updateHolding: (id, changes) =>
@@ -212,16 +264,58 @@ export const useCardStore = create<CardStore>()(
           return { holdings, cards: derive(holdings) };
         }),
       clearDemo: () => set({ holdings: [], cards: [], isDemo: false }),
+      setAuraLanguage: (auraLanguage) => set({ auraLanguage }),
+      setAuraSimple: (auraSimple) => set({ auraSimple }),
+      setLiteMode: (liteMode) => set({ liteMode }),
+      setIntroSeen: () => set({ introSeen: true }),
+      goals: [],
+      addGoal: (goal) =>
+        set((s) => ({ goals: [...(s.goals ?? []), { ...goal, id: `goal-${Date.now()}`, createdAt: new Date().toISOString().slice(0, 10) }] })),
+      updateGoal: (id, changes) => set((s) => ({ goals: (s.goals ?? []).map((g) => (g.id === id ? { ...g, ...changes } : g)) })),
+      removeGoal: (id) => set((s) => ({ goals: (s.goals ?? []).filter((g) => g.id !== id) })),
+      billRemindersOn: false,
+      setBillRemindersOn: (on) => set({ billRemindersOn: on }),
+      spends: [],
+      addSpend: (spend) =>
+        set((s) => ({ spends: [...s.spends, { ...spend, id: `sp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}` }] })),
+      removeSpend: (id) => set((s) => ({ spends: s.spends.filter((x) => x.id !== id) })),
+      importCards: (incoming) =>
+        set((s) => {
+          const base = s.isDemo ? [] : s.holdings;
+          // Index suffix keeps ids unique when one code holds the same card twice.
+          const added = incoming
+            .filter((c) => catalog.byId.has(c.catalogId))
+            .map((c, i) => {
+              const h = newHolding(c.catalogId, c.lastFour, c.points);
+              return { ...h, id: `${h.id}-${i}` };
+            });
+          if (added.length === 0) return {};
+          const holdings = [...base, ...added];
+          return { holdings, cards: derive(holdings), isDemo: false };
+        }),
     }),
     {
       name: 'walletwise-wallet',
       storage: createJSONStorage(() => AsyncStorage),
       // Card facts always come from the bundled catalog, so only the user's own data is saved.
-      partialize: (s) => ({ holdings: s.holdings, profile: s.profile, isDemo: s.isDemo, profileSaved: s.profileSaved }),
+      partialize: (s) => ({
+        userId: s.userId,
+        holdings: s.holdings,
+        profile: s.profile,
+        isDemo: s.isDemo,
+        profileSaved: s.profileSaved,
+        goals: s.goals,
+        auraLanguage: s.auraLanguage,
+        auraSimple: s.auraSimple,
+        liteMode: s.liteMode,
+        introSeen: s.introSeen,
+        billRemindersOn: s.billRemindersOn,
+        spends: s.spends,
+      }),
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<CardStore>;
         const holdings = saved.holdings ?? current.holdings;
-        return { ...current, ...saved, holdings, cards: derive(holdings) };
+        return { ...current, ...saved, holdings, cards: derive(holdings), spends: saved.spends ?? current.spends };
       },
     },
   ),

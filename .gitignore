@@ -42,3 +42,12 @@ example
 # generated native folders
 /ios
 /android
+
+# Aura server
+server/node_modules/
+server/.chroma/
+server/.cache/
+server/.venv/
+
+# Vercel (build output and CLI project link)
+.vercel/

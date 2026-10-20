@@ -5,6 +5,7 @@
 import { CATEGORY_LABELS, EXCLUSION_PRONE, merchantMatches } from './categories';
 import { devaluationRisk, todayIso } from './devaluation';
 import { bestRupeesPerPoint } from './redemption';
+import { verifiedUpiEarning } from './upi';
 import type {
   CapUsage,
   Card,
@@ -170,8 +171,23 @@ export function scorePurchase(
     warnings.push(`This rate needs ${primary.row.merchantsText}. Buy through the bank's portal first.`);
   }
 
+  // A card whose UPI terms were checked on the bank's page earns the bank's stated UPI rate instead.
+  const upiEarning = p.channel === 'UPI' ? verifiedUpiEarning(card, p.category, !!p.online) : null;
+  if (upiEarning) {
+    const capLeft = upiEarning.capRs != null ? Math.max(0, upiEarning.capRs - (usage[upiEarning.capKey] ?? 0)) : Infinity;
+    const uncapped = (p.amount * upiEarning.ratePct) / 100;
+    safeValue = Math.min(uncapped, capLeft);
+    bestValue = safeValue;
+    pointsEarned = safeValue;
+    capUse = upiEarning.capRs != null && safeValue > 0 ? { [upiEarning.capKey]: safeValue } : {};
+    if (uncapped > capLeft) {
+      warnings.push(capLeft === 0 ? 'Monthly cap on UPI rewards already reached.' : `Only ${rupees(capLeft)} of UPI reward is left before the monthly cap.`);
+    }
+  }
+
   // RuPay credit on UPI: small payments carry no interchange, so issuers may pay nothing (NPCI rewards-parity rule exception).
-  if (p.channel === 'UPI' && p.amount <= UPI_SMALL_TICKET) {
+  // Not applied when the bank states its own UPI rate.
+  if (p.channel === 'UPI' && p.amount <= UPI_SMALL_TICKET && !upiEarning) {
     bestValue = safeValue;
     safeValue = 0;
     pointsEarned = 0;
@@ -187,7 +203,7 @@ export function scorePurchase(
   }
 
   const netValue = safeValue - forexCost;
-  const isPoints = primary ? primary.row.type !== 'CASHBACK' : false;
+  const isPoints = !upiEarning && primary ? primary.row.type !== 'CASHBACK' : false;
   const { risk, upcomingCuts } = devaluationRisk(catalog, card.id, today);
   const score = netValue >= 0 && isPoints ? netValue * (1 - risk) : netValue;
   if (upcomingCuts.length > 0) {
@@ -196,7 +212,12 @@ export function scorePurchase(
 
   const effectiveRatePct = p.amount > 0 ? (safeValue / p.amount) * 100 : 0;
   let reason: string;
-  if (!primary) {
+  if (upiEarning) {
+    reason =
+      upiEarning.ratePct > 0
+        ? `${formatPct(effectiveRatePct)} back (${upiEarning.label}): ${rupees(safeValue)} on ${rupees(p.amount)}.`
+        : 'The bank pays no reward on UPI payments with this card.';
+  } else if (!primary) {
     reason = 'This card has no reward data.';
   } else if (safeValue === 0 && bestValue > 0) {
     reason = `No reward counted on ${rupees(p.amount)}. It may earn up to ${rupees(bestValue)} if this spend is not excluded.`;
@@ -217,7 +238,7 @@ export function scorePurchase(
     score,
     effectiveRatePct: round2(effectiveRatePct),
     pointsEarned: Math.round(pointsEarned),
-    rewardUnit: unitFor(primary?.row ?? null),
+    rewardUnit: upiEarning ? 'CASHBACK' : unitFor(primary?.row ?? null),
     row: primary?.row ?? null,
     rowIndex: primary?.rowIndex ?? -1,
     usesPortal: !!primary?.row.portal,

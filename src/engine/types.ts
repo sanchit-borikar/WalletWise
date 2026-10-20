@@ -75,6 +75,42 @@ export type Card = {
   rewards: RewardRow[];
   perks: string[];
   lounge: LoungeSummary | null;
+  /** Hand-checked first-card and UPI facts (datasets/overrides/inclusion.json). Absent means not checked. */
+  inclusion?: Inclusion;
+  /** Issuer page for a card added by hand (datasets/overrides/extra-cards.json). */
+  source?: string;
+  /** Date a hand-added card was checked on the issuer's page. */
+  verifiedAt?: string;
+};
+
+/** What the issuer says about paying with this card on UPI. */
+export type UpiRewards = {
+  earnsRewards: boolean;
+  /** Reward rate on UPI as a % of spend, if the issuer states one. */
+  ratePct: number | null;
+  /** Monthly cap on the UPI reward, in rupees, if the issuer states one. */
+  capRs?: number | null;
+  /** The UPI rate is only for scanning a shop's QR code (scan and pay). */
+  scanAndPayOnly?: boolean;
+  /** Rate for online UPI payments when the scan-and-pay rate does not apply. */
+  onlineRatePct?: number | null;
+  notes: string | null;
+};
+
+/** Facts for people getting a first card, each checked on the issuer's own page. */
+export type Inclusion = {
+  /** Issued against a fixed deposit (FD-backed). */
+  secured: boolean;
+  /** Smallest FD the issuer accepts, in rupees. */
+  minFdRs: number | null;
+  /** True when the issuer says no income proof is needed; null when it does not say. */
+  noIncomeProof: boolean | null;
+  /** null when UPI earning was not checked. */
+  upi: UpiRewards | null;
+  /** The bank only gives this card to people who already hold one of its cards or accounts. */
+  existingCustomersOnly?: boolean;
+  source: string;
+  verifiedAt: string;
 };
 
 export type ProgrammeNode = { id: string; kind: 'BANK' | 'AIRLINE' | 'HOTEL'; name: string; verifiedAt: string | null };
@@ -189,4 +225,10 @@ export type UserProfile = {
   loungeVisitsPerYear?: number;
   /** Prefer cashback-style simplicity (beginner default). */
   preferCashback?: boolean;
+  /** False when the user has never had a loan or credit card (no CIBIL history). Unknown if absent. */
+  hasCreditHistory?: boolean;
+  /** False when the user cannot show a salary slip or ITR (students, homemakers, many gig workers). */
+  incomeProof?: boolean;
+  /** Share of monthly spend (0 to 1) the user pays by UPI rather than by card. Default 0. */
+  upiShare?: number;
 };

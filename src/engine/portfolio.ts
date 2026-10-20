@@ -4,7 +4,8 @@
  */
 import { CATEGORY_LABELS } from './categories';
 import { devaluationRisk, todayIso } from './devaluation';
-import { earnSegments, GST } from './purchase';
+import { earnSegments, GST, UPI_SMALL_TICKET } from './purchase';
+import { verifiedUpiEarning } from './upi';
 import type { CapUsage, Card, Catalog, Category, Experience, Purchase, UserProfile } from './types';
 
 /** Annual "hassle" cost per extra card so the app does not push a card that adds little. */
@@ -18,7 +19,36 @@ const FUEL_WAIVER_CAP_MONTH = 250;
 /** Fee and safety thresholds for users who do not always pay the full bill. */
 const SAFE_PATH_MAX_FEE = 500;
 
-export type CategoryAllocation = { category: Category; cardId: string; spend: number; reward: number; rowText: string };
+export type CategoryAllocation = {
+  category: Category;
+  cardId: string;
+  spend: number;
+  reward: number;
+  rowText: string;
+  /** How this slice of spend is paid. Absent means by card. */
+  channel?: 'CARD' | 'UPI';
+};
+
+/**
+ * How a card earns on UPI:
+ * - NOT_ON_UPI: only RuPay credit cards can be linked to UPI.
+ * - VERIFIED: the issuer's page gives a UPI rate, or says UPI earns nothing (card.inclusion.upi).
+ * - SAME_AS_CARD: the issuer's page says UPI earns at the card's normal rates.
+ * - ASSUMED: a RuPay card whose UPI terms were not checked; its normal rates are used.
+ */
+export type UpiRule = 'NOT_ON_UPI' | 'VERIFIED' | 'SAME_AS_CARD' | 'ASSUMED';
+
+export function upiRule(card: Card): UpiRule {
+  if (card.network !== 'RUPAY') return 'NOT_ON_UPI';
+  const upi = card.inclusion?.upi;
+  if (!upi) return 'ASSUMED';
+  return upi.earnsRewards && upi.ratePct == null ? 'SAME_AS_CARD' : 'VERIFIED';
+}
+
+/** UPI cannot pay in a foreign currency, so international spend always goes on a card. */
+const UPI_EXCLUDED: ReadonlySet<Category> = new Set(['INTERNATIONAL']);
+
+const clampShare = (n: number | undefined) => (n == null || !Number.isFinite(n) ? 0 : Math.min(1, Math.max(0, n)));
 
 export type CardYear = {
   cardId: string;
@@ -74,40 +104,72 @@ export function walletValue(
   const rewardByCard = new Map<string, number>();
   const fuelByCard = new Map<string, number>();
 
-  const entries = (Object.entries(profile.monthlySpend) as [Category, number][])
-    .filter(([, v]) => v > 0)
-    .sort((a, b) => b[1] - a[1]);
+  // Spend paid by UPI can only go on RuPay cards, so each category is split by channel.
+  const upiShare = clampShare(profile.upiShare);
+  const entries: [Category, number, 'CARD' | 'UPI'][] = [];
+  for (const [category, monthly] of Object.entries(profile.monthlySpend) as [Category, number][]) {
+    if (!(monthly > 0)) continue;
+    const upi = UPI_EXCLUDED.has(category) ? 0 : monthly * upiShare;
+    if (monthly - upi > 0) entries.push([category, monthly - upi, 'CARD']);
+    if (upi > 0) entries.push([category, upi, 'UPI']);
+  }
+  entries.sort((a, b) => b[1] - a[1]);
 
-  for (const [category, monthly] of entries) {
+  type Pick = { card: Card; rate: number; capacity: number; capKey: string | null; ratePct: number; rowText: string };
+  // Earning on UPI for a card whose UPI terms were checked: the bank's UPI rate, with its own monthly cap.
+  // 'CARD_RATES' means the bank's UPI rate does not cover this spend, so the card's normal rates apply.
+  const verifiedUpiPick = (card: Card, category: Category, online: boolean): Pick | null | 'CARD_RATES' => {
+    const earning = verifiedUpiEarning(card, category, online);
+    if (!earning) return 'CARD_RATES';
+    const { ratePct, capRs, label } = earning;
+    const capLeft = capRs != null ? Math.max(0, capRs - (usage[earning.capKey] ?? 0)) : Infinity;
+    const capacity = capLeft === Infinity || ratePct === 0 ? Infinity : (capLeft * 100) / ratePct;
+    if (capacity <= 0) return null;
+    return { card, rate: ratePct, capacity, capKey: capRs != null ? earning.capKey : null, ratePct, rowText: label };
+  };
+
+  for (const [category, monthly, channel] of entries) {
     let remaining = monthly;
     for (let guard = 0; remaining > 0.5 && guard < 12; guard++) {
       const p = purchaseFor(category, remaining, experience);
-      let pick: { card: Card; rate: number; capacity: number; rowIndex: number; capRs: number | null; ratePct: number; rowText: string } | null = null;
+      let pick: Pick | null = null;
       for (const card of cards) {
-        // Spend in a category the card may exclude is never counted in yearly value.
-        const seg = earnSegments(catalog, card, p, usage, experience).find((s) => s.capacitySpend > 0 && !s.excluded);
-        if (!seg) continue;
-        const rate = useBest ? seg.bestRatePct : seg.ratePct;
-        if (!pick || rate > pick.rate) {
-          pick = {
-            card,
-            rate,
-            capacity: seg.capacitySpend,
-            rowIndex: seg.rowIndex,
-            capRs: seg.row.capRs,
-            ratePct: seg.ratePct,
-            rowText: seg.row.merchantsText ?? (seg.row.category === 'DEFAULT' ? 'base rate' : CATEGORY_LABELS[seg.row.category]),
-          };
+        let candidate: Pick | null;
+        const rule = channel === 'UPI' ? upiRule(card) : null;
+        if (rule === 'NOT_ON_UPI') continue;
+        const upiPick = rule === 'VERIFIED' ? verifiedUpiPick(card, category, !!p.online) : 'CARD_RATES';
+        if (upiPick !== 'CARD_RATES') {
+          candidate = upiPick;
+        } else {
+          // Spend in a category the card may exclude is never counted in yearly value.
+          const seg = earnSegments(catalog, card, p, usage, experience).find((s) => s.capacitySpend > 0 && !s.excluded);
+          candidate = seg
+            ? {
+                card,
+                rate: useBest ? seg.bestRatePct : seg.ratePct,
+                capacity: seg.capacitySpend,
+                capKey: seg.row.capRs != null ? `${card.id}:${seg.rowIndex}` : null,
+                ratePct: seg.ratePct,
+                rowText: seg.row.merchantsText ?? (seg.row.category === 'DEFAULT' ? 'base rate' : CATEGORY_LABELS[seg.row.category]),
+              }
+            : null;
         }
+        if (candidate && (!pick || candidate.rate > pick.rate)) pick = candidate;
       }
       if (!pick) break;
       const spend = Math.min(remaining, pick.capacity);
       const reward = (spend * pick.rate) / 100;
-      if (pick.capRs != null) {
-        const key = `${pick.card.id}:${pick.rowIndex}`;
-        usage[key] = (usage[key] ?? 0) + (spend * pick.ratePct) / 100;
+      if (pick.capKey != null) {
+        usage[pick.capKey] = (usage[pick.capKey] ?? 0) + (spend * pick.ratePct) / 100;
       }
-      allocations.push({ category, cardId: pick.card.id, spend, reward, rowText: pick.rowText });
+      allocations.push({
+        category,
+        cardId: pick.card.id,
+        spend,
+        reward,
+        rowText: channel === 'UPI' && !pick.rowText.includes('UPI') ? `${pick.rowText}, paid by UPI` : pick.rowText,
+        ...(channel === 'UPI' ? { channel } : {}),
+      });
       spendByCard.set(pick.card.id, (spendByCard.get(pick.card.id) ?? 0) + spend);
       rewardByCard.set(pick.card.id, (rewardByCard.get(pick.card.id) ?? 0) + reward);
       if (category === 'FUEL') fuelByCard.set(pick.card.id, (fuelByCard.get(pick.card.id) ?? 0) + spend);
@@ -177,9 +239,12 @@ function passesSafetyGate(card: Card): boolean {
   return card.lifetimeFree || (card.annualFee ?? Infinity) <= SAFE_PATH_MAX_FEE;
 }
 
+/** Monthly interest assumed when a card does not publish one (typical Indian card rate, about 45% a year). */
+export const DEFAULT_APR_MONTHLY_PCT = 3.75;
+
 /** Interest on a revolving balance for one month, to show in rupees why rewards do not cover it. */
 export function interestExample(card: Card | null, balance = 10000) {
-  const monthlyPct = card?.aprMonthlyPct ?? 3.75;
+  const monthlyPct = card?.aprMonthlyPct ?? DEFAULT_APR_MONTHLY_PCT;
   const monthly = (balance * monthlyPct) / 100;
   return {
     monthlyPct,
@@ -231,6 +296,11 @@ export function recommendCards(
   if (safePath) {
     warnings.push(interestExample(owned[0] ?? null).message);
     warnings.push('Only no-fee or low-fee cards are shown until you pay the full bill every month.');
+  }
+  if (clampShare(profile.upiShare) > 0) {
+    warnings.push(
+      `Your UPI spend is counted only on RuPay cards. UPI payments up to ₹${UPI_SMALL_TICKET.toLocaleString('en-IN')} often earn no reward, and paying by UPI on a credit card makes it easy to spend more than you planned.`,
+    );
   }
 
   const ownedSet = new Set(ownedIds);
@@ -290,10 +360,18 @@ export function recommendCards(
     return { card: e.card, gainPerYear: round(gain), eligibility: e.eligibility, why };
   };
 
+  // Ranked by the risk- and hassle-adjusted gain, but shown as the plain yearly value after fees,
+  // so the figure matches what the same card shows elsewhere in the app.
   const alternatives = candidates.slice(0, 5).map((e) => {
     const after = walletValue(catalog, [...owned, e.card], profile, { newCardIds: [e.card.id], today });
-    return toPick(e, e.gain, after);
+    return toPick(e, after.net - current.net, after);
   });
+
+  /** One card's own yearly value in a wallet: its rewards and perks minus its fee. */
+  const cardNet = (afterValue: WalletValue, cardId: string) => {
+    const y = afterValue.perCard.find((c) => c.cardId === cardId);
+    return y ? y.annualReward + y.perks - y.fee : 0;
+  };
 
   if (bestCombo.length === 0 || bestGain < MIN_WORTHWHILE_GAIN) {
     return {
@@ -316,7 +394,8 @@ export function recommendCards(
   });
   return {
     verdict: 'ADD_CARDS',
-    picks: bestCombo.map((e) => toPick(e, bestGain / bestCombo.length, after)),
+    // Each pick shows its own value in the new wallet, not an even split of the combined gain.
+    picks: bestCombo.map((e) => toPick(e, cardNet(after, e.card.id), after)),
     current,
     after,
     alternatives,
