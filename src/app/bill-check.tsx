@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -67,32 +67,23 @@ export default function BillCheckScreen() {
   const [cash, setCash] = useState('10000');
   const [days, setDays] = useState<(typeof CASH_DAYS)[number]>('30');
 
-  const minResult = useMemo(
-    () =>
-      revolvingCost({
-        balance: toNumber(balance),
-        aprMonthlyPct: rate.source === 'ASSUMED' ? null : rate.pct,
-        minDuePct: toNumber(minPct) > 0 ? toNumber(minPct) : undefined,
-        newMonthlySpend: toNumber(newSpend),
-      }),
-    [balance, minPct, newSpend, rate.pct, rate.source],
-  );
+  // Cheap to compute, so no manual memoization (the React Compiler handles it).
+  const cardRate = rate.source === 'ASSUMED' ? null : rate.pct;
+  const minResult = revolvingCost({
+    balance: toNumber(balance),
+    aprMonthlyPct: cardRate,
+    minDuePct: toNumber(minPct) > 0 ? toNumber(minPct) : undefined,
+    newMonthlySpend: toNumber(newSpend),
+  });
   const minPctEdited = toNumber(minPct) !== DEFAULT_MIN_DUE_PCT;
-  const emiResult = useMemo(
-    () =>
-      emiCost({
-        price: toNumber(price),
-        annualRatePct: toNumber(emiRate),
-        months: Number(emiMonths),
-        processingFee: toNumber(fee),
-        discountLost: toNumber(discountLost),
-      }),
-    [price, emiRate, emiMonths, fee, discountLost],
-  );
-  const cashResult = useMemo(
-    () => cashWithdrawalCost({ amount: toNumber(cash), days: Number(days), aprMonthlyPct: rate.source === 'ASSUMED' ? null : rate.pct }),
-    [cash, days, rate.pct, rate.source],
-  );
+  const emiResult = emiCost({
+    price: toNumber(price),
+    annualRatePct: toNumber(emiRate),
+    months: Number(emiMonths),
+    processingFee: toNumber(fee),
+    discountLost: toNumber(discountLost),
+  });
+  const cashResult = cashWithdrawalCost({ amount: toNumber(cash), days: Number(days), aprMonthlyPct: cardRate });
 
   const rewardFor = (amount: number) => (card ? rewardsOnSpend(catalog, card, amount, { experience }) : 0);
 
