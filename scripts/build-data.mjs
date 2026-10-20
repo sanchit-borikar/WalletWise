@@ -101,7 +101,9 @@ function inclusionFor(i) {
     secured: i.secured,
     minFdRs: i.minFdRs ?? null,
     noIncomeProof: i.noIncomeProof ?? null,
-    upi: i.upi ? { earnsRewards: i.upi.earnsRewards, ratePct: i.upi.ratePct ?? null, notes: i.upi.notes ?? null } : null,
+    upi: i.upi
+      ? { earnsRewards: i.upi.earnsRewards, ratePct: i.upi.ratePct ?? null, capRs: i.upi.capRs ?? null, notes: i.upi.notes ?? null }
+      : null,
     source: i.source,
     verifiedAt: i.verifiedAt,
   };

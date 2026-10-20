@@ -88,6 +88,8 @@ export type UpiRewards = {
   earnsRewards: boolean;
   /** Reward rate on UPI as a % of spend, if the issuer states one. */
   ratePct: number | null;
+  /** Monthly cap on the UPI reward, in rupees, if the issuer states one. */
+  capRs?: number | null;
   notes: string | null;
 };
 
@@ -217,4 +219,10 @@ export type UserProfile = {
   loungeVisitsPerYear?: number;
   /** Prefer cashback-style simplicity (beginner default). */
   preferCashback?: boolean;
+  /** False when the user has never had a loan or credit card (no CIBIL history). Unknown if absent. */
+  hasCreditHistory?: boolean;
+  /** False when the user cannot show a salary slip or ITR (students, homemakers, many gig workers). */
+  incomeProof?: boolean;
+  /** Share of monthly spend (0 to 1) the user pays by UPI rather than by card. Default 0. */
+  upiShare?: number;
 };
