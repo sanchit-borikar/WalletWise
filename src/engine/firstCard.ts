@@ -107,6 +107,7 @@ export function recommendFirstCard(catalog: Catalog, profile: UserProfile): Firs
     .filter(
       (c) =>
         !c.inclusion?.secured &&
+        !c.inclusion?.existingCustomersOnly &&
         (c.tier === 'ENTRY' || c.tier === 'MID') &&
         (c.minMonthlyIncome == null || c.minMonthlyIncome <= FIRST_CARD_MAX_STATED_INCOME) &&
         checkEligibility(c, profile).eligible,

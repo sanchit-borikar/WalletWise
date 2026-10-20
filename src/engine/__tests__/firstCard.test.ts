@@ -171,6 +171,27 @@ describe('walletValue with UPI spend', () => {
     assert.equal(walletValue(cat, [rupayNone], p(0)).annualReward, 3600);
   });
 
+  it('uses the card’s normal rates when the bank says UPI earns like any other spend', () => {
+    const same = card({
+      id: 'rupay-same',
+      network: 'RUPAY',
+      rewards: [row({ category: 'DEFAULT', ratePct: 1.5 })],
+      inclusion: { ...secured(0), secured: false, minFdRs: null, upi: { earnsRewards: true, ratePct: null, notes: null } },
+    });
+    assert.equal(upiRule(same), 'SAME_AS_CARD');
+    assert.equal(walletValue(fixtureCatalog([same]), [same], p(1)).annualReward, 1800);
+  });
+
+  it('skips cards the bank gives only to existing customers on the first-card path', () => {
+    const addOnOnly = card({
+      id: 'existing-only',
+      rewards: [row({ category: 'DEFAULT', ratePct: 5 })],
+      inclusion: { ...secured(0), secured: false, minFdRs: null, existingCustomersOnly: true },
+    });
+    const plan = recommendFirstCard(fixtureCatalog([addOnOnly]), { monthlySpend: { DEFAULT: 5000 }, repayment: 'UNSURE', experience: 'NEW' });
+    assert.equal(plan.routes.flatMap((r) => r.options).length, 0);
+  });
+
   it('uses the verified UPI rate and its monthly cap, then the next card', () => {
     const v = walletValue(cat, [rupayCapped, rupay], p(1));
     // ₹5,000 at 2% hits the ₹100 cap, the other ₹5,000 goes on the 1% card: ₹150 a month.

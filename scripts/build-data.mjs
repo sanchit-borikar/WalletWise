@@ -104,6 +104,7 @@ function inclusionFor(i) {
     upi: i.upi
       ? { earnsRewards: i.upi.earnsRewards, ratePct: i.upi.ratePct ?? null, capRs: i.upi.capRs ?? null, notes: i.upi.notes ?? null }
       : null,
+    ...(i.existingCustomersOnly ? { existingCustomersOnly: true } : {}),
     source: i.source,
     verifiedAt: i.verifiedAt,
   };

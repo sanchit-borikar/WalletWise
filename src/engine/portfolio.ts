@@ -31,14 +31,17 @@ export type CategoryAllocation = {
 /**
  * How a card earns on UPI:
  * - NOT_ON_UPI: only RuPay credit cards can be linked to UPI.
- * - VERIFIED: the issuer's page says what UPI earns (card.inclusion.upi).
+ * - VERIFIED: the issuer's page gives a UPI rate, or says UPI earns nothing (card.inclusion.upi).
+ * - SAME_AS_CARD: the issuer's page says UPI earns at the card's normal rates.
  * - ASSUMED: a RuPay card whose UPI terms were not checked; its normal rates are used.
  */
-export type UpiRule = 'NOT_ON_UPI' | 'VERIFIED' | 'ASSUMED';
+export type UpiRule = 'NOT_ON_UPI' | 'VERIFIED' | 'SAME_AS_CARD' | 'ASSUMED';
 
 export function upiRule(card: Card): UpiRule {
   if (card.network !== 'RUPAY') return 'NOT_ON_UPI';
-  return card.inclusion?.upi ? 'VERIFIED' : 'ASSUMED';
+  const upi = card.inclusion?.upi;
+  if (!upi) return 'ASSUMED';
+  return upi.earnsRewards && upi.ratePct == null ? 'SAME_AS_CARD' : 'VERIFIED';
 }
 
 /** UPI cannot pay in a foreign currency, so international spend always goes on a card. */

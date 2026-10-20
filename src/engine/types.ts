@@ -103,6 +103,8 @@ export type Inclusion = {
   noIncomeProof: boolean | null;
   /** null when UPI earning was not checked. */
   upi: UpiRewards | null;
+  /** The bank only gives this card to people who already hold one of its cards or accounts. */
+  existingCustomersOnly?: boolean;
   source: string;
   verifiedAt: string;
 };
