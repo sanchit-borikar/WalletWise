@@ -11,6 +11,7 @@ import {
   walletValue,
 } from '../engine';
 import type { Card, UserProfile } from '../engine';
+import type { Spend } from '../engine/budget';
 import { shortCardName } from '../components/CardFace';
 
 export type CardData = {
@@ -52,6 +53,10 @@ export type Holding = {
   lastFour: string;
   points: number;
   expiryDays?: number;
+  /** Day of the month the statement is made (1 to 31). Optional, set by the user. */
+  statementDay?: number;
+  /** Day of the month the bill is due (1 to 31). Used for bill-day reminders. */
+  dueDay?: number;
 };
 
 /** Typical monthly spend used for "potential annual value" until the user enters their own. */
@@ -167,10 +172,22 @@ interface CardStore {
   /** Set once the user has answered the Find My Card questions. */
   profileSaved: boolean;
   setProfile: (profile: UserProfile) => void;
-  addCard: (catalogId: string, lastFour: string, points: number) => void;
-  updateHolding: (id: string, changes: Partial<Pick<Holding, 'lastFour' | 'points' | 'expiryDays'>>) => void;
+  addCard: (catalogId: string, lastFour: string, points: number, billDays?: Pick<Holding, 'statementDay' | 'dueDay'>) => void;
+  updateHolding: (
+    id: string,
+    changes: Partial<Pick<Holding, 'lastFour' | 'points' | 'expiryDays' | 'statementDay' | 'dueDay'>>,
+  ) => void;
   removeHolding: (id: string) => void;
   clearDemo: () => void;
+  /** Bill-day reminders (local notifications) are on. Off until the user turns them on. */
+  billRemindersOn?: boolean;
+  setBillRemindersOn: (on: boolean) => void;
+  /** Spends logged by hand on the Spends screen. */
+  spends: Spend[];
+  addSpend: (spend: Omit<Spend, 'id'>) => void;
+  removeSpend: (id: string) => void;
+  /** Adds cards from a "Share my wallet" code. The first real cards replace the demo wallet. */
+  importCards: (cards: { catalogId: string; lastFour: string; points: number }[]) => void;
 }
 
 const derive = (holdings: Holding[]) => holdings.flatMap((h) => (catalog.byId.has(h.catalogId) ? [toCardData(h)] : []));
@@ -199,11 +216,11 @@ export const useCardStore = create<CardStore>()(
       isDemo: true,
       profileSaved: false,
       setProfile: (profile) => set({ profile, profileSaved: true }),
-      addCard: (catalogId, lastFour, points) =>
+      addCard: (catalogId, lastFour, points, billDays) =>
         set((s) => {
           // The first real card replaces the demo wallet.
           const base = s.isDemo ? [] : s.holdings;
-          const holdings = [...base, newHolding(catalogId, lastFour, points)];
+          const holdings = [...base, { ...newHolding(catalogId, lastFour, points), ...billDays }];
           return { holdings, cards: derive(holdings), isDemo: false };
         }),
       updateHolding: (id, changes) =>
@@ -217,16 +234,44 @@ export const useCardStore = create<CardStore>()(
           return { holdings, cards: derive(holdings) };
         }),
       clearDemo: () => set({ holdings: [], cards: [], isDemo: false }),
+      billRemindersOn: false,
+      setBillRemindersOn: (on) => set({ billRemindersOn: on }),
+      spends: [],
+      addSpend: (spend) =>
+        set((s) => ({ spends: [...s.spends, { ...spend, id: `sp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}` }] })),
+      removeSpend: (id) => set((s) => ({ spends: s.spends.filter((x) => x.id !== id) })),
+      importCards: (incoming) =>
+        set((s) => {
+          const base = s.isDemo ? [] : s.holdings;
+          // Index suffix keeps ids unique when one code holds the same card twice.
+          const added = incoming
+            .filter((c) => catalog.byId.has(c.catalogId))
+            .map((c, i) => {
+              const h = newHolding(c.catalogId, c.lastFour, c.points);
+              return { ...h, id: `${h.id}-${i}` };
+            });
+          if (added.length === 0) return {};
+          const holdings = [...base, ...added];
+          return { holdings, cards: derive(holdings), isDemo: false };
+        }),
     }),
     {
       name: 'walletwise-wallet',
       storage: createJSONStorage(() => AsyncStorage),
       // Card facts always come from the bundled catalog, so only the user's own data is saved.
-      partialize: (s) => ({ userId: s.userId, holdings: s.holdings, profile: s.profile, isDemo: s.isDemo, profileSaved: s.profileSaved }),
+      partialize: (s) => ({
+        userId: s.userId,
+        holdings: s.holdings,
+        profile: s.profile,
+        isDemo: s.isDemo,
+        profileSaved: s.profileSaved,
+        billRemindersOn: s.billRemindersOn,
+        spends: s.spends,
+      }),
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<CardStore>;
         const holdings = saved.holdings ?? current.holdings;
-        return { ...current, ...saved, holdings, cards: derive(holdings) };
+        return { ...current, ...saved, holdings, cards: derive(holdings), spends: saved.spends ?? current.spends };
       },
     },
   ),
