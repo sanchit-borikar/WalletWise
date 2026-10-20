@@ -54,7 +54,7 @@ export default function AddCardScreen() {
         contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: insets.bottom + 40 }}
         keyboardShouldPersistTaps="handled"
       >
-        <Pressable onPress={() => setPicked(null)} style={styles.back}>
+        <Pressable onPress={() => setPicked(null)} style={styles.back} accessibilityRole="button" accessibilityLabel="Choose another card">
           <Text style={styles.backText}>← Choose another card</Text>
         </Pressable>
         <View style={styles.preview}>
@@ -115,7 +115,7 @@ export default function AddCardScreen() {
         <Text style={styles.hint}>WalletWise never asks for your full card number, CVV or PIN. Everything stays on this phone.</Text>
         {isDemo && <Text style={styles.hint}>Your first card replaces the sample cards.</Text>}
 
-        <Pressable style={styles.primary} onPress={save}>
+        <Pressable style={styles.primary} onPress={save} accessibilityRole="button">
           <Text style={styles.primaryText}>Add to my wallet</Text>
         </Pressable>
       </ScrollView>
@@ -124,7 +124,7 @@ export default function AddCardScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 12 }]}>
-      <Pressable onPress={() => router.back()} style={styles.back}>
+      <Pressable onPress={() => router.back()} style={styles.back} accessibilityRole="button" accessibilityLabel="Back">
         <Text style={styles.backText}>← Back</Text>
       </Pressable>
       <Text style={styles.title}>Add a card</Text>
@@ -133,6 +133,7 @@ export default function AddCardScreen() {
         value={query}
         onChangeText={setQuery}
         placeholder="Search by bank or card, e.g. SBI Cashback"
+        accessibilityLabel="Search cards by bank or name"
         placeholderTextColor="#666"
         style={styles.search}
         autoFocus
@@ -147,7 +148,7 @@ export default function AddCardScreen() {
         ListEmptyComponent={<Text style={styles.sub}>No card found. Try the bank name.</Text>}
         ListFooterComponent={<Text style={styles.attribution}>{DATA_ATTRIBUTION}</Text>}
         renderItem={({ item }) => (
-          <Pressable style={styles.row} onPress={() => setPicked(item)}>
+          <Pressable style={styles.row} onPress={() => setPicked(item)} accessibilityRole="button" accessibilityLabel={`Add ${item.name}`}>
             <View style={styles.thumb}>
               <CardFace issuer={item.issuer} name={item.name} network={item.network} tier={item.tier} small />
             </View>
@@ -158,6 +159,9 @@ export default function AddCardScreen() {
               <Text style={styles.rowSub}>
                 {item.lifetimeFree || item.annualFee === 0 ? 'No annual fee' : `₹${(item.annualFee ?? 0).toLocaleString('en-IN')} a year`}
                 {item.rateMaxPct ? ` · up to ${item.rateMaxPct}% back` : ''}
+                {item.inclusion?.upi?.earnsRewards && (item.inclusion.upi.ratePct ?? 0) > (item.rateMaxPct ?? 0)
+                  ? ` · ${item.inclusion.upi.ratePct}% on UPI${item.inclusion.upi.scanAndPayOnly ? ' scan and pay' : ''}`
+                  : ''}
               </Text>
             </View>
             <Text style={styles.plus}>＋</Text>
