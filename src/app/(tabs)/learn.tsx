@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   StyleSheet, Text, View, Pressable, ScrollView, 
   useWindowDimensions, TextInput
@@ -29,8 +29,8 @@ const AnimatedCard = ({ children, style, onPress }: any) => {
   }));
   return (
     <AnimatedPressable
-      onPressIn={() => (scale.value = withSpring(0.97, { damping: 20, stiffness: 180 }))}
-      onPressOut={() => (scale.value = withSpring(1))}
+      onPressIn={() => scale.set(withSpring(0.97, { damping: 20, stiffness: 180 }))}
+      onPressOut={() => scale.set(withSpring(1))}
       onPress={onPress}
       style={[style, animatedStyle]}
     >
@@ -225,15 +225,11 @@ const QUIZ_BANK = [
 
 const CardQuiz = () => {
   const [answered, setAnswered] = useState(false);
-  const [quizItem, setQuizItem] = useState(QUIZ_BANK[0]);
+  // A random question, picked once when the quiz first shows.
+  const [quizItem] = useState(() => QUIZ_BANK[Math.floor(Math.random() * QUIZ_BANK.length)]);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const ringScale = useSharedValue(0);
 
-  useEffect(() => {
-    // Pick a random quiz question on mount
-    const randomIdx = Math.floor(Math.random() * QUIZ_BANK.length);
-    setQuizItem(QUIZ_BANK[randomIdx]);
-  }, []);
   
   const handleAnswer = (idx: number) => {
     if (answered) return;
@@ -298,7 +294,7 @@ const InteractiveTools = () => {
 const MYTH_BANK = [
   {
     myth: '"Having multiple credit cards hurts your CIBIL score."',
-    fact: 'More cards increase your total credit limit, which lowers your utilization ratio, actually boosting your score.'
+    fact: 'Holding a few cards does not hurt your score by itself. What hurts is applying for many at once, missing a payment, or using most of your limit. Only add a card you need.'
   },
   {
     myth: '"Paying only the Minimum Amount Due protects your credit score without extra costs."',
@@ -316,13 +312,9 @@ const MYTH_BANK = [
 
 const MythVsFact = () => {
   const [flipped, setFlipped] = useState(false);
-  const [content, setContent] = useState(MYTH_BANK[0]);
+  const [content] = useState(() => MYTH_BANK[Math.floor(Math.random() * MYTH_BANK.length)]);
   const flipVal = useSharedValue(0);
 
-  useEffect(() => {
-    const randomIdx = Math.floor(Math.random() * MYTH_BANK.length);
-    setContent(MYTH_BANK[randomIdx]);
-  }, []);
 
   const frontStyle = useAnimatedStyle(() => ({
     transform: [{ rotateY: `${interpolate(flipVal.value, [0, 1], [0, 90])}deg` }],
@@ -337,7 +329,7 @@ const MythVsFact = () => {
   }));
 
   const handlePress = () => {
-    flipVal.value = withSpring(flipped ? 0 : 1, { damping: 15, stiffness: 120 });
+    flipVal.set(withSpring(flipped ? 0 : 1, { damping: 15, stiffness: 120 }));
     setFlipped(!flipped);
   };
 

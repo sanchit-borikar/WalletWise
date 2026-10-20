@@ -22,7 +22,15 @@ const CATEGORIES: { key: Category; label: string }[] = [
 ];
 const LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.key, c.label])) as Partial<Record<Category, string>>;
 
-const inr = (n: number) => `₹${(n >= 100 ? Math.round(n) : Math.round(n * 100) / 100).toLocaleString('en-IN')}`;
+/** Whole rupees from ₹100, two decimals below it (₹82.50, not ₹82.5). */
+const inr = (n: number) =>
+  `₹${n >= 100 ? Math.round(n).toLocaleString('en-IN') : (Math.round(n * 100) / 100).toLocaleString('en-IN', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
+
+/** "20 Oct" from a YYYY-MM-DD date. */
+const shortDate = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+};
 
 function shiftMonth(month: string, by: number) {
   const [y, m] = month.split('-').map(Number);
@@ -222,13 +230,13 @@ export default function SpendsScreen() {
                   {inr(s.amount)} · {LABEL[s.category] ?? s.category}
                 </Text>
                 <Text style={theme.text.caption}>
-                  {s.date} · {cardLabel(s.cardId)}
+                  {shortDate(s.date)} · {cardLabel(s.cardId)}
                 </Text>
               </View>
               <Pressable
                 onPress={() => removeSpend(s.id)}
                 accessibilityRole="button"
-                accessibilityLabel={`Delete spend of ${inr(s.amount)} on ${s.date}`}
+                accessibilityLabel={`Delete spend of ${inr(s.amount)} on ${shortDate(s.date)}`}
                 hitSlop={12}
                 style={styles.remove}
               >

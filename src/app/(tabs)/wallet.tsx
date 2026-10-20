@@ -13,7 +13,6 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { ScrollView, GestureDetector, Gesture } from 'react-native-gesture-handler';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { typography, colors } from '../../theme';
@@ -45,7 +44,7 @@ function ExpiryBanner({ cards }: { cards: CardData[] }) {
         <Text style={[styles.infoLabel, { color: colors.accent.danger }]}>POINTS EXPIRING SOON</Text>
         <View style={styles.expiryStats}>
           <View style={styles.expiryStat}>
-            <Text style={styles.infoBigNum}>{expiringCard.points.toLocaleString()}</Text>
+            <Text style={styles.infoBigNum}>{expiringCard.points.toLocaleString('en-IN')}</Text>
             <Text style={styles.infoUnit}>pts</Text>
           </View>
           <View style={styles.expiryDivider} />

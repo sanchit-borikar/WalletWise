@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, View, Pressable, ScrollView, Dimensions } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View, Pressable, ScrollView, Dimensions, Platform } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -16,6 +16,9 @@ import { BillDayPanel } from '../components/BillDayPanel';
 import { CLOSE_FREE_LINE } from '../constants/safety';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+/** Entering animations stay stuck at their first frame on web, so web shows content without them. */
+const enter = <T,>(animation: T): T | undefined => (Platform.OS === 'web' ? undefined : animation);
 
 const TABS = ['Earn', 'Transfers', 'Redeem', 'Benefits', 'Updates'] as const;
 type TabKey = (typeof TABS)[number];
@@ -82,7 +85,7 @@ function getUpdatesContent(card: CardData) {
 function EarnTab({ card, inWallet }: { card: CardData; inWallet: boolean }) {
   const data = getEarnContent(card);
   return (
-    <Animated.View entering={FadeInDown.duration(350).springify()}>
+    <Animated.View entering={enter(FadeInDown.duration(350).springify())}>
       {/* Rate Card */}
       <View style={s.infoCard}>
         <Text style={s.infoCardLabel}>{data.rateLabel}</Text>
@@ -139,7 +142,7 @@ function EarnTab({ card, inWallet }: { card: CardData; inWallet: boolean }) {
 function TransfersTab({ card }: { card: CardData }) {
   const data = getTransferContent(card);
   return (
-    <Animated.View entering={FadeInDown.duration(350).springify()}>
+    <Animated.View entering={enter(FadeInDown.duration(350).springify())}>
       <View style={s.infoCard}>
         <Text style={s.infoCardLabel}>FOREX MARKUP</Text>
         <Text style={s.infoCardBigValue}>{data.forex}</Text>
@@ -164,7 +167,7 @@ function RedeemTab({ card }: { card: CardData }) {
   const data = catalog.byId.get(card.catalogId);
   const plan = data && card.points > 0 ? planRedemption(catalog, data, card.points, { experience }) : null;
   return (
-    <Animated.View entering={FadeInDown.duration(350).springify()}>
+    <Animated.View entering={enter(FadeInDown.duration(350).springify())}>
       {plan && (
         <View style={[s.infoCard, { marginBottom: 16 }]}>
           <Text style={s.infoCardLabel}>BEST WAY TO USE {card.points.toLocaleString('en-IN')} POINTS</Text>
@@ -190,7 +193,7 @@ function RedeemTab({ card }: { card: CardData }) {
         </View>
         <Text style={s.infoCardLabel}>REWARD VALUE</Text>
         <Text style={[s.infoCardBigValue, { color: '#F5D06F' }]}>
-          ₹{card.highValue.toLocaleString()}
+          ₹{card.highValue.toLocaleString('en-IN')}
         </Text>
         <Text style={s.infoCardDesc}>Best estimated redemption value</Text>
       </View>
@@ -207,7 +210,7 @@ function RedeemTab({ card }: { card: CardData }) {
         <View style={s.feeRow}>
           <Text style={s.feeLabel}>Annual Potential</Text>
           <Text style={[s.feeValue, { color: '#F5D06F' }]}>
-            ≈ ₹{card.intelligence.potentialAnnualValue.toLocaleString()}
+            ≈ ₹{card.intelligence.potentialAnnualValue.toLocaleString('en-IN')}
           </Text>
         </View>
       </View>
@@ -218,7 +221,7 @@ function RedeemTab({ card }: { card: CardData }) {
 
 function BenefitsTab({ card }: { card: CardData }) {
   return (
-    <Animated.View entering={FadeInDown.duration(350).springify()}>
+    <Animated.View entering={enter(FadeInDown.duration(350).springify())}>
       {/* Lounge */}
       <View style={s.highlightCard}>
         <Text style={s.highlightIcon}>✈︎</Text>
@@ -256,7 +259,7 @@ function BenefitsTab({ card }: { card: CardData }) {
 function UpdatesTab({ card }: { card: CardData }) {
   const offers = getUpdatesContent(card);
   return (
-    <Animated.View entering={FadeInDown.duration(350).springify()}>
+    <Animated.View entering={enter(FadeInDown.duration(350).springify())}>
       {offers.length === 0 ? (
         <View style={s.infoCard}>
           <Text style={s.infoCardDesc}>
@@ -274,7 +277,7 @@ function UpdatesTab({ card }: { card: CardData }) {
                 </View>
               </View>
               <Text style={s.offerDesc}>{offer.desc}</Text>
-              {offer.tag !== 'Better' && <Text style={[s.offerDesc, { marginTop: 8, color: '#BDBDBD' }]}>{CLOSE_FREE_LINE}</Text>}
+              {offer.tag === 'Cut' && <Text style={[s.offerDesc, { marginTop: 8, color: '#BDBDBD' }]}>{CLOSE_FREE_LINE}</Text>}
             </View>
           ))}
         </View>
@@ -366,19 +369,19 @@ export default function CardDetailScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Hero Card Art */}
-        <Animated.View entering={FadeIn.duration(400)} style={s.heroWrapper}>
+        <Animated.View entering={enter(FadeIn.duration(400))} style={s.heroWrapper}>
           <CreditCardImage card={card} />
         </Animated.View>
 
         {/* Card Identity */}
-        <Animated.View entering={FadeIn.delay(150).duration(400)} style={s.titleSection}>
+        <Animated.View entering={enter(FadeIn.delay(150).duration(400))} style={s.titleSection}>
           <Text style={s.bankName}>{card.bankName}</Text>
           <Text style={s.cardName}>{card.cardName}</Text>
         </Animated.View>
 
         {/* Points & Estimated Value */}
         {!preview && (
-        <Animated.View entering={FadeInDown.delay(250).duration(400)} style={s.statsPanelWrapper}>
+        <Animated.View entering={enter(FadeInDown.delay(250).duration(400))} style={s.statsPanelWrapper}>
           <View style={s.statsPanel}>
             <Text style={s.statsLabel}>AVAILABLE {card.currencyName.toUpperCase()}</Text>
             {editing ? (
@@ -390,11 +393,11 @@ export default function CardDetailScreen() {
                 <Text style={s.statsValue}>Copy the balance and dates from your latest statement or bank app.</Text>
               </View>
             ) : (
-              <Text style={s.pointsNumerals}>{card.points.toLocaleString()}</Text>
+              <Text style={s.pointsNumerals}>{card.points.toLocaleString('en-IN')}</Text>
             )}
             <View style={s.statsValueRow}>
               <Text style={s.statsValue}>
-                Estimated Value  ₹{card.lowValue.toLocaleString()} – ₹{card.highValue.toLocaleString()}
+                Estimated Value  ₹{card.lowValue.toLocaleString('en-IN')}{card.highValue > card.lowValue ? ` – ₹${card.highValue.toLocaleString('en-IN')}` : ''}
               </Text>
             </View>
           </View>
@@ -404,7 +407,7 @@ export default function CardDetailScreen() {
         {holding && <BillDayPanel holding={holding} onEdit={startEdit} />}
 
         {/* Tab Bar */}
-        <Animated.View entering={FadeIn.delay(350).duration(400)}>
+        <Animated.View entering={enter(FadeIn.delay(350).duration(400))}>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}

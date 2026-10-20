@@ -153,8 +153,10 @@ export function feeCheck(catalog: Catalog, walletCards: Card[], cardId: string, 
     }
   } else {
     verdict = 'NOT_WORTH';
-    headline =
-      year.annualSpend === 0 && walletCards.length > 1
+    const allUpi = (profile.upiShare ?? 0) >= 1 && card.network !== 'RUPAY';
+    headline = allUpi
+      ? `You pay by UPI, and only RuPay cards work on UPI, so this card earns nothing on your saved spending. Its fee is ${inr(feeCharged)} a year.`
+      : year.annualSpend === 0 && walletCards.length > 1
         ? `Your other cards earn more on all of your spending, so this card adds nothing, and its fee is ${inr(feeCharged)} a year.`
         : `It earns about ${inr(annualReward + perks)} a year but the fee is ${inr(feeCharged)}. You lose about ${inr(feeCharged - annualReward - perks)}.`;
     if (spendToWaiver != null && spendToWaiver > 0) {

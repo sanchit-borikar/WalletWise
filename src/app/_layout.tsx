@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import * as Device from 'expo-device';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -55,13 +55,9 @@ export default function RootLayout() {
   }, [hydrated, showIntro]);
   useLiteSuggestion(hydrated && !showIntro);
 
-  // Splash stays up until the saved settings are known.
-  if (!hydrated) return null;
-
-  if (showIntro) {
-    return <WalletWiseIntro onFinish={setIntroSeen} />;
-  }
-
+  // The navigator always mounts (Expo Router needs it on the first render, or links that open a
+  // screen directly land on Home). The splash covers it until the saved settings are known, and
+  // the intro plays on top of it.
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       {/* Lite mode turns Reanimated animations into instant changes. */}
@@ -79,6 +75,11 @@ export default function RootLayout() {
         <Stack.Screen name="goal" options={{ headerShown: false }} />
         <Stack.Screen name="missed-rewards" options={{ headerShown: false }} />
       </Stack>
+      {showIntro && (
+        <View style={StyleSheet.absoluteFill}>
+          <WalletWiseIntro onFinish={setIntroSeen} />
+        </View>
+      )}
     </GestureHandlerRootView>
   );
 }

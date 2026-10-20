@@ -3,6 +3,7 @@
  * homemakers, gig workers, people in their first job). Three routes, ranked for
  * the user's own spend, and never a fee-heavy card.
  */
+import { CATEGORY_LABELS } from './categories';
 import { checkEligibility, interestExample, walletValue } from './portfolio';
 import { GST } from './purchase';
 import type { Card, Catalog, UserProfile } from './types';
@@ -61,7 +62,10 @@ function option(catalog: Catalog, card: Card, profile: UserProfile): FirstCardOp
 
   const why: string[] = [];
   const top = value.allocations.slice().sort((a, b) => b.reward - a.reward)[0];
-  if (value.annualReward > 0 && top) why.push(`About ${inr(value.annualReward)} a year in rewards, mostly ${top.rowText}.`);
+  if (value.annualReward > 0 && top) {
+    const where = `${CATEGORY_LABELS[top.category].toLowerCase()}${top.channel === 'UPI' ? ' paid by UPI' : ''}`;
+    why.push(`About ${inr(value.annualReward)} a year in rewards, mostly from ${where}.`);
+  }
   if (card.lifetimeFree || card.annualFee === 0) why.push('No annual fee.');
   else if (year.feeWaived) why.push('Annual fee waived at your spend.');
   else why.push(`Annual fee ${inr(year.fee)} including GST.`);

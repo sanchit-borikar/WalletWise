@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Keyboard, Linking, Platform, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MapView, { Circle, Marker, UrlTile } from 'react-native-maps';
-import type { Region } from 'react-native-maps';
+import MapView, { Circle, Marker, UrlTile } from '../../components/maps/NativeMap';
+import type { Region } from '../../components/maps/NativeMap';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { FlatList, Gesture, GestureDetector, ScrollView } from 'react-native-gesture-handler';
 import Constants, { ExecutionEnvironment } from 'expo-constants';

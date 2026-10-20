@@ -69,13 +69,14 @@ export default function BillCheckScreen() {
 
   // Cheap to compute, so no manual memoization (the React Compiler handles it).
   const cardRate = rate.source === 'ASSUMED' ? null : rate.pct;
+  const minPctEdited = toNumber(minPct) !== DEFAULT_MIN_DUE_PCT;
   const minResult = revolvingCost({
     balance: toNumber(balance),
     aprMonthlyPct: cardRate,
-    minDuePct: toNumber(minPct) > 0 ? toNumber(minPct) : undefined,
+    // Left out while it is the default, so the result labels it as assumed.
+    minDuePct: minPctEdited && toNumber(minPct) > 0 ? toNumber(minPct) : undefined,
     newMonthlySpend: toNumber(newSpend),
   });
-  const minPctEdited = toNumber(minPct) !== DEFAULT_MIN_DUE_PCT;
   const emiResult = emiCost({
     price: toNumber(price),
     annualRatePct: toNumber(emiRate),

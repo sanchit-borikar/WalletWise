@@ -79,6 +79,9 @@ export default function FindCardScreen() {
   const [incomeProof, setIncomeProof] = useState<boolean | undefined>(profile.incomeProof);
   const [firstCard, setFirstCard] = useState<FirstCardPlan | null>(null);
 
+  // A card counts as added once it is in the user's own wallet (not the sample cards).
+  const inWallet = (catalogId: string) => !isDemo && holdings.some((h) => h.catalogId === catalogId);
+
   const monthlyTotal = useMemo(() => Object.values(spend).reduce((a, v) => a + toNumber(v), 0), [spend]);
   // The first-card questions appear for people without a card, or who say they have no credit history.
   const newToCredit = repayment === 'UNSURE' || hasCreditHistory === false;
@@ -107,7 +110,7 @@ export default function FindCardScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: insets.bottom + 60, paddingHorizontal: 20 }}>
-      <Pressable onPress={() => router.back()} style={styles.back}>
+      <Pressable onPress={() => router.back()} style={styles.back} accessibilityRole="button" accessibilityLabel="Back">
         <Text style={styles.backText}>← Back</Text>
       </Pressable>
       <Text style={styles.title}>Find My Card</Text>
@@ -128,6 +131,7 @@ export default function FindCardScreen() {
             <TextInput
               value={spend[f.key]}
               onChangeText={(v) => setSpend((s) => ({ ...s, [f.key]: v }))}
+              accessibilityLabel={`${f.label} a month in rupees`}
               keyboardType="number-pad"
               placeholder="0"
               placeholderTextColor="#555"
@@ -145,6 +149,7 @@ export default function FindCardScreen() {
         <TextInput
           value={income}
           onChangeText={setIncome}
+          accessibilityLabel="Monthly take-home income in rupees"
           keyboardType="number-pad"
           placeholder="Used only to check card eligibility"
           placeholderTextColor="#555"
@@ -156,7 +161,12 @@ export default function FindCardScreen() {
       <Text style={styles.section}>HOW DO YOU PAY YOUR CARD BILL?</Text>
       <View style={styles.choiceRow}>
         {REPAYMENT.map((r) => (
-          <Pressable key={r.value} onPress={() => setRepayment(r.value)} style={[styles.choice, repayment === r.value && styles.choiceActive]}>
+          <Pressable
+            key={r.value}
+            onPress={() => setRepayment(r.value)}
+            style={[styles.choice, repayment === r.value && styles.choiceActive]}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: repayment === r.value }}>
             <Text style={[styles.choiceText, repayment === r.value && styles.choiceTextActive]}>{r.label}</Text>
           </Pressable>
         ))}
@@ -217,19 +227,24 @@ export default function FindCardScreen() {
       <Text style={styles.section}>YOUR EXPERIENCE</Text>
       <View style={styles.choiceRow}>
         {EXPERIENCE.map((r) => (
-          <Pressable key={r.value} onPress={() => setExperience(r.value)} style={[styles.choice, experience === r.value && styles.choiceActive]}>
+          <Pressable
+            key={r.value}
+            onPress={() => setExperience(r.value)}
+            style={[styles.choice, experience === r.value && styles.choiceActive]}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: experience === r.value }}>
             <Text style={[styles.choiceText, experience === r.value && styles.choiceTextActive]}>{r.label}</Text>
           </Pressable>
         ))}
       </View>
 
       {!isDemo && holdings.length > 0 && (
-        <Pressable onPress={() => setIncludeOwned((v) => !v)} style={styles.toggle}>
+        <Pressable onPress={() => setIncludeOwned((v) => !v)} style={styles.toggle} accessibilityRole="checkbox" accessibilityState={{ checked: includeOwned }}>
           <Text style={styles.choiceText}>{includeOwned ? '☑' : '☐'} Keep my current {holdings.length} cards and find what to add</Text>
         </Pressable>
       )}
 
-      <Pressable style={styles.primary} onPress={run} disabled={monthlyTotal === 0}>
+      <Pressable style={styles.primary} onPress={run} disabled={monthlyTotal === 0} accessibilityRole="button" accessibilityState={{ disabled: monthlyTotal === 0 }}>
         <Text style={styles.primaryText}>{monthlyTotal === 0 ? 'Enter your spending first' : 'Find my best cards'}</Text>
       </Pressable>
 
@@ -273,7 +288,7 @@ export default function FindCardScreen() {
               {route.kind !== 'ADD_ON' && route.options.length === 0 && <Text style={styles.whySmall}>No card fits this route at your spending yet.</Text>}
             </View>
           ))}
-          <Pressable style={[styles.secondary, { marginTop: 16, alignSelf: 'flex-start' }]} onPress={() => router.push('/build-credit')}>
+          <Pressable style={[styles.secondary, { marginTop: 16, alignSelf: 'flex-start' }]} onPress={() => router.push('/build-credit')} accessibilityRole="button">
             <Text style={styles.secondaryText}>How to build your CIBIL score →</Text>
           </Pressable>
         </View>
@@ -304,9 +319,17 @@ export default function FindCardScreen() {
                 </Text>
               ))}
               <View style={styles.pickActions}>
-                <Pressable style={styles.secondary} onPress={() => addCard(p.card.id, '', 0)}>
-                  <Text style={styles.secondaryText}>I have it, add to wallet</Text>
-                </Pressable>
+                {inWallet(p.card.id) ? (
+                  <Text style={styles.added} accessibilityLiveRegion="polite">✓ In your wallet</Text>
+                ) : (
+                  <Pressable
+                    style={styles.secondary}
+                    onPress={() => addCard(p.card.id, '', 0)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`I have ${p.card.name}, add it to my wallet`}>
+                    <Text style={styles.secondaryText}>I have it, add to wallet</Text>
+                  </Pressable>
+                )}
               </View>
             </View>
           ))}
@@ -375,6 +398,7 @@ const styles = StyleSheet.create({
   altName: { flex: 1, fontFamily: typography.fontFamily, color: '#D0D0D0', fontSize: 14 },
   altGain: { fontFamily: typography.fontFamily, color: '#8A8A8A', fontSize: 13 },
   altFee: { fontFamily: typography.fontFamily, color: '#6F6F6F', fontSize: 12, marginTop: 2 },
+  added: { fontFamily: typography.fontFamily, color: '#6FCF97', fontSize: 14, fontWeight: '600', paddingVertical: 10 },
   feeLine: { fontFamily: typography.fontFamily, color: '#9A9A9A', fontSize: 13, marginTop: 4 },
   firstBox: { backgroundColor: '#111', borderRadius: 14, borderWidth: 1, borderColor: '#2A2A2A', padding: 14, marginTop: 16 },
   firstBoxTitle: { fontFamily: typography.fontFamily, color: '#F5F5F5', fontSize: 16, fontWeight: '700' },

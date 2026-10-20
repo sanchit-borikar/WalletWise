@@ -15,11 +15,11 @@ export function CardInfoPanel({ card }: { card: CardData }) {
       <View style={styles.statsRow}>
         <View style={styles.statBlock}>
           <Text style={styles.statLabel}>POINTS BALANCE</Text>
-          <Text style={styles.statValue}>{card.points.toLocaleString()}</Text>
+          <Text style={styles.statValue}>{card.points.toLocaleString('en-IN')}</Text>
         </View>
         <View style={styles.statBlockRight}>
           <Text style={styles.statLabel}>EST. ₹ VALUE</Text>
-          <Text style={[styles.statValue, { color: colors.accent.goldStart }]}>₹{card.highValue.toLocaleString()}</Text>
+          <Text style={[styles.statValue, { color: colors.accent.goldStart }]}>₹{card.highValue.toLocaleString('en-IN')}</Text>
         </View>
       </View>
       

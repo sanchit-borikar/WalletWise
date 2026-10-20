@@ -145,9 +145,11 @@ export function toCardData(h: Holding): CardData {
       card.rateMinPct != null && card.rateMaxPct != null && card.rateMaxPct > card.rateMinPct
         ? `${card.rateMinPct}% to ${card.rateMaxPct}% value back`
         : `${card.rateMinPct ?? card.rewards[0]?.ratePct ?? 0}% value back`,
-    translatorExample: bestRoute
-      ? `${inr(value.low)} on the default route, or about ${inr(h.points * bestRoute.rupeesPerPoint)} via ${bestRoute.label}`
-      : `${inr(value.low)} on the default route`,
+    // A transfer is mentioned only when it beats the default route.
+    translatorExample:
+      bestRoute && h.points * bestRoute.rupeesPerPoint > value.low
+        ? `${inr(value.low)} on the default route, or about ${inr(h.points * bestRoute.rupeesPerPoint)} via ${bestRoute.label}`
+        : `${inr(value.low)} on the default route`,
     benefits: card.perks.filter((p) => p !== 'MILESTONE_BONUS').map((p) => PERK_LABELS[p] ?? p),
     milestones: card.perks.includes('MILESTONE_BONUS') ? ['Milestone bonuses on yearly spend (check current issuer terms)'] : [],
     rewardCategories: [...new Set(card.rewards.filter((r) => r.category !== 'DEFAULT').map((r) => CATEGORY_LABELS[r.category]))],

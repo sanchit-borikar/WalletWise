@@ -360,10 +360,18 @@ export function recommendCards(
     return { card: e.card, gainPerYear: round(gain), eligibility: e.eligibility, why };
   };
 
+  // Ranked by the risk- and hassle-adjusted gain, but shown as the plain yearly value after fees,
+  // so the figure matches what the same card shows elsewhere in the app.
   const alternatives = candidates.slice(0, 5).map((e) => {
     const after = walletValue(catalog, [...owned, e.card], profile, { newCardIds: [e.card.id], today });
-    return toPick(e, e.gain, after);
+    return toPick(e, after.net - current.net, after);
   });
+
+  /** One card's own yearly value in a wallet: its rewards and perks minus its fee. */
+  const cardNet = (afterValue: WalletValue, cardId: string) => {
+    const y = afterValue.perCard.find((c) => c.cardId === cardId);
+    return y ? y.annualReward + y.perks - y.fee : 0;
+  };
 
   if (bestCombo.length === 0 || bestGain < MIN_WORTHWHILE_GAIN) {
     return {
@@ -386,7 +394,8 @@ export function recommendCards(
   });
   return {
     verdict: 'ADD_CARDS',
-    picks: bestCombo.map((e) => toPick(e, bestGain / bestCombo.length, after)),
+    // Each pick shows its own value in the new wallet, not an even split of the combined gain.
+    picks: bestCombo.map((e) => toPick(e, cardNet(after, e.card.id), after)),
     current,
     after,
     alternatives,
