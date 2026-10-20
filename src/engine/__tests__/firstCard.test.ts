@@ -218,6 +218,25 @@ describe('first-card path on real data', () => {
   const raw: RawData = { cards: load('cards.json'), transfers: load('transfers.json'), changes: load('changes.json'), meta: load('meta.json') };
   const cat = buildCatalog(raw);
 
+  it('loads the hand-added public-sector bank cards with a source and date', () => {
+    const psu = cat.cards.filter((c) => c.issuer === 'PNB' || c.issuer === 'CANARA');
+    assert.ok(psu.length >= 15);
+    for (const c of psu) {
+      assert.match(c.source!, /^https:\/\/(creditcard\.pnb|www\.canarabank)\.bank\.in\//);
+      assert.equal(c.verifiedAt, '2026-10-20');
+      assert.ok(c.rewards.some((r) => r.category === 'DEFAULT'), c.id);
+    }
+  });
+
+  it('scores a public-sector card: Canara RuPay Platinum earns 0.5% and works on UPI', () => {
+    const c = cat.byId.get('canara-rupay-platinum')!;
+    const profile: UserProfile = { monthlySpend: { DEFAULT: 10000 }, repayment: 'ALWAYS_FULL', experience: 'NEW', upiShare: 1 };
+    const v = walletValue(cat, [c], profile);
+    assert.equal(v.annualReward, 600);
+    // ₹1.2 lakh a year clears the ₹50,000 inactivity threshold, so no fee.
+    assert.equal(v.annualFees, 0);
+  });
+
   it('every inclusion entry has a source and date', () => {
     const tagged = cat.cards.filter((c) => c.inclusion);
     assert.ok(tagged.length >= 5);
