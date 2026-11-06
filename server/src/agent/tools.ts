@@ -7,13 +7,12 @@ import { catalog } from '../../../src/data/catalog';
 import {
   CATEGORY_LABELS,
   cardChanges,
-  calculateRedemptionValue,
   planRedemption,
   planTripPayment,
   pointsValue,
-  redemptionRoutes,
   rankCardsForPurchase,
   searchCards,
+  walletValue,
 } from '../../../src/engine';
 import type { Card, Category, Experience, UserProfile } from '../../../src/engine';
 import {
@@ -98,7 +97,7 @@ const SCREENS: Record<string, { label: string; route: string }> = {
 export const TOOLS: Tool[] = [
   {
     name: 'get_user_wallet',
-    description: "List cards the user holds with each separate programme balance, route-specific INR estimate, provenance and reward rules. Never add raw balances from different programmes.",
+    description: "List the cards the user holds, with points balance, point value range and each card's best reward rates. Call this before answering anything about 'my cards'.",
     parameters: { type: 'object', properties: {}, additionalProperties: false },
     run: (_args, ctx) => {
       const cards = walletCards(ctx);
@@ -107,14 +106,7 @@ export const TOOLS: Tool[] = [
         ok: true,
         cards: cards.map(({ holding, card }) => {
           const value = pointsValue(catalog, card, holding.points);
-          return {
-            ...cardSummary(card),
-            balance: holding.points,
-            balance_currency: card.programme?.name ?? (card.rewards.every((r) => r.type === 'CASHBACK') ? 'Cashback' : 'Card reward points'),
-            points_value_inr_estimate: { low: value.low, high: value.high },
-            default_route: { label: value.safeRoute.label, confidence: value.safeRoute.confidence, source: value.safeRoute.ruleSource, verified_at: value.safeRoute.ruleVerifiedAt },
-            best_route: { label: value.bestRoute.label, confidence: value.bestRoute.confidence, valuation_source: value.bestRoute.valuationSource, valuation_verified_at: value.bestRoute.valuationVerifiedAt },
-          };
+          return { ...cardSummary(card), points: holding.points, points_value_inr: { low: value.low, high: value.high } };
         }),
       };
     },
@@ -164,26 +156,21 @@ export const TOOLS: Tool[] = [
           rank: i + 1,
           cardId: r.card.id,
           card: r.card.name,
-          estimated_reward_value_inr: r.safeValue,
-          estimated_best_route_value_inr: r.bestValue,
-          net_value_inr: r.netValue,
-          estimated_return_pct: r.estimatedReturnPct,
+          rupees_back: r.safeValue,
+          rupees_back_if_points_transferred: r.bestValue,
           points_earned: r.pointsEarned,
           reward_unit: r.rewardUnit,
           forex_cost_inr: r.forexCost,
           reason: r.reason,
           warnings: r.warnings,
           confidence: r.confidence,
-          rule_source: r.source,
-          verified_at: r.verifiedAt,
-          assumptions: r.assumptions,
         })),
       };
     },
   },
   {
     name: 'get_points_value',
-    description: "Value each wallet balance separately and explain the route, confidence, source and valuation date. Never pool different currencies. Optionally for one card.",
+    description: "What the user's points are worth and the best way to redeem them (cash/portal vs airline or hotel transfer). Optionally for one card.",
     parameters: {
       type: 'object',
       properties: { cardId: { type: 'string', description: 'Card id or name from the user wallet. Omit for all cards.' } },
@@ -205,67 +192,14 @@ export const TOOLS: Tool[] = [
           return {
             cardId: card.id,
             card: card.name,
-            balance: holding.points,
-            balance_currency: card.programme?.name ?? (card.rewards.every((r) => r.type === 'CASHBACK') ? 'Cashback' : 'Card reward points'),
-            value_inr_estimate: { low: value.low, high: value.high },
+            points: holding.points,
+            value_inr: { low: value.low, high: value.high },
             recommended_route: plan.recommended.label,
-            recommended_value_inr_estimate: plan.valueRs,
-            confidence: plan.recommended.confidence,
-            rule_source: plan.recommended.ruleSource,
-            rule_verified_at: plan.recommended.ruleVerifiedAt,
-            valuation_source: plan.recommended.valuationSource,
-            valuation_verified_at: plan.recommended.valuationVerifiedAt,
+            recommended_value_inr: plan.valueRs,
             reason: plan.reason,
             alternatives: plan.alternatives.map((r) => ({ route: r.label, rupees_per_point: Math.round(r.rupeesPerPoint * 100) / 100, confidence: r.confidence })),
           };
         }),
-      };
-    },
-  },
-  {
-    name: 'check_redemption',
-    description: 'Calculate a specific redemption quote using net value = cash price avoided minus taxes, fees and surcharges. Computes net rupees per source point and estimated return on eligible earning spend when supplied. Never assumes the points currencies from other cards can be used.',
-    parameters: {
-      type: 'object',
-      properties: {
-        cardId: { type: 'string', description: 'Card id or name from the user wallet' },
-        pointsRequired: { type: 'number', description: 'Points or miles deducted from this card balance for the quote' },
-        cashPriceAvoidedRs: { type: 'number', description: 'Comparable cash price the redemption avoids, in INR' },
-        taxesRs: { type: 'number', description: 'Taxes due in INR, use 0 only if the quote confirms none' },
-        feesRs: { type: 'number', description: 'Fees due in INR, use 0 only if the quote confirms none' },
-        surchargesRs: { type: 'number', description: 'Surcharges due in INR, use 0 only if the quote confirms none' },
-        eligibleSpendRs: { type: 'number', description: 'Optional eligible card spend that earned these points, in INR' },
-        source: { type: 'string', description: 'Optional source name or URL for the quote supplied by the user' },
-        verifiedAt: { type: 'string', description: 'Optional date shown on or checked against the source, YYYY-MM-DD' },
-      },
-      required: ['cardId', 'pointsRequired', 'cashPriceAvoidedRs', 'taxesRs', 'feesRs', 'surchargesRs'],
-      additionalProperties: false,
-    },
-    run: (args, ctx) => {
-      const card = resolveCard(String(args.cardId ?? ''));
-      if (!card || !walletCards(ctx).some((holding) => holding.card.id === card.id)) return fail('card_not_in_wallet', 'Choose a card already in the user wallet.');
-      const result = calculateRedemptionValue({
-        pointsRequired: Number(args.pointsRequired),
-        cashPriceAvoidedRs: Number(args.cashPriceAvoidedRs),
-        taxesRs: Number(args.taxesRs),
-        feesRs: Number(args.feesRs),
-        surchargesRs: Number(args.surchargesRs),
-        source: typeof args.source === 'string' ? args.source : undefined,
-        verifiedAt: typeof args.verifiedAt === 'string' ? args.verifiedAt : undefined,
-      }, args.eligibleSpendRs == null ? undefined : Number(args.eligibleSpendRs));
-      if (!result) return fail('invalid_quote', 'Provide positive points required, a non-negative comparable cash price and non-negative costs.');
-      const routes = redemptionRoutes(catalog, card);
-      const defaults = routes.find((route) => route.kind === 'CASH');
-      const best = routes.find((route) => route.confidence !== 'LOW') ?? defaults;
-      return {
-        ok: true,
-        card: card.name,
-        quote: result,
-        comparison: {
-          default_route_rupees_per_point: defaults?.rupeesPerPoint ?? null,
-          best_confidence_route: best ? { label: best.label, rupees_per_point: best.rupeesPerPoint, confidence: best.confidence, valuation_source: best.valuationSource, valuation_verified_at: best.valuationVerifiedAt } : null,
-        },
-        note: 'Quote arithmetic uses user-supplied prices and costs. WalletWise does not independently verify the quote source, date, award availability or final programme value.',
       };
     },
   },
@@ -287,7 +221,7 @@ export const TOOLS: Tool[] = [
   {
     name: 'plan_trip',
     description:
-      'Compare the card return on a cash trip fare and list eligible airline transfer route estimates separately. This tool has no live award price, seat inventory, taxes or fees and must never claim estimated points cover a fare. "spend" is the cash fare in INR.',
+      'Plan paying for a trip: the best card to pay the cash fare, how far the user\'s points cover it, and months of normal spending to cover the rest. "spend" is the total fare or trip cost in INR.',
     parameters: {
       type: 'object',
       properties: {
@@ -302,19 +236,28 @@ export const TOOLS: Tool[] = [
       if (!(spend > 0)) return fail('invalid_amount', 'Trip cost must be a positive number of rupees.');
       const cards = walletCards(ctx);
       if (cards.length === 0) return fail('empty_wallet', 'The user has not added any cards yet.');
+      const profile: UserProfile = {
+        monthlySpend: ctx.wallet.profile?.monthlySpend ?? {},
+        repayment: ctx.wallet.profile?.repayment ?? 'ALWAYS_FULL',
+        experience: experience(ctx),
+      };
+      const monthly = walletValue(catalog, cards.map((c) => c.card), profile).annualReward / 12;
       const plan = planTripPayment(
         catalog,
         cards.map((c) => ({ card: c.card, points: c.holding.points })),
         spend,
-        { experience: experience(ctx), kind: 'FLIGHT' },
+        { experience: experience(ctx), monthlyRewardRs: monthly > 0 ? monthly : undefined },
       );
       ctx.setCta({ label: 'Open Trip Planner', route: '/trip-planner', params: { fare: String(round(spend)) } });
       return {
         ok: true,
         destination: String(args.destination ?? ''),
         trip_cost_inr: spend,
-        pay_cash_with: plan.payCash ? { card: plan.payCash.card.name, estimated_net_return_inr: plan.payCash.netValue, points_earned: plan.payCash.pointsEarned, confidence: plan.payCash.confidence, source: plan.payCash.source, verified_at: plan.payCash.verifiedAt, assumptions: plan.payCash.assumptions, reason: plan.payCash.reason } : null,
-        separate_airline_route_estimates: plan.pointsOptions.map((p) => ({ card: p.cardName, route: p.route, balance_points: p.pointsUsed, estimated_value_inr: p.valueRs, estimated_rupees_per_source_point: p.rupeesPerPoint, confidence: p.confidence, rule_source: p.ruleSource, rule_verified_at: p.ruleVerifiedAt, valuation_source: p.source, valuation_verified_at: p.verifiedAt })),
+        pay_cash_with: plan.payCash ? { card: plan.payCash.card.name, rupees_back: plan.payCash.netValue, points_earned: plan.payCash.pointsEarned, reason: plan.payCash.reason } : null,
+        points_plan: plan.pointsMix.map((p) => ({ card: p.cardName, route: p.route, points_used: p.pointsUsed, value_inr: p.valueRs, rupees_per_point: p.rupeesPerPoint, confidence: p.confidence })),
+        covered_by_points_inr: plan.coveredRs,
+        shortfall_inr: plan.shortfallRs,
+        months_to_cover_shortfall: plan.monthsToCover,
         notes: plan.notes,
       };
     },

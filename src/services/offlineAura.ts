@@ -23,8 +23,7 @@ export type OfflineIntent =
       upi: boolean;
     }
   | { kind: 'points_value' }
-  | { kind: 'card_updates' }
-  | { kind: 'my_cards' };
+  | { kind: 'card_updates' };
 
 export type OfflineContext = {
   catalog: Catalog;
@@ -71,7 +70,6 @@ const CATEGORY_RULES: CategoryRule[] = [
 
 const UPDATES_WORDS = /\bchanges?\b|\bupdates?\b|devalu|बदलाव|अपडेट|परिवर्तन|badlav/i;
 const POINTS_WORDS = /\bpoints?\b|\bworth\b|\bredeem|\bmiles\b|पॉइंट|पॉइंट्स|प्वाइंट|अंक|रिडीम|माइल्स/i;
-const MY_CARDS_WORDS = /\b(?:my cards?|what cards?|which cards? (?:do i have|are in my wallet)|show (?:my )?cards?|wallet cards?)\b|मेरे कार्ड|मेरे वॉलेट|कार्ड्स दिखा/i;
 const CARD_QUESTION_WORDS =
   /which card|best card|what card|\buse\b|\bpay\b|\bearn|\bswipe|कौन सा|कौनसा|कौन-सा|kaun ?sa|konsa|सबसे अच्छा|इस्तेमाल|भुगतान|कमाई|मिलेगा|मिलेंगे/i;
 
@@ -109,7 +107,6 @@ export function matchOfflineIntent(question: string): OfflineIntent | null {
   const q = question.trim();
   if (!q) return null;
   if (UPDATES_WORDS.test(q)) return { kind: 'card_updates' };
-  if (MY_CARDS_WORDS.test(q)) return { kind: 'my_cards' };
 
   const amount = parseAmount(q);
   const rule = matchCategory(q);
@@ -248,13 +245,11 @@ function bestCardAnswer(intent: Extract<OfflineIntent, { kind: 'best_card' }>, c
     return `${header(lang, simple)} ${line}`;
   }
 
-  const cardNames =
-    cards.length <= 3 ? cards.map((c) => c.name).join(', ') : `${cards.slice(0, 2).map((c) => c.name).join(', ')} +${cards.length - 2} more`;
   const lines: string[] = [header(lang, simple)];
   lines.push(
     lang === 'hi'
-      ? `आपके वॉलेट के ${cards.length} कार्ड्स (${cardNames}) में से: ${amount} के ${CATEGORY_HI[intent.category] ?? ''} खर्च के लिए ${top.card.name} इस्तेमाल करें। लगभग ${inr(top.safeValue)} वापस मिलेंगे${units}।`
-      : `From your ${cards.length} wallet cards (${cardNames}): Use ${top.card.name} for ${amount} on ${CATEGORY_EN[intent.category] ?? 'this spend'}. You get about ${inr(top.safeValue)} back${units}.`,
+      ? `${amount} के ${CATEGORY_HI[intent.category] ?? ''} खर्च के लिए ${top.card.name} इस्तेमाल करें। लगभग ${inr(top.safeValue)} वापस मिलेंगे${units}।`
+      : `Use ${top.card.name} for ${amount} on ${CATEGORY_EN[intent.category] ?? 'this spend'}. You get about ${inr(top.safeValue)} back${units}.`,
   );
   const next = ranked[1];
   if (next) {
@@ -286,6 +281,7 @@ function pointsAnswer(cards: { card: Card; points: number }[], ctx: OfflineConte
     return `${header(lang, simple)}\n${none}`;
   }
 
+  const totalPoints = withPoints.reduce((a, c) => a + c.points, 0);
   const low = withPoints.reduce((a, c) => a + c.value.low, 0);
   const high = withPoints.reduce((a, c) => a + c.value.high, 0);
   const top = withPoints[0];
@@ -293,8 +289,8 @@ function pointsAnswer(cards: { card: Card; points: number }[], ctx: OfflineConte
   if (simple) {
     const line =
       lang === 'hi'
-        ? `अलग-अलग रिवॉर्ड प्रोग्राम के आपके बैलेंस की अनुमानित रुपये में कीमत लगभग ${inr(low)} है; इन्हें एक ही रिडेम्पशन में नहीं जोड़ा गया है। सबसे पहले ${top.card.name} का विकल्प देखें।`
-        : `Your separate reward balances have an estimated INR equivalent of about ${inr(low)}; they are not pooled into one redemption. Check the ${top.card.name} option first.`;
+        ? `आपके पॉइंट्स की कीमत लगभग ${inr(low)} है। सबसे पहले ${top.card.name} के पॉइंट्स इस्तेमाल करें।`
+        : `Your points are worth about ${inr(low)}. Start with your ${top.card.name} points.`;
     return `${header(lang, simple)} ${line}`;
   }
 
@@ -302,16 +298,15 @@ function pointsAnswer(cards: { card: Card; points: number }[], ctx: OfflineConte
   const lines: string[] = [header(lang, simple)];
   lines.push(
     lang === 'hi'
-      ? `अलग-अलग रिवॉर्ड प्रोग्राम के बैलेंस की अनुमानित रुपये में कीमत ${range} है; इन्हें जोड़ा नहीं जा सकता।`
-      : `Separate reward-program balances have an estimated INR equivalent of ${range}; the underlying points are not interchangeable or pooled.`,
+      ? `आपके ${groupIndian(totalPoints)} पॉइंट्स की कीमत लगभग ${range} है।`
+      : `Your ${groupIndian(totalPoints)} points are worth about ${range}.`,
   );
   for (const c of withPoints.slice(0, 5)) {
-    const best = c.value.high > c.value.low ? ` ${lang === 'hi' ? 'से' : 'to'} ${inr(c.value.high)} (${c.value.bestRoute.label}; ${c.value.bestRoute.confidence.toLowerCase()} confidence)` : '';
-    const provenance = c.value.bestRoute.valuationSource + (c.value.bestRoute.valuationVerifiedAt ? `; verified ${c.value.bestRoute.valuationVerifiedAt}` : '; no valuation verification date');
+    const best = c.value.high > c.value.low ? ` ${lang === 'hi' ? 'से' : 'to'} ${inr(c.value.high)} (${c.value.bestRoute.label})` : '';
     lines.push(
       lang === 'hi'
-        ? `- ${c.card.name}: ${groupIndian(c.points)} पॉइंट्स, ${inr(c.value.low)}${best}. स्रोत: ${provenance}`
-        : `- ${c.card.name}: ${groupIndian(c.points)} points, ${inr(c.value.low)}${best}. Source: ${provenance}`,
+        ? `- ${c.card.name}: ${groupIndian(c.points)} पॉइंट्स, ${inr(c.value.low)}${best}`
+        : `- ${c.card.name}: ${groupIndian(c.points)} points, ${inr(c.value.low)}${best}`,
     );
   }
   lines.push(
@@ -370,42 +365,6 @@ function updatesAnswer(cards: Card[], ctx: OfflineContext): string {
   return lines.join('\n');
 }
 
-function myCardsAnswer(held: { card: Card; points: number }[], ctx: OfflineContext): string {
-  const lang = ctx.language ?? 'en';
-  const simple = ctx.simple === true;
-  const count = held.length;
-
-  if (simple) {
-    const names = held.map((h) => h.card.name).join(', ');
-    const line =
-      lang === 'hi'
-        ? `आपके वॉलेट में ${count} कार्ड्स हैं: ${names}।`
-        : `You have ${count} ${count === 1 ? 'card' : 'cards'} in your wallet: ${names}.`;
-    return `${header(lang, simple)} ${line}`;
-  }
-
-  const lines = [
-    header(lang, simple),
-    lang === 'hi'
-      ? `आपके वॉलेट में ${count} कार्ड्स सेव हैं:`
-      : `You have ${count} ${count === 1 ? 'card' : 'cards'} saved in your wallet:`,
-  ];
-
-  for (const h of held) {
-    const val = h.points > 0 ? pointsValue(ctx.catalog, h.card, h.points) : null;
-    const pts = h.points > 0 ? ` · ${groupIndian(h.points)} points (~${inr(val?.low ?? 0)})` : '';
-    lines.push(`- ${h.card.name}${pts}`);
-  }
-
-  lines.push(
-    lang === 'hi'
-      ? 'सभी रिवॉर्ड नियम, पॉइंट्स और बेनिफ़िट ऑफ़लाइन उपलब्ध हैं।'
-      : 'All reward rules, points balances, and card benefits are stored locally and accessible offline.',
-  );
-
-  return lines.join('\n');
-}
-
 /** Answers the question on the phone, or returns null when it needs the Aura server. */
 export function answerOffline(question: string, ctx: OfflineContext): OfflineAnswer | null {
   const intent = matchOfflineIntent(question);
@@ -425,7 +384,5 @@ export function answerOffline(question: string, ctx: OfflineContext): OfflineAns
       return { intent: intent.kind, text: pointsAnswer(held, ctx) };
     case 'card_updates':
       return { intent: intent.kind, text: updatesAnswer(cards, ctx) };
-    case 'my_cards':
-      return { intent: intent.kind, text: myCardsAnswer(held, ctx) };
   }
 }
