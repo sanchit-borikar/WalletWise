@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 
 import { Block, Button, Chip, Field, Heading, Label, Para, Screen, kitStyles } from '../components/screen/ScreenKit';
 import { catalog } from '../data/catalog';
-import { currentMonth, monthSummary, spendsInMonth } from '../engine/budget';
+import { currentMonth, monthSummary, spendsInMonth, spendTrends } from '../engine/budget';
 import { localIsoDate } from '../engine/billing';
 import type { Category } from '../engine';
 import { useCardStore } from '../store/useCardStore';
@@ -52,6 +52,7 @@ export default function SpendsScreen() {
   const isDemo = useCardStore((s) => s.isDemo);
   const spends = useCardStore((s) => s.spends);
   const addSpend = useCardStore((s) => s.addSpend);
+  const updateSpend = useCardStore((s) => s.updateSpend);
   const removeSpend = useCardStore((s) => s.removeSpend);
 
   const [amount, setAmount] = useState('');
@@ -60,7 +61,11 @@ export default function SpendsScreen() {
   // Falls back to the first card, also after the saved wallet loads or a card is removed.
   const cardId = pickedCard && cards.some((c) => c.id === pickedCard) ? pickedCard : (cards[0]?.id ?? null);
   const [online, setOnline] = useState(false);
-  const [yesterday, setYesterday] = useState(false);
+  const [paymentMode, setPaymentMode] = useState<'CARD' | 'UPI' | 'DEBIT' | 'CASH'>('CARD');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [spendDate, setSpendDate] = useState(new Date());
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(new Date());
   const [month, setMonth] = useState(currentMonth());
 
   const holdings = useMemo(() => cards.map((c) => ({ id: c.id, catalogId: c.catalogId, label: `${c.bankName} ${c.cardName}` })), [cards]);
@@ -69,16 +74,17 @@ export default function SpendsScreen() {
     [spends, holdings, profile, month],
   );
   const recent = useMemo(() => spendsInMonth(spends, month).reverse().slice(0, 20), [spends, month]);
+  const trends = useMemo(() => spendTrends(spends, month), [spends, month]);
   const cardLabel = (id: string) => holdings.find((h) => h.id === id)?.label ?? 'Removed card';
 
   const value = Number(amount.replace(/[^0-9.]/g, ''));
-  const canAdd = value > 0 && !!cardId;
+  const canAdd = value > 0 && (paymentMode !== 'CARD' || !!cardId);
   const add = () => {
-    if (!canAdd || !cardId) return;
-    const day = new Date();
-    if (yesterday) day.setDate(day.getDate() - 1);
-    const date = localIsoDate(day);
-    addSpend({ amount: Math.round(value * 100) / 100, category, cardId, date, online: online || category === 'ONLINE_SHOPPING' });
+    if (!canAdd || (paymentMode === 'CARD' && !cardId)) return;
+    const date = localIsoDate(spendDate);
+    const entry = { amount: Math.round(value * 100) / 100, category, cardId: paymentMode === 'CARD' ? cardId! : '', date, online: online || category === 'ONLINE_SHOPPING', paymentMode };
+    if (editingId) updateSpend(editingId, entry); else addSpend(entry);
+    setEditingId(null);
     setAmount('');
     setMonth(date.slice(0, 7));
   };
@@ -101,7 +107,19 @@ export default function SpendsScreen() {
             <Chip key={c.key} label={c.label} selected={category === c.key} onPress={() => setCategory(c.key)} />
           ))}
         </View>
-        {cards.length > 0 ? (
+        <Button kind="secondary" label={`Date: ${localIsoDate(spendDate)}`} onPress={() => { setCalendarMonth(spendDate); setDatePickerOpen(true); }} />
+        {datePickerOpen && <Block>
+          <View style={kitStyles.between}>
+            <Button kind="secondary" label="‹" onPress={() => setCalendarMonth((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))} />
+            <Heading>{calendarMonth.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</Heading>
+            <Button kind="secondary" label="›" onPress={() => setCalendarMonth((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))} />
+          </View>
+          <View style={kitStyles.wrap}>{Array.from({ length: new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1).getDay() }, (_, i) => <Text key={`blank-${i}`} style={styles.day}> </Text>)}{Array.from({ length: new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate() }, (_, i) => { const day = i + 1; const date = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day); const disabled = date > new Date(); return <Pressable key={day} disabled={disabled} onPress={() => { setSpendDate(date); setDatePickerOpen(false); }} accessibilityRole="button" accessibilityLabel={`Choose ${localIsoDate(date)}`}><Text style={[styles.day, disabled && styles.disabledDay]}>{day}</Text></Pressable>; })}</View>
+        </Block>}
+        <View style={kitStyles.wrap}>
+          {(['CARD', 'UPI', 'DEBIT', 'CASH'] as const).map((mode) => <Chip key={mode} label={{ CARD: 'Credit card', UPI: 'UPI', DEBIT: 'Debit card', CASH: 'Cash' }[mode]} selected={paymentMode === mode} onPress={() => setPaymentMode(mode)} />)}
+        </View>
+        {paymentMode === 'CARD' && cards.length > 0 ? (
           <>
             <Label>Paid with</Label>
             <View style={kitStyles.wrap}>
@@ -110,15 +128,15 @@ export default function SpendsScreen() {
               ))}
             </View>
           </>
-        ) : (
+        ) : paymentMode === 'CARD' ? (
           <Para muted>Add a card to your wallet first.</Para>
-        )}
+        ) : null}
         <View style={kitStyles.wrap}>
           {category !== 'ONLINE_SHOPPING' && <Chip label="Paid online" selected={online} onPress={() => setOnline((v) => !v)} />}
-          <Chip label="Yesterday" selected={yesterday} onPress={() => setYesterday((v) => !v)} />
         </View>
-        <Button label="Add spend" onPress={add} disabled={!canAdd} />
-        {isDemo && <Para muted>You are using the sample cards. Add your own cards for real numbers.</Para>}
+        <Para muted>Only credit-card transactions are compared for rewards. UPI, debit, and cash entries count toward spending totals, not card rewards.</Para>
+        <Button label={editingId ? 'Save spend' : 'Add spend'} onPress={add} disabled={!canAdd} />
+        {isDemo && <Para muted>Sample cards remain in this comparison wallet. Remove them from Wallet when you are done.</Para>}
       </Block>
 
       <View style={kitStyles.between}>
@@ -212,6 +230,44 @@ export default function SpendsScreen() {
         </Block>
       )}
 
+      {trends ? (
+        <Block>
+          <Label>Spend Insights & Forecast</Label>
+          <View style={styles.line}>
+            <View style={kitStyles.between}>
+              <Text style={theme.text.caption}>Projected this month</Text>
+              <Text style={[theme.text.body, kitStyles.gold]}>≈ {inr(trends.projectedMonthTotal)}</Text>
+            </View>
+            <View style={kitStyles.between}>
+              <Text style={theme.text.caption}>Historical monthly avg</Text>
+              <Text style={theme.text.body}>{inr(trends.averageMonthlySpend)}</Text>
+            </View>
+            {trends.topCategory && (
+              <View style={kitStyles.between}>
+                <Text style={theme.text.caption}>Top spending category</Text>
+                <Text style={theme.text.body}>{trends.topCategory.label} ({inr(trends.topCategory.spent)})</Text>
+              </View>
+            )}
+            {trends.momChangePct !== null && (
+              <View style={kitStyles.between}>
+                <Text style={theme.text.caption}>Month-over-month trend</Text>
+                <Text style={[theme.text.body, trends.momChangePct > 0 ? { color: '#E57373' } : { color: '#81C784' }]}>
+                  {trends.momChangePct > 0 ? `+${trends.momChangePct}%` : `${trends.momChangePct}%`}
+                </Text>
+              </View>
+            )}
+          </View>
+          <Para muted>{trends.assumptions[0]} {trends.assumptions[1]}</Para>
+        </Block>
+      ) : spends.length > 0 ? (
+        <Block>
+          <Label>Spend Insights & Forecast</Label>
+          <Para muted>
+            📊 Log transactions across two calendar months to unlock historical averages, category trends, and monthly forecasting.
+          </Para>
+        </Block>
+      ) : null}
+
       <Block tone="gold">
         <Para strong>Never spend more just to reach a milestone or a fee waiver.</Para>
         <Para>
@@ -230,7 +286,7 @@ export default function SpendsScreen() {
                   {inr(s.amount)} · {LABEL[s.category] ?? s.category}
                 </Text>
                 <Text style={theme.text.caption}>
-                  {shortDate(s.date)} · {cardLabel(s.cardId)}
+                  {shortDate(s.date)} · {s.paymentMode === 'UPI' ? 'UPI' : s.paymentMode === 'DEBIT' ? 'debit' : s.paymentMode === 'CASH' ? 'cash' : cardLabel(s.cardId)}
                 </Text>
               </View>
               <Pressable
@@ -242,6 +298,7 @@ export default function SpendsScreen() {
               >
                 <Text style={styles.removeText}>✕</Text>
               </Pressable>
+              <Pressable onPress={() => { setEditingId(s.id); setAmount(String(s.amount)); setCategory(s.category); setCardId(s.cardId); setPaymentMode(s.paymentMode ?? 'CARD'); setOnline(!!s.online); setSpendDate(new Date(`${s.date}T12:00:00`)); }} accessibilityRole="button" accessibilityLabel={`Edit spend of ${inr(s.amount)}`}><Text style={styles.edit}>Edit</Text></Pressable>
             </View>
           ))}
         </Block>
@@ -271,4 +328,7 @@ const styles = StyleSheet.create({
   fillOver: { backgroundColor: theme.colors.warning },
   remove: { minWidth: theme.sizes.touch, minHeight: theme.sizes.touch, alignItems: 'center', justifyContent: 'center' },
   removeText: { color: theme.colors.textMuted, fontSize: 16 },
+  edit: { color: theme.colors.gold, padding: 8 },
+  day: { minWidth: 36, padding: 8, color: theme.colors.textPrimary, textAlign: 'center' },
+  disabledDay: { color: theme.colors.textMuted },
 });
