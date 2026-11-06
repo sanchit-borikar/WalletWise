@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -9,7 +9,6 @@ import type { Card, Category } from '../engine';
 import { useCardStore } from '../store/useCardStore';
 import { theme } from '../theme';
 
-const MAX_SPENDS = 5;
 const CATEGORIES: { value: Category; label: string }[] = [
   { value: 'GROCERY', label: 'Groceries' },
   { value: 'DINING', label: 'Food' },
@@ -22,6 +21,8 @@ const CATEGORIES: { value: Category; label: string }[] = [
 
 type SpendDraft = { amount: string; category: Category; merchant: string; online: 'YES' | 'NO'; usedCardId: string };
 
+const NO_CC_ID = '__no_cc__';
+
 /**
  * Missed-rewards check: a few recent spends and the card used for each, then how much
  * more the best card in the wallet would have earned (same ranking as Best Card).
@@ -29,18 +30,40 @@ type SpendDraft = { amount: string; category: Category; merchant: string; online
 export default function MissedRewardsScreen() {
   const router = useRouter();
   const holdings = useCardStore((s) => s.holdings);
+  const ledger = useCardStore((s) => s.spends);
   const experience = useCardStore((s) => s.profile.experience);
+  const sampleWallet = useCardStore((s) => s.isDemo);
   const walletCards = holdings.map((h) => catalog.byId.get(h.catalogId)).filter((c): c is Card => !!c);
   const firstCard = walletCards[0]?.id ?? '';
 
-  const [spends, setSpends] = useState<SpendDraft[]>([{ amount: '', category: 'GROCERY', merchant: '', online: 'NO', usedCardId: firstCard }]);
+  const eligibleLedgerSpends = useMemo(() => {
+    return ledger.filter((spend) => !spend.paymentMode || spend.paymentMode === 'CARD').flatMap((spend) => {
+      const holding = holdings.find((h) => h.id === spend.cardId);
+      return holding && walletCards.some((card) => card.id === holding.catalogId)
+        ? [{
+            amount: String(spend.amount),
+            category: spend.category,
+            merchant: '',
+            online: (spend.online ? 'YES' : 'NO') as 'YES' | 'NO',
+            usedCardId: holding.catalogId,
+          }]
+        : [];
+    });
+  }, [ledger, holdings, walletCards]);
+
+  const [spends, setSpends] = useState<SpendDraft[]>(() => {
+    if (eligibleLedgerSpends.length > 0) {
+      return eligibleLedgerSpends;
+    }
+    return [{ amount: '', category: 'GROCERY', merchant: '', online: 'NO', usedCardId: NO_CC_ID }];
+  });
   const [checked, setChecked] = useState(false);
   const update = (i: number, changes: Partial<SpendDraft>) => {
     setChecked(false);
     setSpends((list) => list.map((s, j) => (j === i ? { ...s, ...changes } : s)));
   };
 
-  if (walletCards.length < 2) {
+  if (walletCards.length === 0) {
     return (
       <MoneyScreen title="Missed rewards" sub="This check compares the cards in your wallet, so it needs at least two cards.">
         <PrimaryButton label="Add a card" onPress={() => router.push('/add-card')} />
@@ -52,16 +75,48 @@ export default function MissedRewardsScreen() {
   const result = missedRewards(
     catalog,
     walletCards,
-    valid.map((s) => ({ amount: toNumber(s.amount), category: s.category, merchant: s.merchant, online: s.online === 'YES', usedCardId: s.usedCardId })),
+    valid.map((s) => ({ amount: toNumber(s.amount), category: s.category, merchant: s.merchant, online: s.online === 'YES', usedCardId: s.usedCardId === NO_CC_ID ? '' : s.usedCardId })),
     { experience },
   );
-  const cardOptions = walletCards.map((c) => ({ value: c.id, label: c.name }));
+  const cardOptions = [
+    { value: NO_CC_ID, label: '💸 UPI / Debit / Cash (no credit card)' },
+    ...walletCards.map((c) => ({ value: c.id, label: c.name })),
+  ];
 
   return (
     <MoneyScreen
       title="Missed rewards"
-      sub={`Enter up to ${MAX_SPENDS} recent spends, for example last month's biggest, and the card you used. We show what your best card would have earned.`}
+      sub={`Enter recent spends and the card you used. We compare eligible cards in your wallet; ties are shown as ties.`}
     >
+      {sampleWallet && <Body style={styles.small}>This wallet includes sample comparison cards. Remove the samples in Wallet before relying on a real-wallet comparison.</Body>}
+      {eligibleLedgerSpends.length > 0 && spends === eligibleLedgerSpends && (
+        <View style={styles.ledgerInfoRow}>
+          <Text style={styles.ledgerInfoText}>
+            💡 Loaded {spends.length} credit card spend{spends.length === 1 ? '' : 's'} from your spend ledger.
+          </Text>
+          <Pressable
+            onPress={() => {
+              setSpends([{ amount: '', category: 'GROCERY', merchant: '', online: 'NO', usedCardId: firstCard }]);
+              setChecked(false);
+            }}
+            accessibilityRole="button"
+          >
+            <Text style={styles.ledgerResetText}>Clear / Enter manually</Text>
+          </Pressable>
+        </View>
+      )}
+      {eligibleLedgerSpends.length > 0 && spends !== eligibleLedgerSpends && (
+        <Pressable
+          onPress={() => {
+            setSpends(eligibleLedgerSpends);
+            setChecked(false);
+          }}
+          accessibilityRole="button"
+          style={{ marginBottom: 12, alignSelf: 'flex-start' }}
+        >
+          <Text style={styles.ledgerResetText}>↻ Reload spends from ledger</Text>
+        </Pressable>
+      )}
       {spends.map((s, i) => (
         <Panel key={i}>
           <View style={styles.spendTop}>
@@ -109,10 +164,10 @@ export default function MissedRewardsScreen() {
         </Panel>
       ))}
 
-      {spends.length < MAX_SPENDS && (
+      {(
         <LinkButton
           label="+ Add another spend"
-          onPress={() => setSpends((list) => [...list, { amount: '', category: 'DEFAULT', merchant: '', online: 'NO', usedCardId: firstCard }])}
+          onPress={() => setSpends((list) => [...list, { amount: '', category: 'DEFAULT', merchant: '', online: 'NO', usedCardId: NO_CC_ID }])}
         />
       )}
 
@@ -122,7 +177,7 @@ export default function MissedRewardsScreen() {
         <>
           <Panel tone={result.totalMissed > 0 ? 'gold' : 'good'}>
             <Text style={styles.headline}>
-              {result.totalMissed > 0
+          {walletCards.length === 1 ? 'This is your only card, so there is no alternative-card comparison.' : result.totalMissed > 0
                 ? `You could have earned ${inr(result.totalMissed)} more on these ${result.rows.length} spends.`
                 : 'You used your best card every time. Nice.'}
             </Text>
@@ -134,10 +189,11 @@ export default function MissedRewardsScreen() {
               <Text style={styles.spendTitle}>
                 {inr(r.spend.amount)} · {CATEGORIES.find((c) => c.value === r.spend.category)?.label}
               </Text>
-              <StatRow label={`${r.usedCard?.name ?? 'Your card'} earned`} value={inr(r.earned)} />
-              {r.missed > 0 && r.bestCard ? (
+              <StatRow label={`${r.usedCard?.name ?? (r.spend.usedCardId === NO_CC_ID || !r.spend.usedCardId ? 'UPI / Debit / Cash' : 'Your card')} earned`} value={inr(r.earned)} />
+              {walletCards.length === 1 ? <Body style={styles.small}>Benchmark: this card’s eligible reward under catalog rules. No other card is available to compare.</Body> : r.missed > 0 && r.bestCard ? (
                 <>
                   <StatRow label={`${r.bestCard.name} would have earned`} value={inr(r.bestEarned)} tone="good" />
+                  {r.tiedBestCards.length > 1 && <Body style={styles.small}>Tie: {r.tiedBestCards.map((card) => card.name).join(', ')} earn the same estimated amount.</Body>}
                   <StatRow label="You missed" value={inr(r.missed)} tone="gold" strong />
                   <Body style={styles.small}>{r.reason}</Body>
                 </>
@@ -177,4 +233,31 @@ const styles = StyleSheet.create({
   },
   hint: { ...theme.text.caption, fontWeight: '400', marginTop: 4 },
   disclaimer: { ...theme.text.caption, fontWeight: '400', marginTop: theme.spacing.lg, lineHeight: 17 },
+  ledgerInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#161616',
+    borderWidth: 1,
+    borderColor: '#262626',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 14,
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  ledgerInfoText: {
+    fontFamily: theme.fontFamily,
+    color: '#D4AF37',
+    fontSize: 12,
+    fontWeight: '600',
+    flex: 1,
+  },
+  ledgerResetText: {
+    fontFamily: theme.fontFamily,
+    color: theme.colors.textMuted,
+    fontSize: 12,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
 });
