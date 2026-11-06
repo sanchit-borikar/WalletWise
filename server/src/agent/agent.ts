@@ -43,7 +43,6 @@ const TOOL_STATUS: Record<string, string> = {
   get_user_wallet: 'Checking your wallet…',
   get_best_card: 'Comparing your cards…',
   get_points_value: 'Valuing your points…',
-  check_redemption: 'Checking the net redemption value…',
   get_card_updates: 'Checking card updates…',
   plan_trip: 'Planning your trip…',
   search_card_knowledge: 'Looking up card details…',
@@ -63,8 +62,7 @@ export async function* runAgent(
   options: { signal?: AbortSignal; today?: string; language?: AuraLanguage; simple?: boolean } = {},
 ): AsyncGenerator<AgentEvent> {
   const today = options.today ?? new Date().toISOString().slice(0, 10);
-  const trimmedConversation = conversation.slice(-config.maxTurns);
-  const messages: ChatMessage[] = [{ role: 'system', content: buildSystemPrompt(today, options) }, ...trimmedConversation];
+  const messages: ChatMessage[] = [{ role: 'system', content: buildSystemPrompt(today, options) }, ...conversation];
 
   let cta: Cta | null = null;
   const ctx = { wallet, setCta: (c: Cta) => (cta = c) };

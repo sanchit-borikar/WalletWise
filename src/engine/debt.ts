@@ -46,8 +46,6 @@ export type RevolvingInput = {
   minDueFloor?: number;
   /** New card spend each month while the balance is unpaid. */
   newMonthlySpend?: number;
-  /** Calendar days in the card's statement cycle. Defaults to 30 only when unavailable. */
-  cycleDays?: number;
   maxMonths?: number;
 };
 
@@ -77,7 +75,6 @@ export type RevolvingCost = {
   firstPayment: number;
   firstMonthInterest: number;
   monthlyPct: number;
-  cycleDays: number;
   rateSource: RateSource;
   minDuePct: number;
   schedule: RevolvingMonth[];
@@ -100,12 +97,10 @@ export function revolvingCost(input: RevolvingInput): RevolvingCost {
   const floor = input.minDueFloor ?? DEFAULT_MIN_DUE_FLOOR;
   const newSpend = Math.max(0, input.newMonthlySpend ?? 0);
   const maxMonths = input.maxMonths ?? MAX_SIMULATION_MONTHS;
-  const cycleDays = Number.isInteger(input.cycleDays) && input.cycleDays! >= 1 && input.cycleDays! <= 31 ? input.cycleDays! : 30;
-  const r = (monthlyPct * 12 / 100) * cycleDays / 365;
+  const r = monthlyPct / 100;
 
   const assumptions: string[] = [];
   if (!userRate) assumptions.push(`Interest assumed at ${DEFAULT_APR_MONTHLY_PCT}% a month (this card does not publish a rate).`);
-  assumptions.push(`Statement-cycle interest uses ${cycleDays} calendar days: balance after payment × (monthly rate × 12) × ${cycleDays}/365. ${input.cycleDays == null ? 'A 30-day cycle is assumed because no cycle length was provided.' : 'Cycle length is based on saved statement dates.'}`);
   if (input.minDuePct == null) assumptions.push(`Minimum due assumed at ${DEFAULT_MIN_DUE_PCT}% of the bill, at least ₹${floor.toLocaleString('en-IN')}. Check your statement and change it if yours is different.`);
   assumptions.push('18% GST is added to interest.');
   assumptions.push('Simplified: banks charge interest from each purchase date, so real interest is usually a little higher.');
@@ -168,7 +163,6 @@ export function revolvingCost(input: RevolvingInput): RevolvingCost {
     firstPayment: round(schedule[0]?.payment ?? 0),
     firstMonthInterest: round((schedule[0]?.interest ?? 0) + (schedule[0]?.gst ?? 0)),
     monthlyPct,
-    cycleDays,
     rateSource,
     minDuePct,
     schedule,
